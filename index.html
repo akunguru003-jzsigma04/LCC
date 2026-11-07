@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LCC Kepanduan - Babak Penyisihan</title>
+    <title>LCC Kepanduan · MAN 1 Boalemo</title>
     <style>
         :root {
             --coklat-tua: #4E342E;
@@ -221,6 +221,25 @@
         #toast.show { opacity: 1; }
         .member:hover { transform: scale(1.15); }
         .card.shake { animation: shake .4s; }
+        .member.sudah { position: relative; box-shadow: 0 0 0 3px #66bb6a; }
+        .member.sudah::after { content: '✓'; position: absolute; top: -8px; right: -6px; font-size: .75rem; background: #2e7d32; color: #fff; border-radius: 50%; width: 1.2em; height: 1.2em; line-height: 1.2em; text-align: center; }
+        .member.tunggu { opacity: .55; border-style: dashed; }
+        .cd-ov { position: fixed; inset: 0; z-index: 9998; display: flex; align-items: center; justify-content: center; background: #000b; color: #ffca28; font-size: 45vmin; font-weight: 900; pointer-events: none; animation: stampIn .4s; }
+        #app-foot { text-align: center; font-size: .8rem; line-height: 1.7; padding: 1rem .8rem 1.3rem; background: rgba(62,39,35,.95); color: #ffe082; margin-top: 1.5rem; }
+        #app-foot b { color: #fff; } #app-foot small { display: block; color: #d7ccc8; font-size: .72rem; }
+        .cv-credit { margin-top: 1.4rem; font-size: .8rem; color: #ffe082; opacity: .9; }
+        .rm-credit { margin-top: 1.2rem; font-size: .75rem; color: #8d6e63; }
+        .kc.g2c { position: relative; overflow: hidden; padding: 0; background: #455a64; }
+        .kc.g2c img { width: 100%; height: 100%; object-fit: cover; }
+        .kc .nm { position: absolute; left: 8px; bottom: 2px; color: #fff; font-size: 1.7rem; text-shadow: 0 2px 5px #000; }
+        .kc.kunci { outline: 6px solid #43a047; outline-offset: -6px; }
+        .kc .stamp { position: absolute; right: 6px; top: 0; font-size: 3.4rem; font-weight: 900; text-shadow: 0 0 6px #fff, 0 0 6px #fff; animation: stampIn .35s; }
+        .stamp.ok { color: #2e7d32; } .stamp.bad { color: #e53935; }
+        .kc em { position: absolute; left: 0; right: 0; top: 0; background: #000b; color: #fff; font: 700 .85rem sans-serif; text-align: center; }
+        .hasil-ov { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; background: #000a; pointer-events: none; animation: stampIn .3s; }
+        .hasil-ov div { width: min(60vw, 60vh); aspect-ratio: 1; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; font-size: 4.5rem; font-weight: 900; letter-spacing: 3px; }
+        .hasil-ov span { font-size: 6rem; } .hasil-ov.ok div { background: #2e7d32; } .hasil-ov.bad div { background: #c62828; }
+        @keyframes stampIn { from { transform: scale(2.6); opacity: 0; } }
         @keyframes shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
 
         .skor-row { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: .8rem; }
@@ -291,18 +310,45 @@
 
         #cloud-badge { position: fixed; left: 12px; bottom: 12px; z-index: 950; color: #fff; font-size: .8rem; font-weight: 700; padding: .35rem .8rem; border-radius: 20px; background: #777; opacity: .92; pointer-events: none; }
         body.penonton #cloud-badge, body.bel #cloud-badge { display: none; }
+
+        #main-header { position: relative; }
+        .hd-logo { position: absolute; left: 1.2rem; top: 50%; transform: translateY(-50%); height: 58px; background: #fff; border-radius: 50%; padding: 2px; }
+        @media (max-width: 640px) { .hd-logo { display: none; } }
+        .cv-logo { width: 170px; height: 170px; padding: 6px; box-sizing: border-box; }
+        .pn-head { display: flex; align-items: center; gap: 12px; margin-bottom: 1rem; color: var(--coklat-tua); font-size: 1.1rem; }
+        .pn-head img { height: 52px; }
+        #role-menu, #babak-menu { position: fixed; inset: 0; z-index: 2000; overflow: auto; align-items: center; justify-content: center; padding: 1.5rem; text-align: center; color: #fff;
+            background: radial-gradient(circle at 50% 30%, #6D4C41 0%, #4E342E 55%, #2B1D19 100%); }
+        .rm-box { max-width: 900px; width: 100%; }
+        .rm-logo { display: block; margin: 0 auto; width: 130px; height: 130px; object-fit: contain; background: #fff; border-radius: 50%; border: 4px solid var(--kuning-pramuka); padding: 6px; box-sizing: border-box; }
+        .rm-box h1 { color: var(--kuning-pramuka); font-size: clamp(2rem, 6vw, 3.4rem); text-transform: uppercase; margin: .6rem 0 .2rem; text-shadow: 3px 3px 0 rgba(0,0,0,.4); }
+        .rm-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin: 1.2rem 0; }
+        .rm-btn { background: rgba(255,255,255,.1); color: #fff; border: 2px solid var(--kuning-pramuka); border-radius: 18px; padding: 1.6rem 1rem; cursor: pointer; display: flex; flex-direction: column; gap: .4rem; align-items: center; transition: .15s; font-family: inherit; }
+        .rm-btn:hover { background: var(--kuning-pramuka); color: var(--coklat-tua); transform: translateY(-4px); }
+        .rm-btn span { font-size: 3rem; } .rm-btn b { font-size: 1.6rem; } .rm-btn small { opacity: .85; font-size: .9rem; }
+        .rm-note { opacity: .75; font-size: .9rem; }
+
+        #landing { position: fixed; inset: 0; z-index: 2000; overflow: auto; background: #f4f4f4; padding: 1rem; }
+
+        .reg-row { display: grid; grid-template-columns: 2rem 1.5fr 1.2fr repeat(3, 1fr) 2.2rem; gap: 5px; margin-bottom: 5px; align-items: center; font-size: .85rem; }
+        .reg-row input { padding: .4rem; border: 2px solid #ddd; border-radius: 6px; width: 100%; min-width: 0; }
+        .reg-head { font-weight: 800; color: var(--coklat-tua); }
+        .asal { font-size: .8rem; opacity: .7; text-align: center; margin: -.3rem 0 .6rem; }
+
+        .member.now { box-shadow: 0 0 0 4px var(--kuning-pramuka); }
     </style>
 </head>
 <body>
 
     <header id="main-header">
-        <h1>LCC Kepanduan - Season 4</h1>
+        <img class="hd-logo" id="hd-logo" alt="Logo">
+        <h1>LCC Kepanduan - Season 5</h1>
         <p>Aplikasi Penilaian Cerdas Cermat Sistem Gugur</p>
     </header>
 
     <div class="dashboard-bar" id="dashboard-bar">
         <div class="stats" id="juri-stats">
-            Regu Bertahan: <span id="active-count">14</span> / 14 
+            Regu Bertahan: <span id="active-count">14</span> / <span id="total-count">14</span> 
             <small style="color:#666; font-weight:normal; margin-left: 10px;">(Target Grand Final: 5 Regu)</small>
         </div>
         <div class="stats" id="peserta-stats" style="display: none;">
@@ -310,12 +356,18 @@
         </div>
         
         <div id="juri-buttons" style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button class="btn btn-primary btn-outline" onclick="bukaReg()">📝 Daftar Regu</button>
             <button class="btn btn-primary btn-outline" onclick="kembaliCover()">🏠 Cover</button>
+            <button class="btn btn-primary btn-outline" onclick="gantiPeran()">🔀 Ganti Peran</button>
             <button class="btn btn-primary" style="background: transparent; border: 2px solid var(--kuning-pramuka);" onclick="switchMode('peserta')">Tampilan Peserta 📝</button>
             <button class="btn btn-primary btn-outline" onclick="bukaPenonton()">🖥 Layar Penonton</button>
             <button class="btn btn-primary btn-outline" onclick="bukaEditor()">✏️ Editor Soal</button>
             <button class="btn btn-primary btn-outline" onclick="cloudSimpanSekarang()" title="Simpan ke Google Sheets sekarang">☁️ Simpan</button>
             <button class="btn btn-primary btn-outline" onclick="cloudMuatManual()" title="Muat data dari Google Sheets">☁️ Muat</button>
+            <button class="btn btn-primary btn-outline" onclick="jedaTimer()" title="Jeda / lanjutkan timer">⏸ Jeda/Lanjut</button>
+            <button class="btn btn-primary btn-outline" onclick="cekKesiapan()">✅ Cek Kesiapan</button>
+            <button class="btn btn-primary btn-outline" onclick="cadangUnduh()" title="Unduh cadangan semua data lomba">💾 Cadangan</button>
+            <label class="btn btn-primary btn-outline" style="cursor:pointer" title="Pulihkan dari berkas cadangan">📂 Pulihkan<input type="file" accept=".json" style="display:none" onchange="cadangPulih(this)"></label>
             <button class="btn btn-primary btn-outline" id="btn-undo" onclick="undo()" title="Ctrl+Z">↩ Undo</button>
             <button class="btn btn-primary btn-outline mute-btn" onclick="toggleMute()">🔊</button>
             <button class="btn btn-danger" onclick="resetData()">Reset Data</button>
@@ -355,6 +407,7 @@
             <small>SOAL <b id="jp-no"></b> · KUNCI JAWABAN (khusus juri)</small>
             <div class="jp-soal" id="jp-soal"></div>
             <div class="jp-kunci" id="jp-kunci"></div>
+            <div class="jp-kunci" id="jp-masuk" style="border-color:var(--kuning-pramuka)"></div>
             <div class="timer-row"><div class="timer"><div class="timer-fill"></div></div><div class="timer-text">15</div></div>
             <div class="jp-btns">
                 <button class="btn btn-primary btn-sm" onclick="navSoal(-1)">⬅ Soal</button>
@@ -363,6 +416,7 @@
                 <button class="btn btn-primary btn-sm" onclick="startTimer()">▶ Mulai Timer</button>
                 <button class="btn btn-danger btn-sm" onclick="resetTimer()">■ Reset</button>
                 <button class="btn btn-primary btn-sm" id="btn-tampil" onclick="toggleTampil()">👁 Tampilkan Soal ke Layar</button>
+                <button class="btn btn-danger btn-sm" onclick="tutupSoal()" title="Peserta aktif yang belum menjawab dinyatakan salah">⛔ Tutup Soal</button>
             </div>
         </div>
 
@@ -386,6 +440,18 @@
         </div>
     </div>
 
+    <div id="reg-modal" class="modal" style="display:none"><div class="modal-box" style="max-width:1250px">
+        <h2>📝 Pendaftaran Regu — Sistem Gugur</h2>
+        <small>Setiap regu terdiri dari 3 anggota. Aturan gugur dapat diatur di bawah; 5 regu terbaik lolos ke Grand Final. Data tersimpan otomatis.</small>
+        <div id="reg-info" style="margin:.6rem 0"></div>
+        <div id="reg-list"></div>
+        <div class="jp-btns">
+            <button class="btn btn-primary btn-sm" id="reg-add" onclick="tambahReg()">＋ Tambah Regu</button>
+            <label class="btn btn-primary btn-outline btn-sm" id="reg-imp">📥 Impor CSV<input type="file" accept=".csv,.txt" hidden onchange="imporReg(this)"></label>
+            <button class="btn btn-primary btn-outline btn-sm" onclick="eksporReg()">📤 Unduh Template / Ekspor CSV</button>
+            <button class="btn btn-primary btn-sm" onclick="tutupReg()">✔ Selesai</button>
+        </div>
+    </div></div>
     <div id="editor-modal" class="modal" style="display:none"><div class="modal-box">
         <h2>✏️ Editor Bank Soal</h2>
         <select onchange="edBank=this.value;renderEditor()" style="padding:.5rem;font-weight:bold"><option value="p">Bank Penyisihan</option><option value="g">Grand Final · Sesi 1 (Cepat Tepat)</option><option value="k">Grand Final · Sesi 3 (25 soal Kotak Katik)</option></select>
@@ -399,6 +465,36 @@
             <button class="btn btn-primary btn-sm" onclick="tutupEditor()">✔ Selesai</button>
         </div>
     </div></div>
+    <div id="landing" style="display:none"></div>
+    <div id="babak-menu" style="display:none">
+        <div class="rm-box">
+            <img id="bm-logo" class="rm-logo" alt="Logo MAN 1 Boalemo">
+            <h1>Pilih Babak</h1>
+            <p>Pilih babak lomba terlebih dahulu, lalu pilih peran Anda.</p>
+            <div class="rm-grid">
+                <button class="rm-btn" onclick="pilihBabak('gugur')"><span>⚔️</span><b>Babak Gugur</b><small>Penyisihan sistem gugur · semua regu terdaftar</small></button>
+                <button class="rm-btn" onclick="pilihBabak('final')"><span>🏆</span><b>Babak Grand Final</b><small>3 sesi · hanya regu yang lolos dari Babak Gugur</small></button>
+            </div>
+            <button class="cv-link" onclick="tampilLanding()">↩ Kembali ke cover</button>
+        </div>
+    </div>
+    <div id="role-menu" style="display:none">
+        <div class="rm-box">
+            <img id="rm-logo" class="rm-logo" alt="Logo MAN 1 Boalemo">
+            <div class="cv-ribbon" style="display:inline-block;margin-top:1rem">LCC KEPANDUAN</div>
+            <h1>Lomba Cerdas Cermat</h1>
+            <p>Kemah Kerja Madrasah · Season 5 · MAN 1 Boalemo</p>
+            <h2 id="rm-title" style="margin-top:1.5rem">Masuk sebagai</h2>
+            <div class="rm-grid">
+                <button class="rm-btn" onclick="pilihPeran('juri')"><span>🧑‍⚖️</span><b>Juri</b><small>Mengatur lomba, menilai jawaban, dan mengontrol layar</small></button>
+                <button class="rm-btn" id="rm-p" onclick="pilihPeran('peserta')"><span>✍️</span><b>Peserta</b><small>Ketik &amp; cek jawaban</small></button>
+                <button class="rm-btn" onclick="pilihPeran('penonton')"><span>🖥️</span><b>Penonton</b><small>Layar proyektor (hanya tampilan)</small></button>
+            </div>
+            <div class="rm-credit">© 2026 · J D Ace | Sigma04, an1mo</div>
+            <p class="rm-note" id="rm-note"></p>
+            <button class="cv-link" onclick="bukaMenuBabak()">↩ Pilih babak lagi</button>
+        </div>
+    </div>
     <div id="cloud-badge">☁️ Offline</div>
     <div id="toast"></div>
 
@@ -406,14 +502,18 @@
         // =====================================================================
         //  KONFIGURASI GOOGLE APPS SCRIPT  (ganti nilai di bawah ini)
         // =====================================================================
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbxYJH4TZBH1n5w9Poox7Wq4neeZ0Ta8P4i8RJ0y2OwSCmFKOhGeXn02q6nP0H6hHW_tJw/exec";   // tempel URL Web App (berakhiran /exec)
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbxjgn4uwHn0TFOBesQHYNgv8sZ46p7gVhSpagAx_EL_wG_8hFcGdSvhZ3xD4u3Pr0IJKw/exec";   // tempel URL Web App (berakhiran /exec)
         const GAS_KEY = "";                      // opsional, samakan dengan API_KEY di Code.gs
+        const JURI_PIN = "";                     // opsional: isi PIN (mis. "1234") agar menu Juri meminta PIN
         const POLL_MS = 2000;                    // interval layar penonton/bel mengambil data (ms)
         // =====================================================================
 
-        const PENONTON = location.hash === '#penonton', BEL = location.hash === '#bel';
+        const PENONTON = location.hash === '#penonton', BEL = location.hash === '#bel' || location.hash === '#regu', MODE_REGU = location.hash === '#regu';
+        const PICK = !PENONTON && !BEL && sessionStorage.getItem('lcc_role') !== 'juri';  // tampilkan menu pilihan peran
         // State Management
         const TARGET_GF = 5;
+        const ANGGOTA = 3;   // jumlah anggota per regu
+        const ANG = Array.from({ length: ANGGOTA }, (_, i) => i);
         let state = {
             phase: 'penyisihan', // 'penyisihan' | 'final'
             viewMode: 'juri', // 'juri' | 'peserta'
@@ -446,13 +546,14 @@
                 id: i + 1,
                 name: `Regu ${i + 1}`,
                 // true = aktif/benar, false = gugur/salah
-                members: [true, true, true, true, true], 
+                members: Array(ANGGOTA).fill(true),
                 eliminated: false
             }));
             state.phase = 'cover';
             state.history = [];
             state.gf = null;
             state.lastPhase = null;
+            state.jawab = {};
             state.viewMode = 'juri';
             state.currentSoalIndex = 0;
         }
@@ -492,10 +593,11 @@
             return d[a.length][b.length];
         }
         function cocok(input, q) {
-            const n = norm(input);
+            const n = norm(input), NEG = /(^| )(bukan|bukanlah|tidak|jangan)( |$)/;
+            if (!n) return false;
             return [q.j, ...(q.a || [])].some(k => {
-                k = norm(k);
-                return n === k || (' ' + n + ' ').includes(' ' + k + ' ') || lev(n, k) <= Math.floor(k.length / 6);
+                k = norm(k); if (!k) return false;
+                return n === k || (!NEG.test(n) && n.split(' ').length <= k.split(' ').length + 2 && (' ' + n + ' ').includes(' ' + k + ' ')) || lev(n, k) <= Math.floor(k.length / 6);
             });
         }
 
@@ -564,29 +666,91 @@
         }
         function updateMuteUI() { document.querySelectorAll('.mute-btn').forEach(b => b.innerText = muted ? '🔇' : '🔊'); }
 
-        let timerId = null, timerLeft = 15, timerTotal = 15;
+        let timerId = null, timerLeft = 15, timerTotal = 15, tPaused = false, cdN = 0, _tEnd = null;
         function updateTimerUI() {
             const pct = timerTotal ? (timerLeft / timerTotal) * 100 : 0;
             document.querySelectorAll('.timer-fill').forEach(e => {
                 e.style.width = pct + '%';
                 e.style.background = pct > 50 ? 'var(--hijau-sukses)' : pct > 25 ? 'var(--kuning-pramuka)' : 'var(--merah-gagal)';
             });
-            document.querySelectorAll('.timer-text').forEach(e => e.innerText = fmtT(timerLeft));
+            document.querySelectorAll('.timer-text').forEach(e => e.innerText = (tPaused ? '⏸ ' : '') + fmtT(timerLeft));
             pushLive();
         }
-        function stopTimer() { clearInterval(timerId); timerId = null; }
+        function stopTimer() { clearInterval(timerId); timerId = null; tPaused = false; }
         function resetTimer() {
             stopTimer();
             timerTotal = timerLeft = parseInt(document.getElementById('timer-durasi').value) || 15;
             updateTimerUI();
         }
         function startTimer() {
-            resetTimer();
+            hitung(() => {
+                resetTimer();
+                if (!liveTampil || liveIdx !== (state.currentSoalIndex || 0)) { liveTampil = false; toggleTampil(); }
+                _tEnd = () => toast('⏰ Waktu habis!'); jalanTimer();
+            });
+        }
+        function jalanTimer() {
+            updateTimerUI();
             timerId = setInterval(() => {
                 timerLeft--; updateTimerUI();
-                if (timerLeft > 0 && timerLeft <= 3) sfx('tick');
-                if (timerLeft <= 0) { stopTimer(); sfx('habis'); toast('⏰ Waktu habis!'); }
+                if (timerLeft > 0 && timerLeft <= 5) sfx('tick');
+                if (timerLeft <= 0) { stopTimer(); sfx('habis'); _tEnd && _tEnd(); }
             }, 1000);
+        }
+        function jedaTimer() {
+            if (timerId !== null) { clearInterval(timerId); timerId = null; tPaused = true; updateTimerUI(); toast('⏸ Dijeda'); }
+            else if (tPaused && timerLeft > 0) { tPaused = false; jalanTimer(); toast('▶ Dilanjutkan'); }
+            else toast('Tidak ada timer berjalan');
+        }
+        function renderCd() {
+            let e = document.getElementById('cd-ov');
+            if (!e) { e = document.createElement('div'); e.id = 'cd-ov'; e.className = 'cd-ov'; document.body.appendChild(e); }
+            e.style.display = cdN > 0 ? 'flex' : 'none'; e.innerText = cdN;
+        }
+        function hitung(fn) {
+            if (cdN) return; cdN = 4;
+            const step = () => { cdN--; pushLive(); renderCd(); if (cdN <= 0) { fn(); return; } sfx('tick'); setTimeout(step, 1000); };
+            step();
+        }
+        // ===== Cadangan & cek kesiapan =====
+        function cadangUnduh() {
+            const d = { v: 1, waktu: new Date().toISOString(), state: Object.assign({}, state, { history: [] }), banks: { p: bankSoal, g: bankGF, k: bankK }, papan, cfg: CFG, logo: localStorage.getItem('lcc_logo') || '' };
+            const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(d)], { type: 'application/json' }));
+            a.download = 'cadangan_lcc_' + d.waktu.slice(0, 16).replace(/[:T]/g, '-') + '.json'; a.click(); toast('💾 Cadangan diunduh');
+        }
+        function cadangPulih(inp) {
+            const f = inp.files[0]; if (!f) return; const rd = new FileReader();
+            rd.onload = () => {
+                try {
+                    const d = JSON.parse(rd.result); if (!d || !d.state || !Array.isArray(d.state.teams) || !d.banks) throw 0;
+                    if (!confirm('Pulihkan cadangan ' + (d.waktu || '') + '?\nData lomba di perangkat ini akan diganti.')) { inp.value = ''; return; }
+                    stopTimer(); state = Object.assign({}, d.state, { history: [] });
+                    bankSoal = d.banks.p || bankSoal; bankGF = d.banks.g || bankGF; bankK = d.banks.k || bankK;
+                    if (Array.isArray(d.papan) && d.papan.length === 5) papan = d.papan;
+                    if (d.cfg) CFG = Object.assign(CFG, d.cfg);
+                    try { localStorage.setItem('lcc_cfg', JSON.stringify(CFG)); if (d.logo) localStorage.setItem('lcc_logo', d.logo); } catch (e) {}
+                    simpanSoal(); simpanGambar(); saveData(); cloudDirty = { b: true, m: true }; cloudSchedule(); buildCover(); render(); toast('✅ Cadangan dipulihkan');
+                } catch (e) { toast('❌ Berkas cadangan tidak valid'); }
+                inp.value = '';
+            };
+            rd.readAsText(f);
+        }
+        function cekKesiapan() {
+            const L = (ok, t) => `<div style="padding:.3rem 0">${ok ? '✅' : '⚠️'} ${t}</div>`, ts = state.teams || [];
+            const isi = a => a.filter(q => q.t && q.j && q.j !== '-' && !/^Soal kotak \d+ \(/.test(q.t)).length;
+            const pb = papan.map((b, k) => b.soal && b.g.every(g => g.img) && b.g.filter(g => g.b).length === 5 ? 0 : k + 1).filter(Boolean);
+            const kat = bankK.filter(q => q.c).length;
+            const o = document.createElement('div'); o.id = 'cek-ov';
+            o.style.cssText = 'position:fixed;inset:0;z-index:9997;background:#000a;display:flex;align-items:center;justify-content:center';
+            o.innerHTML = `<div style="background:#fff;color:#222;border-radius:14px;padding:1.2rem 1.6rem;max-width:520px;width:92%;max-height:85vh;overflow:auto"><h3>✅ Cek Kesiapan Lomba</h3>` +
+                L(ts.length >= 5, `Regu terdaftar: ${ts.length}`) + L(ts.length > 0 && ts.every(t => (t.anggota || []).filter(Boolean).length === ANGGOTA), `Nama ${ANGGOTA} anggota terisi di semua regu`) +
+                L(isi(bankSoal) === bankSoal.length, `Soal Penyisihan terisi: ${isi(bankSoal)}/${bankSoal.length}`) + L(isi(bankGF) === bankGF.length, `Soal Sesi 1 terisi: ${isi(bankGF)}/${bankGF.length}`) +
+                L(pb.length === 0, pb.length ? `Papan Sesi 2 belum lengkap (soal, 12 gambar, 5 kunci): papan ${pb.join(', ')}` : 'Kelima papan Sesi 2 lengkap') +
+                L(isi(bankK) === 25 && kat === 25, `Soal Sesi 3 terisi: ${isi(bankK)}/25 · berkategori: ${kat}/25`) +
+                L(!!localStorage.getItem('lcc_logo'), 'Logo kegiatan terpasang') + L(GAS_AKTIF, GAS_AKTIF ? 'Terhubung ke Google Sheets (lihat lencana ☁️ di pojok)' : 'Mode offline (GAS_URL belum diisi)') +
+                `<div style="padding:.3rem 0">⏱ Waktu: Sesi 1 ${CFG.s1} dtk · Sesi 2 ${CFG.s2} dtk/regu · Sesi 3 ${CFG.s3} mnt</div>
+                <button class="btn btn-primary" style="margin-top:.8rem" onclick="document.getElementById('cek-ov').remove()">Tutup</button></div>`;
+            document.body.appendChild(o);
         }
 
         function confetti() {
@@ -614,7 +778,7 @@
 
             // Aturan gugur: 3 atau lebih salah
             const wrongCount = team.members.filter(m => m === false).length;
-            team.eliminated = (wrongCount >= 3);
+            team.eliminated = (wrongCount >= gugurN());
 
             if (team.members[memberIndex]) sfx('benar');
             else sfx(team.eliminated && !wasElim ? 'gugur' : 'salah');
@@ -633,13 +797,15 @@
             saveData();
         }
 
-        function kembaliCover() {
+        async function kembaliCover() {
             if (state.phase === 'cover') return;
-            if (!confirm('Kembali ke halaman cover? Data lomba tetap tersimpan dan bisa dilanjutkan.')) return;
+            if (!confirm('Kembali ke halaman cover? Data lomba tetap tersimpan dan akan dilanjutkan saat Anda masuk sebagai Juri lagi.')) return;
             stopTimer();
             state.lastPhase = state.phase;
             state.phase = 'cover';
-            saveData(); buildCover(); render();
+            saveData();
+            if (GAS_AKTIF) { clearTimeout(cloudTimer); await Promise.race([cloudFlush(), new Promise(r => setTimeout(r, 3000))]); }
+            sessionStorage.removeItem('lcc_role'); location.reload();
         }
 
         function mulaiLomba() {
@@ -651,6 +817,7 @@
 
         // Render UI
         function render() {
+            rapikan();
             const mainHeader = document.getElementById('main-header');
             const dashboardBar = document.getElementById('dashboard-bar');
             const coverView = document.getElementById('cover-view');
@@ -668,9 +835,13 @@
             
             const activeTeams = state.teams.filter(t => !t.eliminated);
             const activeCount = activeTeams.length;
+            document.getElementById('total-count').innerText = state.teams.length;
 
             // Panel juri (soal aktif + kunci) & tombol undo
             const qi = state.currentSoalIndex || 0, q = bankSoal[qi];
+            const jm = Object.keys(state.jawab || {}).filter(k => +k.split('|')[1] === qi).length;
+            const aktifP = state.teams.reduce((s, t) => s + (t.eliminated ? 0 : t.members.filter(m => m).length), 0);
+            document.getElementById('jp-masuk').innerText = '✍️ Semua peserta aktif menjawab tiap soal · jawaban masuk: ' + jm + ' / ' + aktifP + ' peserta aktif';
             document.getElementById('juri-panel').style.display = (state.phase === 'penyisihan' && state.viewMode === 'juri') ? 'block' : 'none';
             document.getElementById('jp-no').innerText = (qi + 1) + ' / ' + bankSoal.length;
             document.getElementById('jp-soal').innerText = q.t;
@@ -744,17 +915,18 @@
                 penyisihanView.innerHTML = state.teams.map((team, tIndex) => {
                     const wrongCount = team.members.filter(m => m === false).length;
                     return `
-                        <div class="card ${team.eliminated ? 'eliminated' : (wrongCount === 2 ? 'warning' : '')}">
+                        <div class="card ${team.eliminated ? 'eliminated' : (gugurN() > 1 && wrongCount === gugurN() - 1 ? 'warning' : '')}">
                             ${team.eliminated ? `<div class="overlay">GUGUR <span>(Salah ${wrongCount} Anggota)</span></div>` : ''}
                             <div class="team-name" contenteditable="true" 
-                                 onblur="updateTeamName(${tIndex}, this.innerText)">${team.name}</div>
+                                 onblur="updateTeamName(${tIndex}, this.innerText)">${esc(team.name)}</div>
+                            ${team.asal ? `<div class="asal">${esc(team.asal)}</div>` : ''}${team.eliminated ? '' : `<div class="asal">⏳ ${team.members.filter((m, i) => m && (state.jawab || {})[team.id + '|' + qi + '|' + (i + 1)] !== 1).length} belum menjawab</div>`}
                             <div class="skor-row"><button class="sk-btn" onclick="ubahSkor(${tIndex},-5)">−5</button><span class="skor">⭐ ${team.skor || 0}</span><button class="sk-btn" onclick="ubahSkor(${tIndex},10)">+10</button></div>
                             <div class="members">
                                 ${team.members.map((memberStatus, mIndex) => `
-                                    <div class="member ${memberStatus ? '' : 'wrong'}" 
+                                    <div class="member ${memberStatus ? ((state.jawab || {})[team.id + '|' + qi + '|' + (mIndex + 1)] === 1 ? 'sudah' : (team.eliminated ? '' : 'tunggu')) : 'wrong'}" 
                                          onclick="toggleMember(${tIndex}, ${mIndex})"
-                                         title="Anggota ${mIndex + 1}">
-                                        ${memberStatus ? '✓' : '✗'}
+                                         title="${esc((team.anggota || [])[mIndex] || 'Anggota ' + (mIndex + 1))}">
+                                        ${mIndex + 1}
                                     </div>
                                 `).join('')}
                             </div>
@@ -840,14 +1012,14 @@
                 <div class="ed-row"><b>${i + 1}</b>
                     <input value="${esc(q.t)}" placeholder="Soal" oninput="editSoal(${i},'t',this.value)">
                     <input value="${esc(q.j)}" placeholder="Jawaban" oninput="editSoal(${i},'j',this.value)">
-                    <input value="${esc((q.a || []).join(' | '))}" placeholder="Alternatif (pisah |)" oninput="editSoal(${i},'a',this.value)">
+                    <input value="${esc((q.a || []).join(' | '))}" placeholder="Alternatif (pisah |)" oninput="editSoal(${i},'a',this.value)">${edBank === 'k' ? `<input list="kat-list" value="${esc(q.c || '')}" placeholder="Kategori" oninput="editSoal(${i},'c',this.value)"><datalist id="kat-list">${Object.keys(KAT).map(k => `<option value="${k}">`).join('')}</datalist>` : ''}
                     <button class="sk-btn" onclick="hapusSoal(${i})">🗑</button></div>`).join('');
         }
         function editSoal(i, k, v) {
             EB()[i][k] = k === 'a' ? v.split('|').map(s => s.trim()).filter(Boolean) : v;
             simpanSoal();
         }
-        function tambahSoal() { EB().push({ t: '', j: '', a: [] }); simpanSoal(); renderEditor(); }
+        function tambahSoal() { EB().push({ t: '', j: '', a: [], c: edBank === 'k' ? 'Umum' : undefined }); simpanSoal(); renderEditor(); }
         function hapusSoal(i) {
             if (EB().length <= 1) { toast('Minimal harus ada 1 soal'); return; }
             EB().splice(i, 1); simpanSoal(); renderEditor();
@@ -876,7 +1048,7 @@
                 const d = lines[0].includes(';') ? ';' : ',';
                 const rows = lines.map(l => splitCSV(l, d));
                 if (/^soal/i.test(rows[0][0])) rows.shift();
-                const baru = rows.filter(r => r[0] && r[1]).map(r => ({ t: r[0], j: r[1], a: (r[2] || '').split('|').map(s => s.trim()).filter(Boolean) }));
+                const baru = rows.filter(r => r[0] && r[1]).map(r => ({ t: r[0], j: r[1], a: (r[2] || '').split('|').map(s => s.trim()).filter(Boolean), c: r[3] || (edBank === 'k' ? 'Umum' : undefined) }));
                 if (!baru.length) { toast('Tidak ada soal valid di file'); return; }
                 setEB(baru); simpanSoal(); renderEditor(); toast('✅ ' + baru.length + ' soal diimpor');
                 inp.value = '';
@@ -885,7 +1057,7 @@
         }
         function eksporCSV() {
             const q = s => '"' + String(s).replace(/"/g, '""') + '"';
-            const csv = 'soal;jawaban;alternatif\n' + EB().map(x => [q(x.t), q(x.j), q((x.a || []).join('|'))].join(';')).join('\n');
+            const csv = 'soal;jawaban;alternatif;kategori\n' + EB().map(x => [q(x.t), q(x.j), q((x.a || []).join('|')), q(x.c || '')].join(';')).join('\n');
             const a = document.createElement('a');
             a.href = URL.createObjectURL(new Blob(['\uFEFF' + csv], { type: 'text/csv' }));
             a.download = 'bank_soal_lcc.csv'; a.click();
@@ -902,21 +1074,23 @@
         function pushLive() {
             if (PENONTON || BEL) return;
             const q = bankSoal[liveIdx];
-            const L = { gfT: state.phase === 'final', run: timerId !== null, left: timerLeft, total: timerTotal, t: q ? q.t : '', tampil: !!(liveTampil && q && liveIdx === (state.currentSoalIndex || 0)) };
+            const L = { gfT: state.phase === 'final', run: timerId !== null, left: timerLeft, total: timerTotal, t: q ? q.t : '', qi: liveIdx, tampil: !!(liveTampil && q && liveIdx === (state.currentSoalIndex || 0)), cd: cdN, jeda: tPaused };
             try { localStorage.setItem('lcc_live', JSON.stringify(L)); } catch (e) {}
             if (GAS_AKTIF) {
-                const k = [L.gfT, L.run, L.total, L.t, L.tampil].join('|');
+                const k = [L.gfT, L.run, L.total, L.t, L.qi, L.tampil, L.cd, L.jeda].join('|');
                 if (k !== window._liveK) { window._liveK = k; state.live = Object.assign({}, L, { endAt: srvNow() + timerLeft * 1000 }); state.ver = Date.now(); cloudSchedule(); }
             }
         }
         function renderPenonton() {
+            rapikan();
             const pv = document.getElementById('penonton-view'), ts = state.teams || [];
             const L = getLive();
             if (state.phase === 'cover' || !ts.length) {
                 pv.innerHTML = coverHTML(false);
                 return;
             }
-            let h = '';
+            let h = '<div class="pn-head"><img src="' + logoSrc() + '" alt=""><b>LCC KEPANDUAN · Kemah Kerja Madrasah Season 5 · MAN 1 BOALEMO</b></div>';
+            if (L.cd > 0) h += '<div class="cd-ov">' + L.cd + '</div>';
             if (L.tampil && state.phase === 'penyisihan') {
                 const pct = L.total ? L.left / L.total * 100 : 0;
                 const col = pct > 50 ? 'var(--hijau-sukses)' : pct > 25 ? 'var(--kuning-pramuka)' : 'var(--merah-gagal)';
@@ -931,9 +1105,9 @@
             const list = state.phase === 'final' ? urutGF(ts.filter(t => !t.eliminated)) : ts;
             h += (state.phase === 'final' ? '<h2 style="text-align:center;margin-bottom:1rem">🏆 GRAND FINAL</h2>' : '') + '<div class="grid-regu">' + list.map((t, i) => {
                 const w = t.members.filter(m => !m).length;
-                return `<div class="card ${t.eliminated ? 'eliminated' : (w === 2 ? 'warning' : '')}">${t.eliminated ? '<div class="overlay">GUGUR</div>' : ''}
-                    <div class="team-name" style="border:0">${state.phase === 'final' ? '#' + (i + 1) + ' ' : ''}${esc(t.name)}</div>
-                    <div class="members">${t.members.map(m => `<div class="member ${m ? '' : 'wrong'}">${m ? '✓' : '✗'}</div>`).join('')}</div>
+                return `<div class="card ${t.eliminated ? 'eliminated' : (gugurN() > 1 && w === gugurN() - 1 ? 'warning' : '')}">${t.eliminated ? '<div class="overlay">GUGUR</div>' : ''}
+                    <div class="team-name" style="border:0">${state.phase === 'final' ? '#' + (i + 1) + ' ' : ''}${esc(t.name)}</div>${t.asal ? `<div class="asal">${esc(t.asal)}</div>` : ''}
+                    <div class="members">${t.members.map((m, i) => `<div class="member ${m ? '' : 'wrong'}">${i + 1}</div>`).join('')}</div>
                     <div class="skor">⭐ ${state.phase === 'final' ? (t.gf || 0) : (t.skor || 0)}</div></div>`;
             }).join('') + '</div>';
             pv.innerHTML = h;
@@ -957,15 +1131,34 @@
             { t: "Apa tingkatan Pramuka usia 7-10 tahun?", j: "Siaga", a: ["Pramuka Siaga"] },
             { t: "Apa warna bendera Gerakan Pramuka?", j: "Merah Putih", a: [] }
         ];
-        const K_DEFAULT = Array.from({ length: 25 }, (_, i) => ({ t: 'Soal kotak ' + (i + 1) + ' (ubah di Editor Soal → Sesi 3)', j: '-', a: [] }));
+        const K_DEFAULT = Array.from({ length: 25 }, (_, i) => ({ t: 'Soal kotak ' + (i + 1) + ' (ubah di Editor Soal → Sesi 3)', j: '-', a: [], c: 'Umum' }));
         const DEF = { p: SOAL_DEFAULT, g: GF_DEFAULT, k: K_DEFAULT };
         let bankGF = JSON.parse(localStorage.getItem('lcc_soal_gf') || 'null') || JSON.parse(JSON.stringify(GF_DEFAULT));
         let bankK = JSON.parse(localStorage.getItem('lcc_soal_k') || 'null') || JSON.parse(JSON.stringify(K_DEFAULT));
-        let gambar = JSON.parse(localStorage.getItem('lcc_gambar') || 'null') || Array.from({ length: 12 }, () => ({ img: '', t: '', j: '' }));
+        const KAT = { Kepramukaan: '⚜️', Navigasi: '🧭', Simpul: '🪢', Sandi: '🔐', Alam: '🌿', 'Quran Hadis': '📖', 'Akidah Akhlak': '🕌', Fikih: '📿', SKI: '📜', 'Bahasa Arab': '🔤', Matematika: '🔢', Literasi: '📚', Geografi: '🌍', Sejarah: '📜', Umum: '⭐' };
+        function katIk(c) { return KAT[c] || '❓'; }
+        const papanBaru = () => Array.from({ length: 5 }, () => ({ soal: '', g: Array.from({ length: 12 }, () => ({ img: '', t: '', b: false })) }));
+        let papan = (() => { try { const p = JSON.parse(localStorage.getItem('lcc_papan')); if (Array.isArray(p) && p.length === 5) return p; } catch (e) {} return papanBaru(); })();
+        function gugurN() { return Math.min(ANGGOTA, Math.max(1, Math.round(+CFG.gugur) || 3)); }
+        function setGugur(v) {
+            if (lombaBerjalan()) { toast('Aturan gugur dikunci saat lomba berjalan'); renderReg(); return; }
+            CFG.gugur = Math.min(ANGGOTA, Math.max(1, Math.round(+v) || 3));
+            try { localStorage.setItem('lcc_cfg', JSON.stringify(CFG)); } catch (e) {}
+            toast('✅ Aturan gugur disimpan'); renderReg();
+        }
+        function rapikan() {
+            (state.teams || []).forEach(t => {
+                t.members = (t.members || []).slice(0, ANGGOTA); while (t.members.length < ANGGOTA) t.members.push(true);
+                if (t.anggota) { t.anggota = t.anggota.slice(0, ANGGOTA); while (t.anggota.length < ANGGOTA) t.anggota.push(''); }
+            });
+        }
+        let edP = 0, cfgOpen = false;
+        let CFG = Object.assign({ s1: 180, s2: 60, s3: 15, gugur: 3 }, (() => { try { return JSON.parse(localStorage.getItem('lcc_cfg')); } catch (e) { return null; } })() || {});
+        function setCfg(k, v) { v = Math.max(1, Math.round(+v) || CFG[k]); CFG[k] = v; try { localStorage.setItem('lcc_cfg', JSON.stringify(CFG)); } catch (e) {} toast('⏱ Waktu disimpan'); renderGF(); }
         let edBank = 'p', gambarOpen = false;
         function EB() { return edBank === 'g' ? bankGF : edBank === 'k' ? bankK : bankSoal; }
         function setEB(x) { if (edBank === 'g') bankGF = x; else if (edBank === 'k') bankK = x; else bankSoal = x; }
-        function simpanGambar() { try { localStorage.setItem('lcc_gambar', JSON.stringify(gambar)); } catch (e) { toast('Penyimpanan penuh, kecilkan gambar'); } cloudDirty.m = true; cloudSchedule(3000); }
+        function simpanGambar() { try { localStorage.setItem('lcc_papan', JSON.stringify(papan)); } catch (e) { toast('Penyimpanan penuh, kecilkan gambar'); } cloudDirty.m = true; cloudSchedule(3000); }
 
         const TC = ['#e53935', '#1e88e5', '#43a047', '#fb8c00', '#8e24aa'];
         const IK = { biasa: '✓', ask: '🙋', double: '✖2', extra: '➕', bom: '💣' };
@@ -973,7 +1166,7 @@
         const LN = []; for (let r = 0; r < 5; r++) { LN.push([0,1,2,3,4].map(c => r * 5 + c)); LN.push([0,1,2,3,4].map(c => c * 5 + r)); }
         LN.push([0,6,12,18,24], [4,8,12,16,20]);
 
-        function G() { if (!state.gf) state.gf = { sesi: 1, s1: { idx: 0, buzz: null, blk: [], on: false }, s2: { pil: {}, aktif: null, qi: 0, hasil: {}, done: {}, mulai: false }, s3: null }; return state.gf; }
+        function G() { if (!state.gf) state.gf = { sesi: 1, s1: { idx: 0, buzz: null, blk: [], on: false }, s2: { pil: {}, aktif: null, qi: 0, hasil: {}, done: {}, mulai: false, pap: {} }, s3: null }; return state.gf; }
         function tim() { return state.teams.filter(t => !t.eliminated); }
         function tById(id) { return state.teams.find(t => t.id === id); }
         function warna(id) { return TC[tim().findIndex(t => t.id === id) % 5] || '#999'; }
@@ -985,18 +1178,11 @@
         function setPanel(h) { try { localStorage.setItem('lcc_panel', h); } catch (e) {} }
         function B(l, f, c = 'btn-primary', x = '') { return `<button class="btn ${c} btn-sm" onclick="${f}" ${x}>${l}</button>`; }
         function timerHTML(L) {
-            if (!L.gfT || !L.run) return '';
+            if (!L.gfT || !(L.run || L.jeda)) return '';
             const pct = L.total ? L.left / L.total * 100 : 0, col = pct > 50 ? 'var(--hijau-sukses)' : pct > 25 ? 'var(--kuning-pramuka)' : 'var(--merah-gagal)';
-            return `<div class="timer-row"><div class="timer"><div class="timer-fill" style="width:${pct}%;background:${col};transition:none"></div></div><div class="timer-text">${fmtT(L.left)}</div></div>`;
+            return `<div class="timer-row"><div class="timer"><div class="timer-fill" style="width:${pct}%;background:${col};transition:none"></div></div><div class="timer-text">${L.jeda ? '⏸ ' : ''}${fmtT(L.left)}</div></div>`;
         }
-        function gfTimer(sec, onEnd) {
-            stopTimer(); timerTotal = timerLeft = sec; updateTimerUI();
-            timerId = setInterval(() => {
-                timerLeft--; updateTimerUI();
-                if (timerLeft > 0 && timerLeft <= 5) sfx('tick');
-                if (timerLeft <= 0) { stopTimer(); sfx('habis'); onEnd && onEnd(); }
-            }, 1000);
-        }
+        function gfTimer(sec, onEnd) { stopTimer(); timerTotal = timerLeft = sec; _tEnd = onEnd; jalanTimer(); }
 
         function renderGF() {
             const g = G(), el = document.getElementById('gf-panel'), pod = !!g.podium;
@@ -1007,7 +1193,13 @@
                 B('🏆 Podium Juara', 'setPodium()', pod ? 'btn-primary' : 'btn-outline');
             el.innerHTML = `<div class="jp-btns" style="margin-bottom:.8rem">${tabs}</div>
                 ${pod ? '' : `<div class="timer-row"><div class="timer"><div class="timer-fill"></div></div><div class="timer-text">${fmtT(timerLeft)}</div></div>`}
-                ${P(true)}<div class="jp-btns">${C()}</div>`;
+                ${P(true)}<div class="jp-btns">${C()}</div>
+                <details style="margin-top:.8rem" ${cfgOpen ? 'open' : ''} ontoggle="cfgOpen=this.open"><summary><b>⚙ Pengaturan Waktu</b> · S1 ${fmtT(CFG.s1)} dtk · S2 ${CFG.s2} dtk/regu · S3 ${CFG.s3} mnt</summary>
+                <div class="jp-btns" style="align-items:center;margin-top:.4rem">
+                    <label>Sesi 1 (detik) <input type="number" min="10" step="10" value="${CFG.s1}" style="width:5rem" onchange="setCfg('s1',this.value)"></label>
+                    <label>Sesi 2 per regu (detik) <input type="number" min="10" step="5" value="${CFG.s2}" style="width:5rem" onchange="setCfg('s2',this.value)"></label>
+                    <label>Sesi 3 (menit) <input type="number" min="1" step="1" value="${CFG.s3}" style="width:5rem" onchange="setCfg('s3',this.value)"></label>
+                    <small>Berlaku untuk mulai berikutnya, tidak mengubah timer yang sedang berjalan.</small></div></details>`;
             setPanel(P(false)); updateTimerUI();
         }
 
@@ -1040,9 +1232,9 @@
         function cetakRekap() {
             const pr = peringkat(), tgl = new Date().toLocaleDateString('id-ID', { dateStyle: 'full' });
             const gfRows = pr.map(x => `<tr><td>${x.r}</td><td>${esc(x.t.name)}</td>${[1, 2, 3].map(n => `<td>${(x.t.gfs || {})[n] || 0}</td>`).join('')}<td><b>${x.t.gf || 0}</b></td></tr>`).join('');
-            const pyRows = state.teams.map((t, i) => `<tr><td>${i + 1}</td><td>${esc(t.name)}</td><td>${t.members.filter(m => m).length}/5</td><td>${t.skor || 0}</td><td>${t.eliminated ? 'Gugur' : 'Lolos Grand Final'}</td></tr>`).join('');
+            const pyRows = state.teams.map((t, i) => `<tr><td>${i + 1}</td><td>${esc(t.name)}</td><td>${t.members.filter(m => m).length}/${ANGGOTA}</td><td>${t.skor || 0}</td><td>${t.eliminated ? 'Gugur' : 'Lolos Grand Final'}</td></tr>`).join('');
             const w = window.open('', '_blank'); if (!w) { toast('Pop-up diblokir browser'); return; }
-            w.document.write(`<!DOCTYPE html><html lang="id"><head><meta charset="utf-8"><title>Rekap Hasil LCC</title><style>body{font-family:Arial,sans-serif;max-width:800px;margin:2rem auto;color:#222}h1,h2,p{text-align:center}h1{margin-bottom:0}table{width:100%;border-collapse:collapse;margin:1rem 0 2rem}th,td{border:1px solid #888;padding:6px 10px;text-align:center}th{background:#FFCA28}td:nth-child(2){text-align:left}@media print{button{display:none}}</style></head><body><h1>REKAP HASIL LOMBA CERDAS CERMAT</h1><p>Kemah Kerja Madrasah · Season 4 · MAN 1 Boalemo<br>${tgl}</p><h2>Grand Final</h2><table><tr><th>Peringkat</th><th>Regu</th><th>Sesi 1<br>Cepat Tepat</th><th>Sesi 2<br>Cepat Cermat</th><th>Sesi 3<br>Kotak Katik</th><th>Total</th></tr>${gfRows}</table><h2>Babak Penyisihan</h2><table><tr><th>No</th><th>Regu</th><th>Anggota Bertahan</th><th>Skor</th><th>Status</th></tr>${pyRows}</table><p><button onclick="print()">🖨 Cetak / Simpan PDF</button></p></body></html>`);
+            w.document.write(`<!DOCTYPE html><html lang="id"><head><meta charset="utf-8"><title>Rekap Hasil LCC</title><style>body{font-family:Arial,sans-serif;max-width:800px;margin:2rem auto;color:#222}h1,h2,p{text-align:center}h1{margin-bottom:0}table{width:100%;border-collapse:collapse;margin:1rem 0 2rem}th,td{border:1px solid #888;padding:6px 10px;text-align:center}th{background:#FFCA28}td:nth-child(2){text-align:left}@media print{button{display:none}}</style></head><body><img src="${logoSrc()}" style="display:block;margin:0 auto 8px;height:90px"><h1>REKAP HASIL LOMBA CERDAS CERMAT</h1><p>Kemah Kerja Madrasah · Season 5 · MAN 1 Boalemo<br>${tgl}</p><h2>Grand Final</h2><table><tr><th>Peringkat</th><th>Regu</th><th>Sesi 1<br>Cepat Tepat</th><th>Sesi 2<br>Cepat Cermat</th><th>Sesi 3<br>Kotak Katik</th><th>Total</th></tr>${gfRows}</table><h2>Babak Penyisihan</h2><table><tr><th>No</th><th>Regu</th><th>Anggota Bertahan</th><th>Skor</th><th>Status</th></tr>${pyRows}</table><p><button onclick="print()">🖨 Cetak / Simpan PDF</button></p></body></html>`);
             w.document.close();
         }
 
@@ -1058,13 +1250,14 @@
         function s1Ctl() {
             const s = G().s1, q = bankGF[s.idx % bankGF.length];
             return `<div class="jp-kunci" style="width:100%">Soal ${s.idx + 1} · 🔑 ${esc(q.j)} &nbsp;<small>(peserta menekan warna regunya di Layar Bel Peserta)</small></div>` +
-                B('▶ Mulai 3 Menit', 's1Mulai()') + B('■ Stop', 's1Stop()', 'btn-danger') +
-                B('📱 Buka Layar Bel Peserta', 'bukaBel()', 'btn-outline') + `<details style="width:100%"><summary><small>Cadangan manual (jika layar bel bermasalah)</small></summary>${tim().map((t, i) => B(`🔔 ${i + 1}. ${esc(t.name)}`, `s1Bel(${t.id})`, 'btn-outline', `style="background:${warna(t.id)};color:#fff;border-color:${warna(t.id)}" ${s.blk.includes(t.id) ? 'disabled' : ''}`)).join('')}</details>` +
+                B('▶ Mulai ' + fmtT(CFG.s1) + ' dtk', 's1Mulai()') + B('■ Stop', 's1Stop()', 'btn-danger') +
+                B('📱 Buka Layar Regu (bel)', 'bukaBel()', 'btn-outline') + `<details style="width:100%"><summary><small>Cadangan manual (jika layar bel bermasalah)</small></summary>${tim().map((t, i) => B(`🔔 ${i + 1}. ${esc(t.name)}`, `s1Bel(${t.id})`, 'btn-outline', `style="background:${warna(t.id)};color:#fff;border-color:${warna(t.id)}" ${s.blk.includes(t.id) ? 'disabled' : ''}`)).join('')}</details>` +
                 B('✓ Benar +10', 's1Nilai(true)') + B('✗ Salah (0)', 's1Nilai(false)', 'btn-danger') + B('Soal berikut ➡', 's1Next()', 'btn-outline');
         }
-        function s1Mulai() { api('belClear'); G().s1.on = true; gfTimer(180, () => { G().s1.on = false; saveData(); render(); toast('⏰ Sesi 1 selesai!'); }); saveData(); render(); }
+        function s1Mulai() { hitung(s1Jalan); }
+        function s1Jalan() { api('belClear'); G().s1.on = true; gfTimer(CFG.s1, () => { G().s1.on = false; saveData(); render(); toast('⏰ Sesi 1 selesai!'); }); saveData(); render(); }
         function s1Stop() { stopTimer(); G().s1.on = false; saveData(); render(); }
-        function s1Bel(id) { const s = G().s1; if (!s.on || s.buzz || s.blk.includes(id)) return; s.buzz = id; tone(880, .4, 'triangle'); saveData(); render(); }
+        function s1Bel(id) { const s = G().s1; const tt = tById(id); if (!tt || tt.eliminated || !s.on || tPaused || s.buzz || s.blk.includes(id)) return; s.buzz = id; tone(880, .4, 'triangle'); saveData(); render(); }
         function s1Nilai(ok) {
             const s = G().s1; if (!s.buzz) return;
             gfAksi(() => {
@@ -1075,72 +1268,77 @@
         function s1Next() { gfAksi(() => { const s = G().s1; s.idx++; s.buzz = null; s.blk = []; }); }
 
         // ---- Sesi 2: Cepat Cermat ----
+        function S2() { const s = G().s2; s.pap = s.pap || {}; return s; }
+        function s2Bd(s) { const k = s.pap[s.aktif]; return k === undefined ? null : papan[k]; }
         function s2Panel(jr) {
-            const s = G().s2, a = s.aktif;
-            if (!a) return '<div class="pn-q">Sesi 2 · Cepat Cermat<br><small>Pilih regu untuk mulai</small></div>';
-            const t = tById(a), p = s.pil[a] || [];
-            if (!s.mulai) {
-                return `<div class="buzz" style="background:${warna(a)}">${esc(t.name)} memilih 5 gambar (${p.length}/5)</div><div class="kg g12" style="grid-template-columns:repeat(4,1fr)">` +
-                    gambar.map((g, i) => {
-                        const own = Object.keys(s.pil).find(k => s.pil[k].includes(i));
-                        return `<div class="kc" style="background:${own ? warna(+own) : '#fff'};color:${own ? '#fff' : 'inherit'}" ${jr ? `onclick="s2Pilih(${i})"` : ''}>${i + 1}</div>`;
-                    }).join('') + '</div>';
+            const s = S2(), a = s.aktif;
+            if (!a) return '<div class="pn-q">Sesi 2 · Cerdas Cermat<br><small>Juri memilih regu yang tampil</small></div>';
+            const t = tById(a), bd = s2Bd(s);
+            if (!bd) {
+                return `<div class="buzz" style="background:${warna(a)}">${esc(t.name)} · pilih 1 dari 5 kartu soal</div><div class="kg" style="grid-template-columns:repeat(5,1fr);max-width:none">` +
+                    papan.map((_, k) => { const own = Object.keys(s.pap).find(id => s.pap[id] === k); return `<div class="kc" style="flex-direction:column;font-size:${jr ? '1.6rem' : '3rem'};aspect-ratio:.8;background:${own ? warna(+own) : '#ffca28'};color:${own ? '#fff' : '#3e2723'}" ${jr && !own ? `onclick="s2Kartu(${k})"` : ''}><span>${own ? '🔒' : '🎴'}</span>${k + 1}</div>`; }).join('') + '</div>';
             }
-            const g = gambar[p[s.qi]] || {};
-            return `<div class="buzz" style="background:${warna(a)}">${esc(t.name)} · Gambar ${s.qi + 1}/5</div>` +
-                (g.img ? `<img src="${g.img}" style="max-width:100%;max-height:${jr ? '260px' : '55vh'};display:block;margin:0 auto 1rem;border-radius:10px">` : '') +
-                `<div class="pn-q" style="font-size:${jr ? '1.4rem' : '2.4rem'}">${esc(g.t || '')}</div>`;
+            const p = s.pil[a] || [], hs = s.hasil[a] || [], lihat = jr || s.mulai || s.done[a] || s.buka;
+            const cells = bd.g.map((g, i) => {
+                const k = p.indexOf(i), kunci = s.buka ? (s.kunci || []).includes(i) : (jr && g.b);
+                return `<div class="kc g2c ${kunci ? 'kunci' : ''}" ${jr && s.mulai && k < 0 ? `onclick="s2Pilih(${i})"` : ''}>${lihat && g.img ? `<img src="${g.img}" alt="">` : ''}<b class="nm">${i + 1}</b>${k >= 0 ? `<span class="stamp ${hs[k] ? 'ok' : 'bad'}">${hs[k] ? '✓' : '✗'}</span>` : ''}${s.buka && g.t ? `<em>${esc(g.t)}</em>` : ''}</div>`;
+            }).join('');
+            return `<div class="buzz" style="background:${warna(a)}">${esc(t.name)} · Kartu ${s.pap[a] + 1} · dipilih ${p.length}/5 · benar ${hs.filter(Boolean).length}</div><div class="pn-q" style="font-size:${jr ? '1.2rem' : '2.2rem'};padding:${jr ? '.8rem' : '1.2rem'}">${esc(bd.soal || 'Soal belum diisi')}</div><div class="kg g12" style="grid-template-columns:repeat(4,1fr);max-width:none">${cells}</div>`;
         }
         function s2Ctl() {
-            const s = G().s2, a = s.aktif, p = (s.pil[a] || []), g = s.mulai ? (gambar[p[s.qi]] || {}) : null;
-            return tim().map(t => B(`${esc(t.name)} ${s.done[t.id] ? '✔' : '(' + (s.pil[t.id] || []).length + '/5)'}`, `s2Tim(${t.id})`, a === t.id ? 'btn-primary' : 'btn-outline')).join('') +
-                (g ? `<div class="jp-kunci" style="width:100%">🔑 ${esc(g.j || '-')}</div>` : '') +
-                B('▶ Mulai 1 Menit', 's2Mulai()') + B('◀', 's2Nav(-1)', 'btn-outline') + B('▶', 's2Nav(1)', 'btn-outline') +
-                B('✓ Benar +10', 's2Nilai(true)') + B('✗ Salah', 's2Nilai(false)', 'btn-danger') + B('■ Selesai Regu', 's2Selesai()', 'btn-danger') +
-                `<details style="width:100%" ${gambarOpen ? 'open' : ''} ontoggle="gambarOpen=this.open"><summary><b>🖼 Atur 12 Gambar & Soal</b></summary>` +
-                gambar.map((g, i) => `<div class="ed-row" style="grid-template-columns:2rem 1fr 2fr 2fr"><b>${i + 1}${g.img ? '✅' : ''}</b>
+            const s = S2(), a = s.aktif, P = papan[edP];
+            return tim().map(t => B(`${esc(t.name)} ${s.done[t.id] ? '✔ ' + (s.hasil[t.id] || []).filter(Boolean).length + '/5' : (s.pap[t.id] !== undefined ? '🎴' + (s.pap[t.id] + 1) : '')}`, `s2Tim(${t.id})`, a === t.id ? 'btn-primary' : 'btn-outline')).join('') +
+                B('▶ Mulai ' + CFG.s2 + ' dtk', 's2Mulai()') + B('↩ Batal pilihan terakhir', 's2Undo()', 'btn-outline') + B('■ Selesai Regu', 's2Selesai()', 'btn-danger') + B('🎴 Ganti Kartu', 's2Ganti()', 'btn-outline') + B(s.buka ? '🙈 Tutup Kunci' : '👁 Buka Kunci', 's2Buka()', 'btn-outline') +
+                `<div style="width:100%"><small>Pilih regu → regu memilih 1 dari 5 kartu → Mulai → ketuk nomor yang disebut regu. ✓/✗ otomatis dari kunci (bingkai hijau hanya tampak di layar juri).</small></div>` +
+                `<details style="width:100%" ${gambarOpen ? 'open' : ''} ontoggle="gambarOpen=this.open"><summary><b>🖼 Atur 5 Papan Soal</b> · kunci benar: ${papan.map((b, k) => (k + 1) + '=' + b.g.filter(g => g.b).length + '/5').join(' ')}</summary>
+                <div class="jp-btns" style="margin:.4rem 0">${papan.map((_, k) => B('Papan ' + (k + 1), `edP=${k};renderGF()`, edP === k ? 'btn-primary' : 'btn-outline')).join('')}</div>
+                <input style="width:100%;margin:.4rem 0" value="${esc(P.soal)}" placeholder="Soal papan ${edP + 1}, mis. Pilih 5 gambar simpul yang ..." oninput="papan[edP].soal=this.value;simpanGambar()">` +
+                P.g.map((g, i) => `<div class="ed-row" style="grid-template-columns:2rem 1fr 2fr 3.5rem"><b>${i + 1}${g.img ? '✅' : ''}</b>
                     <input type="file" accept="image/*" onchange="muatGambar(${i},this)">
-                    <input value="${esc(g.t)}" placeholder="Soal untuk gambar ini" oninput="gambar[${i}].t=this.value;simpanGambar()">
-                    <input value="${esc(g.j)}" placeholder="Jawaban" oninput="gambar[${i}].j=this.value;simpanGambar()"></div>`).join('') + '</details>';
+                    <input value="${esc(g.t)}" placeholder="Nama gambar (tampil saat kunci dibuka)" oninput="papan[edP].g[${i}].t=this.value;simpanGambar()">
+                    <label><input type="checkbox" ${g.b ? 'checked' : ''} onchange="papan[edP].g[${i}].b=this.checked;simpanGambar();renderGF()"> ✓</label></div>`).join('') + '</details>';
         }
         function muatGambar(i, inp) {
-            const f = inp.files[0]; if (!f) return;
+            const f = inp.files[0]; if (!f) return; const P = papan[edP];
             const im = new Image(), u = URL.createObjectURL(f);
             im.onload = () => {
-                const k = Math.min(1, 640 / im.width), c = document.createElement('canvas');
+                const k = Math.min(1, 420 / im.width), c = document.createElement('canvas');
                 c.width = im.width * k; c.height = im.height * k;
                 c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
-                gambar[i].img = c.toDataURL('image/jpeg', .7); simpanGambar(); URL.revokeObjectURL(u); renderGF();
+                P.g[i].img = c.toDataURL('image/jpeg', .6); simpanGambar(); URL.revokeObjectURL(u); renderGF();
             };
             im.src = u;
         }
-        function s2Tim(id) { const s = G().s2; if (s.mulai) return; s.aktif = id; s.qi = 0; saveData(); render(); }
-        function s2Pilih(i) {
-            const s = G().s2, a = s.aktif; if (!a || s.mulai || s.done[a]) return;
-            gfAksi(() => {
-                const p = s.pil[a] = s.pil[a] || [], own = Object.keys(s.pil).find(k => s.pil[k].includes(i)), k = p.indexOf(i);
-                if (own && +own !== a) { toast('Gambar sudah dipilih regu lain'); return; }
-                if (k >= 0) p.splice(k, 1); else if (p.length < 5) p.push(i); else toast('Maksimal 5 gambar');
-            });
+        function s2Tim(id) { const s = S2(); if (s.mulai || cdN) return; s.aktif = id; s.buka = false; saveData(); render(); }
+        function s2Kartu(k) {
+            const s = S2(), a = s.aktif; if (!a || s.mulai || s.pap[a] !== undefined) return;
+            if (Object.values(s.pap).includes(k)) { toast('Kartu sudah dipilih regu lain'); return; }
+            gfAksi(() => { s.pap[a] = k; sfx('tick'); });
         }
+        function s2Ganti() {
+            const s = S2(), a = s.aktif; if (!a || s.mulai || s.done[a]) { toast('Tidak bisa ganti kartu sekarang'); return; }
+            gfAksi(() => { delete s.pap[a]; delete s.pil[a]; delete s.hasil[a]; });
+        }
+        function s2Tutup(a, habis) { const x = S2(); stopTimer(); x.mulai = false; x.done[a] = true; saveData(); render(); if (habis) toast('⏰ Waktu habis!'); }
         function s2Mulai() {
-            const s = G().s2, a = s.aktif;
-            if (!a || (s.pil[a] || []).length < 5) { toast('Pilih 5 gambar dulu'); return; }
-            s.mulai = true; s.qi = 0; s.hasil[a] = [null, null, null, null, null];
-            gfTimer(60, () => { const x = G().s2; x.mulai = false; x.done[a] = true; saveData(); render(); toast('⏰ Waktu habis!'); });
-            saveData(); render();
+            const s = S2(), a = s.aktif; if (!a) { toast('Pilih regu dulu'); return; }
+            const bd = s2Bd(s); if (!bd) { toast('Regu belum memilih kartu'); return; }
+            if (s.done[a]) { toast('Regu ini sudah selesai'); return; }
+            if (bd.g.filter(g => g.b).length !== 5) { toast('Kunci papan ini harus tepat 5 gambar benar'); return; }
+            hitung(() => { s.mulai = true; s.buka = false; s.pil[a] = []; s.hasil[a] = []; gfTimer(CFG.s2, () => s2Tutup(a, true)); saveData(); render(); });
         }
-        function s2Selesai() { const s = G().s2; stopTimer(); if (s.aktif) s.done[s.aktif] = true; s.mulai = false; saveData(); render(); }
-        function s2Nav(d) { const s = G().s2; if (!s.mulai) return; s.qi = Math.max(0, Math.min(4, s.qi + d)); saveData(); render(); }
-        function s2Nilai(ok) {
-            const s = G().s2, a = s.aktif; if (!s.mulai) return;
-            gfAksi(() => {
-                const h = s.hasil[a], prev = h[s.qi]; if (prev === ok) return;
-                if (prev === true) addGF(a, -10);
-                if (ok) addGF(a, 10);
-                h[s.qi] = ok; sfx(ok ? 'benar' : 'salah'); if (s.qi < 4) s.qi++;
-            });
+        function s2Pilih(i) {
+            const s = S2(), a = s.aktif; if (!s.mulai || !a || tPaused) return;
+            const p = s.pil[a], bd = s2Bd(s); if (p.includes(i) || p.length >= 5) return;
+            gfAksi(() => { const ok = !!bd.g[i].b; p.push(i); s.hasil[a].push(ok); if (ok) addGF(a, 10); sfx(ok ? 'benar' : 'salah'); });
+            if (p.length >= 5) s2Tutup(a);
         }
+        function s2Undo() {
+            const s = S2(), a = s.aktif, p = (s.pil[a] || []); if (!p.length) return;
+            gfAksi(() => { p.pop(); if (s.hasil[a].pop()) addGF(a, -10); if (s.done[a] && timerLeft > 0) { delete s.done[a]; s.mulai = true; gfTimer(timerLeft, () => s2Tutup(a, true)); } });
+        }
+        function s2Selesai() { const s = S2(); if (s.aktif) s2Tutup(s.aktif); }
+        function s2Buka() { const s = S2(), bd = s2Bd(s); if (!bd) return; if (s.mulai) { toast('Selesaikan giliran dulu'); return; } gfAksi(() => { s.buka = !s.buka; s.kunci = s.buka ? bd.g.map((g, i) => g.b ? i : -1).filter(i => i >= 0) : []; }); }
 
         // ---- Sesi 3: Kotak Katik ----
         function s3Init() {
@@ -1152,40 +1350,49 @@
         function garis(s, id) { return LN.some(l => l.every(i => s.k[i].o === id)); }
         function s3Panel(jr) {
             const s = G().s3; if (!s) return '';
-            const b = s.akt !== null ? s.k[s.akt] : null;
-            return `<div class="kg" style="grid-template-columns:repeat(5,1fr)">` + s.k.map((x, i) => {
+            const b = s.akt !== null ? s.k[s.akt] : null, q = b ? bankK[s.akt] : null, fz = jr ? '1.4rem' : '2.6rem';
+            if (b && s.fase === 'soal' && !jr) return `<div class="buzz" style="background:${warna(s.gil)}">${esc(tById(s.gil).name)} · Kotak ${s.akt + 1} · ${katIk(q.c)} ${esc(q.c || '')}</div><div class="pn-q" style="font-size:${fz}">${NM[b.j]}<br>${esc(q.t)}</div>`;
+            const grid = `<div class="kg" style="grid-template-columns:repeat(5,1fr)">` + s.k.map((x, i) => {
                 const open = x.o !== null;
-                return `<div class="kc" style="background:${open ? warna(x.o) : s.akt === i ? 'var(--kuning-pramuka)' : '#fff'};color:${open ? '#fff' : 'inherit'}" ${jr && !open && s.akt === null && !s.selesai ? `onclick="s3Pilih(${i})"` : ''}>${open ? IK[x.j] : i + 1}</div>`;
-            }).join('') + '</div>' +
+                return `<div class="kc" style="background:${open ? warna(x.o) : s.akt === i ? 'var(--kuning-pramuka)' : '#fff'};color:${open ? '#fff' : 'inherit'}" ${jr && !open && s.akt === null && !s.selesai ? `onclick="s3Pilih(${i})"` : ''}>${open ? IK[x.j] + '<small style="font-size:.9rem">' + katIk((bankK[i] || {}).c) + '</small>' : i + 1}</div>`;
+            }).join('') + '</div>';
+            const info = !b ? '' : s.fase === 'soal' ? `<div class="pn-q" style="font-size:${fz}">Kotak ${s.akt + 1} · ${NM[b.j]}<br>${esc(q.t)}</div>` :
+                `<div class="pn-q" style="font-size:${fz}">Kotak ${s.akt + 1}<br><span style="font-size:3em">${katIk(q.c)}</span><br>${esc(q.c || 'Umum')}</div>`;
+            const ov = s.hasil ? `<div class="hasil-ov ${s.hasil.ok ? 'ok' : 'bad'}"><div>${s.hasil.ok ? 'BENAR' : 'SALAH'}<span>${s.hasil.ok ? '😊' : '😞'}</span></div></div>` : '';
+            return grid +
                 (s.bonus ? `<div class="buzz" style="background:${warna(s.bonus)}">🎉 ${esc(tById(s.bonus).name)} membuat 1 garis lurus! BONUS +30</div>` : s.selesai ? '<div class="buzz" style="background:var(--coklat-tua)">⏰ Sesi Kotak Katik selesai</div>' :
-                    `<div class="buzz" style="background:${warna(s.gil)}">Giliran: ${esc(tById(s.gil).name)}${s.extra ? ' · EXTRA BOX, pilih 1 kotak lagi!' : ''}</div>`) +
-                (b ? `<div class="pn-q" style="font-size:${jr ? '1.4rem' : '2.4rem'}">Kotak ${s.akt + 1} · ${NM[b.j]}<br>${esc(bankK[s.akt].t)}</div>` : '');
+                    `<div class="buzz" style="background:${warna(s.gil)}">Giliran: ${esc(tById(s.gil).name)}${s.extra ? ' · EXTRA BOX, pilih 1 kotak lagi!' : ''}</div>`) + info + ov;
         }
         function s3Ctl() {
             const s = G().s3, i = s.akt;
             return tim().map(t => B(esc(t.name), `s3Gil(${t.id})`, s.gil === t.id ? 'btn-primary' : 'btn-outline')).join('') +
-                B('▶ Mulai 15 Menit', 's3Mulai()') + B('■ Akhiri Sesi', 's3Akhiri()', 'btn-danger') +
-                (i !== null ? `<div class="jp-kunci" style="width:100%">🔑 ${esc(bankK[i].j)}</div>` + B('✓ Benar', 's3Nilai(true)') + B('✗ Salah', 's3Nilai(false)', 'btn-danger') + B('Batal pilih', 's3Batal()', 'btn-outline') : '<small>Klik nomor kotak untuk memilih.</small>');
+                B('▶ Mulai ' + CFG.s3 + ' Menit', 's3Mulai()') + B('■ Akhiri Sesi', 's3Akhiri()', 'btn-danger') +
+                (i !== null ? `<div class="jp-kunci" style="width:100%">🔑 ${esc(bankK[i].j)} · ${katIk(bankK[i].c)} ${esc(bankK[i].c || 'Umum')}</div>` +
+                    (s.fase === 'soal' ? B('✓ Benar', 's3Nilai(true)') + B('✗ Salah', 's3Nilai(false)', 'btn-danger') : B('📖 Tampilkan Soal', 's3Soal()')) + B('Batal pilih', 's3Batal()', 'btn-outline') : '<small>Klik nomor kotak untuk memilih.</small>');
         }
         function s3Gil(id) { gfAksi(() => { G().s3.gil = id; }); }
-        function s3Pilih(i) { const s = G().s3; if (s.selesai) return; s.akt = i; saveData(); render(); }
-        function s3Batal() { G().s3.akt = null; saveData(); render(); }
-        function s3Mulai() { G().s3.mulai = true; gfTimer(900, () => { G().s3.selesai = true; saveData(); render(); toast('⏰ Waktu Kotak Katik habis!'); }); saveData(); render(); }
+        function s3Pilih(i) { const s = G().s3; if (s.selesai) return; s.akt = i; s.fase = 'kategori'; s.hasil = null; sfx('tick'); saveData(); render(); }
+        function s3Soal() { const s = G().s3; if (s.akt === null) return; s.fase = 'soal'; saveData(); render(); }
+        function s3Batal() { const s = G().s3; s.akt = null; s.fase = null; saveData(); render(); }
+        function s3Mulai() { hitung(s3Jalan); }
+        function s3Jalan() { G().s3.mulai = true; gfTimer(CFG.s3 * 60, () => { G().s3.selesai = true; saveData(); render(); toast('⏰ Waktu Kotak Katik habis!'); }); saveData(); render(); }
         function s3Akhiri() { stopTimer(); G().s3.selesai = true; saveData(); render(); }
         function s3Nilai(ok) {
-            const s = G().s3, i = s.akt; if (i === null) return;
+            const s = G().s3, i = s.akt; if (i === null || s.fase !== 'soal') return;
             gfAksi(() => {
                 const b = s.k[i], id = s.gil;
                 if (ok) {
                     addGF(id, b.j === 'double' ? 20 : 10); b.o = id; sfx('benar');
                     if (garis(s, id)) { addGF(id, 30); s.selesai = true; s.bonus = id; stopTimer(); sfx('final'); confetti(); }
                 } else { if (b.j === 'bom') addGF(id, -5); sfx('salah'); }
-                s.akt = null; s.extra = ok && b.j === 'extra' && !s.selesai;
+                s.akt = null; s.fase = null; s.hasil = { ok: ok };
+                s.extra = ok && b.j === 'extra' && !s.selesai;
                 if (!s.extra) { const ts = tim(); s.gil = ts[(ts.findIndex(t => t.id === id) + 1) % ts.length].id; }
             });
+            setTimeout(() => { const x = G().s3; if (x && x.hasil) { x.hasil = null; saveData(); render(); } }, 2500);
         }
         document.addEventListener('keydown', e => {
-            if (!BEL || state.phase !== 'final' || /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+            if (!BEL || (MODE_REGU && !window._belSemua) || state.phase !== 'final' || /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
             const i = +e.key - 1;
             if (G().sesi === 1 && i >= 0 && i < 5 && tim()[i]) belTekan(tim()[i].id);
         });
@@ -1193,7 +1400,7 @@
 
         // ===== Layar Bel Peserta (jendela ketiga; peserta menekan warna regu) =====
         let belKunci = 0;
-        function bukaBel() { window.open(location.href.split('#')[0] + '#bel', 'lcc_bel', 'width=1000,height=700'); }
+        function bukaBel() { window.open(location.href.split('#')[0] + '#regu', 'lcc_regu', 'width=1000,height=700'); }
         function initBel() {
             document.body.classList.add('bel');
             const sync = () => { readLocal(); renderBel(); };
@@ -1202,17 +1409,24 @@
         }
         function renderBel() {
             const v = document.getElementById('bel-view');
-            if (state.phase !== 'final' || !(state.teams || []).length) { v.innerHTML = '<div class="pn-q">Menunggu Grand Final dimulai…</div>'; return; }
+            if (MODE_REGU && !window._belSemua) { renderRegu(v); return; }
+            if (!MODE_REGU) {
+                if (state.phase === 'final') { v.innerHTML = '<div class="pn-q">Babak Grand Final: masuk lewat menu <b>Regu</b></div>' + MENU_LINK; return; }
+                renderPeserta(v); return;
+            }
+            if (state.phase !== 'final' || !(state.teams || []).length) { v.innerHTML = '<div class="pn-q">Babak Grand Final belum dimulai…</div>' + MENU_LINK; return; }
             const s = G().s1, b = s.buzz ? tById(s.buzz) : null;
             const open = G().sesi === 1 && s.on && !s.buzz && Date.now() > belKunci;
-            v.innerHTML = `<div class="pn-q" style="font-size:2rem">${b ? '🔔 ' + esc(b.name) + ' menjawab!' : open ? 'BEL DIBUKA — tekan warna regu Anda!' : 'Menunggu bel dibuka…'}</div>
-                <div class="bel-grid">${tim().map((t, i) => `<button class="bel-btn" style="background:${warna(t.id)}" ${open && !s.blk.includes(t.id) ? '' : 'disabled'} onclick="belTekan(${t.id})">${i + 1}<br>${esc(t.name)}</button>`).join('')}</div>`;
+            v.innerHTML = `<div class="pn-q" style="font-size:2rem">${b ? '🔔 ' + esc(b.name) + ' menjawab!' : open ? 'BEL DIBUKA — tekan warna regu Anda!' : G().sesi !== 1 ? 'Sesi ' + G().sesi + ' sedang berlangsung (bel dipakai di Sesi 1)' : 'Menunggu bel dibuka…'}</div>
+                <div class="bel-grid">${tim().map((t, i) => `<button class="bel-btn" style="background:${warna(t.id)}" ${open && !s.blk.includes(t.id) ? '' : 'disabled'} onclick="belTekan(${t.id})">${i + 1}<br>${esc(t.name)}</button>`).join('')}</div>
+                <div style="text-align:center;margin-top:1rem"><a href="#" style="color:#888" onclick="gantiPeran();return false">↩ Menu peran</a></div>`;
         }
         function belTekan(id) {
             const s = G().s1;
+            const tt = tById(id); if (!tt || tt.eliminated || (MODE_REGU && !window._belSemua && id !== reguId())) return;
             if (G().sesi !== 1 || !s.on || s.buzz || s.blk.includes(id) || Date.now() < belKunci) return;
             belKunci = Date.now() + 1500;
-            if (REMOTE) api('bel', { id }).then(r => { if (r && r.ok && r.accepted === false) toast('Regu lain lebih cepat!'); else if (!r || !r.ok) { belKunci = 0; toast('Gagal mengirim bel, coba lagi'); } });
+            if (REMOTE) api('bel', { id }).then(r => { if (r && r.ok && r.accepted === false) toast('Regu lain lebih cepat!'); else if (!r || !r.ok) { belKunci = 0; toast(r && r.err ? r.err : 'Gagal mengirim bel, coba lagi'); } });
             else try { localStorage.setItem('lcc_bel', JSON.stringify({ id, ts: Date.now() })); } catch (e) {}
             renderBel();
         }
@@ -1225,21 +1439,22 @@
 
         // ===== Cover =====
         const EMBLEM = `<svg viewBox="0 0 120 120" width="130" height="130" aria-label="Tunas kelapa"><circle cx="60" cy="60" r="56" fill="#FFCA28" stroke="#fff" stroke-width="4"/><path d="M60 98C43 89 41 66 60 50C79 66 77 89 60 98Z" fill="#4E342E"/><path d="M60 54C50 37 36 35 25 41C38 41 48 47 56 58Z" fill="#43A047"/><path d="M60 54C70 37 84 35 95 41C82 41 72 47 64 58Z" fill="#43A047"/><path d="M60 54C55 36 57 24 60 15C63 24 65 36 60 54Z" fill="#2E7D32"/></svg>`;
+        function logoSrc() { return localStorage.getItem('lcc_logo') || LOGO_DEFAULT; }
         function logoHTML(jr) {
-            const l = localStorage.getItem('lcc_logo'), inp = '<input type="file" accept="image/*" hidden onchange="muatLogo(this)">';
-            if (l) return jr ? `<label class="cv-logo" title="Klik untuk ganti logo"><img src="${l}" alt="Logo">${inp}</label>` : `<div class="cv-logo"><img src="${l}" alt="Logo"></div>`;
-            return jr ? `<label class="cv-logo ph">＋ Logo<br>sekolah${inp}</label>` : '';
+            const inp = '<input type="file" accept="image/*" hidden onchange="muatLogo(this)">';
+            return jr ? `<label class="cv-logo" title="Klik untuk mengganti logo"><img src="${logoSrc()}" alt="Logo MAN 1 Boalemo">${inp}</label>`
+                      : `<div class="cv-logo"><img src="${logoSrc()}" alt="Logo MAN 1 Boalemo"></div>`;
         }
-        function coverHTML(jr) {
+        function coverHTML(jr, landing) {
             return `<div class="cv-wrap">
                 <div class="cv-ribbon">LCC KEPANDUAN</div>
-                <div class="cv-row">${logoHTML(jr)}${EMBLEM}</div>
+                <div class="cv-row">${logoHTML(jr)}</div>
                 <div class="cv-t1">Lomba<br>Cerdas Cermat</div>
                 <div class="cv-rope"></div>
-                <div class="cv-t2">Kemah Kerja Madrasah · Season 4</div>
-                <div class="cv-inst">MAN 1 BOALEMO</div>
-                <div class="cv-chips"><span class="cv-chip">👥 14 Regu</span><span class="cv-chip">⚔️ Sistem Gugur</span><span class="cv-chip">🏆 Grand Final 3 Sesi</span></div>
-                ${jr ? '<button class="btn-start" onclick="mulaiLomba()">' + (state.lastPhase ? 'Lanjutkan Lomba ▶' : 'Mulai Lomba 🚀') + '</button><button class="cv-link" onclick="bukaPenonton()">🖥 Buka Layar Penonton</button>' : ''}
+                <div class="cv-t2">Kemah Kerja Madrasah · Season 5</div>
+                <div class="cv-inst">MAN 1 BOALEMO</div><div class="cv-credit">© 2026 · J D Ace | Sigma04, an1mo</div>
+                <div class="cv-chips"><span class="cv-chip">⚔️ Sistem Gugur</span><span class="cv-chip">🏆 Grand Final 3 Sesi</span></div>
+                ${landing ? '<button class="btn-start" onclick="bukaMenuPeran()">Mulai 🚀</button>' : jr ? '<button class="btn-start" onclick="mulaiLomba()">' + (state.lastPhase ? 'Lanjutkan Lomba ▶' : 'Mulai Lomba 🚀') + '</button><button class="cv-link" onclick="bukaPenonton()">🖥 Buka Layar Penonton</button><button class="cv-link" onclick="gantiPeran()">🔀 Ganti Peran</button>' : ''}
                 <div class="cv-motto">“Satyaku kudarmakan, darmaku kubaktikan”</div>
             </div>`;
         }
@@ -1252,7 +1467,7 @@
                 c.width = im.width * k; c.height = im.height * k;
                 c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
                 try { localStorage.setItem('lcc_logo', c.toDataURL('image/png')); } catch (e) { toast('Logo terlalu besar'); }
-                URL.revokeObjectURL(u); buildCover(); cloudDirty.m = true; cloudSchedule(3000);
+                URL.revokeObjectURL(u); buildCover(); initBrand(); cloudDirty.m = true; cloudSchedule(3000);
             };
             im.src = u;
         }
@@ -1272,8 +1487,10 @@
             const ac = new AbortController(), to = setTimeout(() => ac.abort(), 20000);
             try {
                 // body teks biasa = "simple request", tidak memicu preflight CORS pada GAS
-                const r = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action, key: GAS_KEY, data }), signal: ac.signal });
-                return await r.json();
+                const r = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action, key: GAS_KEY, pin: sessionStorage.getItem('lcc_pin') || '', data }), signal: ac.signal });
+                const j = await r.json();
+                if (j && j.err === 'PIN juri salah') { sessionStorage.removeItem('lcc_pin'); badge('🔒 PIN juri salah — muat ulang halaman', '#c62828'); }
+                return j;
             } catch (e) { return { ok: false, err: String(e) }; }
             finally { clearTimeout(to); }
         }
@@ -1289,7 +1506,7 @@
             const data = { state: Object.assign({}, state, { history: [] }), logs: logQ.splice(0) };
             const sb = cloudDirty.b, sm = cloudDirty.m; cloudDirty = { b: false, m: false };
             if (sb) data.banks = { p: bankSoal, g: bankGF, k: bankK };
-            if (sm) data.media = { gambar, logo: localStorage.getItem('lcc_logo') || '' };
+            if (sm) data.media = { papan, logo: localStorage.getItem('lcc_logo') || '' };
             const r = await api('save', data);
             cloudBusy = false;
             if (r && r.ok) { clockOff = r.now - Date.now(); badge('☁️ Tersimpan ' + new Date().toLocaleTimeString('id-ID'), '#2e7d32'); }
@@ -1307,14 +1524,15 @@
                 localStorage.setItem('lcc_soal', JSON.stringify(bankSoal)); localStorage.setItem('lcc_soal_gf', JSON.stringify(bankGF)); localStorage.setItem('lcc_soal_k', JSON.stringify(bankK));
             }
             if (r.media) {
-                if (r.media.gambar) { gambar = r.media.gambar; try { localStorage.setItem('lcc_gambar', JSON.stringify(gambar)); } catch (e) {} }
+                if (r.media.papan) { papan = r.media.papan; try { localStorage.setItem('lcc_papan', JSON.stringify(papan)); } catch (e) {} }
                 if (r.media.logo) localStorage.setItem('lcc_logo', r.media.logo);
             }
-            buildCover(); render();
+            buildCover(); if (state.phase === 'cover') mulaiLomba(); else render();
         }
         async function cloudInit() {
             if (!GAS_AKTIF) { badge('☁️ Offline — isi GAS_URL', '#777'); return; }
             badge('☁️ Menghubungkan…', '#f39c12');
+            if (sessionStorage.getItem('lcc_pin') === null) sessionStorage.setItem('lcc_pin', prompt('PIN juri (kosongkan jika belum diatur di Code.gs):') || '');
             const r = await api('load');
             if (!r || !r.ok) { badge('☁️ Gagal terhubung ke GAS', '#c62828'); return; }
             clockOff = r.now - Date.now();
@@ -1344,7 +1562,7 @@
             if (r.state) state = r.state;
             if (r.banks) { bankSoal = r.banks.p || bankSoal; bankGF = r.banks.g || bankGF; bankK = r.banks.k || bankK; }
             if (r.bver !== undefined) window._cb = r.bver;
-            if (r.media) { if (r.media.gambar) gambar = r.media.gambar; if (r.media.logo) localStorage.setItem('lcc_logo', r.media.logo); }
+            if (r.media) { if (r.media.papan) papan = r.media.papan; if (r.media.logo) localStorage.setItem('lcc_logo', r.media.logo); }
             if (r.mver !== undefined) window._cm = r.mver;
             if (window._renderRemote) window._renderRemote();
         }
@@ -1368,12 +1586,276 @@
             if (r && r.ok && r.bel) { s1Bel(r.bel.id); api('belClear'); }
         }
 
+
+        // ===== Menu pilihan peran =====
+        function sembunyiMenu() { ['landing', 'babak-menu', 'role-menu'].forEach(id => document.getElementById(id).style.display = 'none'); }
+        function tampilLanding() { sembunyiMenu(); const l = document.getElementById('landing'); l.innerHTML = coverHTML(true, true); l.style.display = 'block'; }
+        function bukaMenuBabak() { sembunyiMenu(); document.getElementById('bm-logo').src = logoSrc(); document.getElementById('babak-menu').style.display = 'flex'; }
+        function bukaMenuPeran() { bukaMenuBabak(); }
+        function pilihBabak(bb) {
+            window._babak = bb; sembunyiMenu();
+            const f = bb === 'final';
+            document.getElementById('rm-title').innerText = (f ? 'Babak Grand Final' : 'Babak Gugur') + ' — masuk sebagai';
+            document.getElementById('rm-p').innerHTML = f
+                ? '<span>👥</span><b>Regu</b><small>Tombol bel regu · 1 perangkat per regu (hanya regu yang lolos)</small>'
+                : '<span>✍️</span><b>Peserta</b><small>Ketik &amp; cek jawaban · 1 perangkat per anggota</small>';
+            document.getElementById('rm-logo').src = logoSrc();
+            document.getElementById('role-menu').style.display = 'flex';
+        }
+        function pilihPeran(r) {
+            const bb = window._babak || 'gugur';
+            if (r === 'juri') {
+                if (JURI_PIN) { const p = prompt('Masukkan PIN juri:'); if (p === null) return; if (p !== JURI_PIN) { alert('PIN salah.'); return; } }
+                sessionStorage.setItem('lcc_role', 'juri'); sessionStorage.setItem('lcc_babak', bb); location.reload();
+            } else {
+                sessionStorage.removeItem('lcc_role');
+                location.hash = r === 'penonton' ? '#penonton' : (bb === 'final' ? '#regu' : '#bel'); location.reload();
+            }
+        }
+        function gantiPeran() {
+            sessionStorage.removeItem('lcc_role'); sessionStorage.setItem('lcc_menu', '1');   // langsung ke menu babak
+            if (location.hash) location.href = location.href.split('#')[0]; else location.reload();
+        }
+        function initPick() {
+            document.getElementById('rm-note').innerText = GAS_AKTIF
+                ? '☁️ Google Sheets aktif: perangkat regu, peserta, dan penonton lain akan tersinkron otomatis.'
+                : 'Mode offline: jendela Juri, Regu/Peserta, dan Penonton harus dibuka di browser yang sama.';
+            if (sessionStorage.getItem('lcc_menu')) { sessionStorage.removeItem('lcc_menu'); bukaMenuBabak(); } else tampilLanding();
+        }
+        // juri masuk sesuai babak yang dipilih
+        function aturBabakJuri() {
+            const bb = sessionStorage.getItem('lcc_babak'); sessionStorage.removeItem('lcc_babak');
+            if (!bb) return;
+            if (bb === 'final' && state.phase !== 'final') {
+                const n = state.teams.filter(t => !t.eliminated).length;
+                if (n !== TARGET_GF) { alert(`Babak Grand Final belum bisa dimulai: regu yang bertahan harus tepat ${TARGET_GF} (saat ini ${n}). Lanjutkan Babak Gugur terlebih dahulu.`); return; }
+                if (confirm('Mulai Babak Grand Final dengan ' + TARGET_GF + ' regu yang lolos?')) startGrandFinal();
+            } else if (bb === 'gugur' && state.phase === 'final') {
+                if (confirm('Kembali ke Babak Gugur? Skor Grand Final tetap tersimpan.')) backToPenyisihan();
+            }
+        }
+        function initBrand() {
+            const l = logoSrc();
+            document.getElementById('hd-logo').src = l;
+            let f = document.querySelector('link[rel=icon]');
+            if (!f) { f = document.createElement('link'); f.rel = 'icon'; document.head.appendChild(f); }
+            f.href = l;
+        }
+
+        // ===== LOGO BAWAAN (MAN 1 Boalemo) — bisa diganti dengan klik logo di cover =====
+        const LOGO_DEFAULT = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAAC/CAMAAACMoWPVAAAKMGlDQ1BJQ0MgUHJvZmlsZQAAeJydlndUVNcWh8+9d3qhzTAUKUPvvQ0gvTep0kRhmBlgKAMOMzSxIaICEUVEBBVBgiIGjIYisSKKhYBgwR6QIKDEYBRRUXkzslZ05eW9l5ffH2d9a5+99z1n733WugCQvP25vHRYCoA0noAf4uVKj4yKpmP7AQzwAAPMAGCyMjMCQj3DgEg+Hm70TJET+CIIgDd3xCsAN428g+h08P9JmpXBF4jSBInYgs3JZIm4UMSp2YIMsX1GxNT4FDHDKDHzRQcUsbyYExfZ8LPPIjuLmZ3GY4tYfOYMdhpbzD0i3pol5IgY8RdxURaXky3iWyLWTBWmcUX8VhybxmFmAoAiie0CDitJxKYiJvHDQtxEvBQAHCnxK47/igWcHIH4Um7pGbl8bmKSgK7L0qOb2doy6N6c7FSOQGAUxGSlMPlsult6WgaTlwvA4p0/S0ZcW7qoyNZmttbWRubGZl8V6r9u/k2Je7tIr4I/9wyi9X2x/ZVfej0AjFlRbXZ8scXvBaBjMwDy97/YNA8CICnqW/vAV/ehieclSSDIsDMxyc7ONuZyWMbigv6h/+nwN/TV94zF6f4oD92dk8AUpgro4rqx0lPThXx6ZgaTxaEb/XmI/3HgX5/DMISTwOFzeKKIcNGUcXmJonbz2FwBN51H5/L+UxP/YdiftDjXIlEaPgFqrDGQGqAC5Nc+gKIQARJzQLQD/dE3f3w4EL+8CNWJxbn/LOjfs8Jl4iWTm/g5zi0kjM4S8rMW98TPEqABAUgCKlAAKkAD6AIjYA5sgD1wBh7AFwSCMBAFVgEWSAJpgA+yQT7YCIpACdgBdoNqUAsaQBNoASdABzgNLoDL4Dq4AW6DB2AEjIPnYAa8AfMQBGEhMkSBFCBVSAsygMwhBuQIeUD+UAgUBcVBiRAPEkL50CaoBCqHqqE6qAn6HjoFXYCuQoPQPWgUmoJ+h97DCEyCqbAyrA2bwAzYBfaDw+CVcCK8Gs6DC+HtcBVcDx+D2+EL8HX4NjwCP4dnEYAQERqihhghDMQNCUSikQSEj6xDipFKpB5pQbqQXuQmMoJMI+9QGBQFRUcZoexR3qjlKBZqNWodqhRVjTqCakf1oG6iRlEzqE9oMloJbYC2Q/ugI9GJ6Gx0EboS3YhuQ19C30aPo99gMBgaRgdjg/HGRGGSMWswpZj9mFbMecwgZgwzi8ViFbAGWAdsIJaJFWCLsHuxx7DnsEPYcexbHBGnijPHeeKicTxcAa4SdxR3FjeEm8DN46XwWng7fCCejc/Fl+Eb8F34Afw4fp4gTdAhOBDCCMmEjYQqQgvhEuEh4RWRSFQn2hKDiVziBmIV8TjxCnGU+I4kQ9InuZFiSELSdtJh0nnSPdIrMpmsTXYmR5MF5O3kJvJF8mPyWwmKhLGEjwRbYr1EjUS7xJDEC0m8pJaki+QqyTzJSsmTkgOS01J4KW0pNymm1DqpGqlTUsNSs9IUaTPpQOk06VLpo9JXpSdlsDLaMh4ybJlCmUMyF2XGKAhFg+JGYVE2URoolyjjVAxVh+pDTaaWUL+j9lNnZGVkLWXDZXNka2TPyI7QEJo2zYeWSiujnaDdob2XU5ZzkePIbZNrkRuSm5NfIu8sz5Evlm+Vvy3/XoGu4KGQorBToUPhkSJKUV8xWDFb8YDiJcXpJdQl9ktYS4qXnFhyXwlW0lcKUVqjdEipT2lWWUXZSzlDea/yReVpFZqKs0qySoXKWZUpVYqqoypXtUL1nOozuizdhZ5Kr6L30GfUlNS81YRqdWr9avPqOurL1QvUW9UfaRA0GBoJGhUa3RozmqqaAZr5ms2a97XwWgytJK09Wr1ac9o62hHaW7Q7tCd15HV8dPJ0mnUe6pJ1nXRX69br3tLD6DH0UvT2693Qh/Wt9JP0a/QHDGADawOuwX6DQUO0oa0hz7DecNiIZORilGXUbDRqTDP2Ny4w7jB+YaJpEm2y06TX5JOplWmqaYPpAzMZM1+zArMus9/N9c1Z5jXmtyzIFp4W6y06LV5aGlhyLA9Y3rWiWAVYbbHqtvpobWPNt26xnrLRtImz2WczzKAyghiljCu2aFtX2/W2p23f2VnbCexO2P1mb2SfYn/UfnKpzlLO0oalYw7qDkyHOocRR7pjnONBxxEnNSemU73TE2cNZ7Zzo/OEi55Lsssxlxeupq581zbXOTc7t7Vu590Rdy/3Yvd+DxmP5R7VHo891T0TPZs9Z7ysvNZ4nfdGe/t57/Qe9lH2Yfk0+cz42viu9e3xI/mF+lX7PfHX9+f7dwXAAb4BuwIeLtNaxlvWEQgCfQJ3BT4K0glaHfRjMCY4KLgm+GmIWUh+SG8oJTQ29GjomzDXsLKwB8t1lwuXd4dLhseEN4XPRbhHlEeMRJpEro28HqUYxY3qjMZGh0c3Rs+u8Fixe8V4jFVMUcydlTorc1ZeXaW4KnXVmVjJWGbsyTh0XETc0bgPzEBmPXM23id+X/wMy421h/Wc7cyuYE9xHDjlnIkEh4TyhMlEh8RdiVNJTkmVSdNcN24192Wyd3Jt8lxKYMrhlIXUiNTWNFxaXNopngwvhdeTrpKekz6YYZBRlDGy2m717tUzfD9+YyaUuTKzU0AV/Uz1CXWFm4WjWY5ZNVlvs8OzT+ZI5/By+nL1c7flTuR55n27BrWGtaY7Xy1/Y/7oWpe1deugdfHrutdrrC9cP77Ba8ORjYSNKRt/KjAtKC94vSliU1ehcuGGwrHNXpubiySK+EXDW+y31G5FbeVu7d9msW3vtk/F7OJrJaYllSUfSlml174x+6bqm4XtCdv7y6zLDuzA7ODtuLPTaeeRcunyvPKxXQG72ivoFcUVr3fH7r5aaVlZu4ewR7hnpMq/qnOv5t4dez9UJ1XfrnGtad2ntG/bvrn97P1DB5wPtNQq15bUvj/IPXi3zquuvV67vvIQ5lDWoacN4Q293zK+bWpUbCxp/HiYd3jkSMiRniabpqajSkfLmuFmYfPUsZhjN75z/66zxailrpXWWnIcHBcef/Z93Pd3Tvid6D7JONnyg9YP+9oobcXtUHtu+0xHUsdIZ1Tn4CnfU91d9l1tPxr/ePi02umaM7Jnys4SzhaeXTiXd272fMb56QuJF8a6Y7sfXIy8eKsnuKf/kt+lK5c9L1/sdek9d8XhyumrdldPXWNc67hufb29z6qv7Sern9r6rfvbB2wGOm/Y3ugaXDp4dshp6MJN95uXb/ncun572e3BO8vv3B2OGR65y747eS/13sv7WffnH2x4iH5Y/EjqUeVjpcf1P+v93DpiPXJm1H2070nokwdjrLHnv2T+8mG88Cn5aeWE6kTTpPnk6SnPqRvPVjwbf57xfH666FfpX/e90H3xw2/Ov/XNRM6Mv+S/XPi99JXCq8OvLV93zwbNPn6T9mZ+rvitwtsj7xjvet9HvJ+Yz/6A/VD1Ue9j1ye/Tw8X0hYW/gUDmPP8uaxzGQAAAYBQTFRFa5aeVWVoTJNqi7mfXZ55YJJyIXxK5/Leocaultiz2+MvNYZZM4ZXtd13yOBUe7GTuNPEOktOPIxhVJlyl6OierCTEHI8wcK+aaWDISAfI3xLIXtHfNXhhLWXtNG9iL/J4t3dMlc+B283QT08UnyDPI1gwry7Oj9Bgn58gIJ+REA9gH+Airqh8vzwjLqjfdXmAWgtBQQDGhYV0djT5+rlJycmdcfX1+TZNjc3p6imtri1lZeVx8nGVldWR0hHDXE6gdrrjsfQdnd2h4iGUpdu7+cEaGlnrMi1M4VWcamHIBsYGXZCt9PMAFobheT2UpdwMYRWJntJqsvOAF4hcKmJhraYxtvOutTEmsKoI3tIa6izGXZCqMq3L4NS0+PY4eXeVZl0hrWah9XSc87hp8m2cKmJ3enhCWsxbLjGE3I7cKmKnaGdsdK5kLujMYVWTpZvS5NqnMKsUZdvmsKrfLGRh7abq9uMkr2iZKF8JXxKMIRWQ45jT5ZvWYePcKqJGXhEAPyOKQAAAIB0Uk5T//+aL2b/FgdK//8wav//XCP/ohP8FKv/hf9djf9mEP//7hT///////////++/wD//P//////////////////+P/////+/////v7/9//9/5Cz/v/9cP4IDP/R/9AMyQn/cg7//y4N/9X/0lH//0uRLKgMCC//UP///7IL/k7/LbEbztR/AAAdfElEQVR42tVdiV/a2LcHt9rW7vt0ne23vPewSW5C9qAJBawgKAhS99al7lttq7X1X3/33IQQJCvVGed+ZlqLKPnesy/33NjgRa8rc/cG/4IVu9hfX+vuKRYHTg7+2UD27v1SKU5ThdRs8fnJzsw/E8jM/vHS87trVGNNF7euLC7X/nlAlhaOpqmWlap3bVX/YUC6B4qlehMBVba+mC0OdC/+Y4B09y3sjtooxtMjn3pz9r9Hdxeu/yOALB7vPCa0SKXgj1z6C59IJPKT6XEb2mxl5/repQeydXd1tfHEua9TgIIsFmMZtVhs9WFx6ZIDefC01GCi8d6pvA2DLJQdyTVUWGng4BIDube+2xSMbCsKc22ONFgsVdx6cEmBPLhetJhqND3lhoIsfipt0qw8Xdnpu5RAth6aOMZHNtmEz1rJ9qbKoJNX715KIFslC0Z2JRGw+Gw6Rdjr4cmlA1Lrr5eJbGTZRIjFT34jUGb7Zy4XkOWdI0KOyUTYxY8QJNPXH1wqIN0LIB/pzUSENQW6eHW7+1IBWa9T5dQISkRa+TTQpFK9PED2ZhYKFDXCJyIu1EtRhS7LyNeWd2D9WNyr/UVAaov7945/6zu4fbt23LdMnKaDrgL1NTIOLCgYSX1hf/DBYl93/+Pi7t2u3WLlef+Vwb79xeqFA6keLhS3T09Pp6dLp9vrsJ/76/VyDiU6WOgbRW0fY9399LQRgqVSqfrR9sLW3EUCqR2cDBR3Z+ujxLUlAcb2L1haF6jUVKKjlR2ntgcfLBxRBVhl29mvz+72nPyoXgSQmcXrOACfTVEFZ9RXKFDFpdoClU50uEZGt3d6VgtUahRWY4PAhaHqu7cOds4ZyN7x8UGltNYI+My/yCdjLKWtrvFPnQLJ5qbvrlI5HH1NTk6OfE3nxlOOfVotPf/Rt189PyBLC6drjt8/muv9NJnNbm5mp8yIKbfZKRA+XaC+feFtTcGj7GQ6RzWCY2rt4dPK3DkB6T4pllpC16ks4hueCMvnR8YLvXynQBJp6tNZPcHnp0aaEWWqvrvQU/1pIIvXe7rsbAiOXD9lkQt7pDsGwk9OejiWTSwFqlQ52an+DJDjncpsk6HSIx4ctDmFOgbC+znJOfvD17qW5n4CSM/aakOH5Nxjvotd6EvaVi9HtzsHclCyBeNLfiXxdyw0ZQf6lVrHQCprsBkpZzbkr19sdiRnuvyHnQLpJkFGbgQl/uaFRkBrFnrmOgNS21r9KRNxnlRJg6DMHnYG5KAIcvYpcRlWPlfG7FWc6wjIOmEs/lIASYwASepL1Q6AVIuwCSM/xdvIkYpACvtTJIFtLdY6ALJVx3swnu2Mp4mdy2pa88dRhtNBayii1BGgSaK4ljoAAhJS7u1s/2QNHlpiaNl+SRJoRsR/G5zaWQyWC4jwPYBUq2AMRzuMlzI08wjTRaB1+yVRoGkV00mlOQIESSgaZSbBmExvRQWyWAHVHdEZnG88mkzTUgIeWrMfVuZompPhNZW8lmFUORJpeJMkVyIC6SbeyZdIxDe0Xuu5JY42kCQLtGA/q8EwHK0mWI3WWZPTMLCMyEZSXBS1uxQRyAExhpG2DD89o5sPpmg0J3AMftRHje/qNGdwjIg02oD36AyX0Wg6w0a0JdOVaEBmboExjKZ7RbzH5lNiFQX7LQgMkW+y4rSGX9VkgbyEBMxhSFdlNhGRJHerkYD8gJJNLh8JiMQwmAYGUb8GJo7CStb2w9IwX2GaaQyHpYeVGVpVoqqQqVHizdeiAFmHqDBcaoRXUIMinKHTjGx+DRvPqnTG+ibIBmgzmhYwAKTiLxhNBl3CirqaCSX3CIKT6cpyFCAV0L2hcuusrkk2EAU/KqimRNY0IVgwLJOocEArbFkwh5G/1cwT80uVI6CMEEz2BXir9CA8kJlasYCNYSjOQhxtMToGIiMdP9QGCzIQB51LGInE9QIHJMLfxhqZxcKiJETVmCd2UtC0pp4INIprB+GBLK9DpP41nO2w9CmREQGUKkYCTKXC4+sGauhm8pVCAIpcQ3Z4DdAnWEWl6WCa8CTw9cimugE5XoCafyBnsbIuAd9nGkBAAgxZBfkQ9Q3yFvvhrK8kWQKOw+8DXOwGw1h6Dv+UFMxbIO6P90IDebCdChNRgbXISHHC6iYQTcYeoaSqUoJ95bO/IrCSgN0x4DHLeRA5ZiMcb+3uhAZC/Kxg90TRBYYWOMt5AjtiWg0U/JMyFnGsvrB5zAAHYvisaITQx8Bb9ZOwQKq3j4I5izWZSwOZkCwgT8QISV8D6whEPC+kMkZIH4JUHm+FBTKzhEUkoFCQNY0yi0QspqaxkH7Xo7g0IDSsDPKEGYzRrD1gRdnXJkL2sRIWyN4WNoejeX85pxmjwWDWl/yj6IEG5i1BxL4KQ3PE4WR1jvNDku8tY2kfrIYDsnhrNDBYx94HY9kPXqV9P9zfQRNoThcNy44gA2s+xscBAwVcLs7VwgFZrqTKgbKOmkiwcfi3x7vZFR5Zi+dZjx2BxYEWBl9T0Hy3ZQSAVMMDKaQClRa2YYz1ibLqYszmUX5iuHVNTOTRfNuOyBlNNaBjAjywOMI7xInnA+QBABnxpC+L7L18IluvoLPJh3weP3gSrw+wXuP/4R9J/GIenSUNUkjUC9adFiT8t49j/ImiCu7pLTc7cjjqA0TRM4ptEF35eQVNDL9MJl+7rQ8AJu8SroPPz6kCIEGKfzIltNaa6a/7AMGhhPaoiaSNqVYmhj1A2AuDmTj7Y9j/wppYaUTHXnWTT1GAVG+XCqmvXmWEeawrBYuJMVdrrduHiRGAAtazZxhK66MapoMvqpl54sR4BMGfolj2wbm7flqLlQVTySSyiqSL8y3Vv0Bq2FTBHOb8UQVbRTCoIG6KzlmhZruwF6iu7tBAapU1XzsiYpWpI1YSWk05iwiMobaHbn8FXkomJ5w/ju07rZOQUcL6EHtwbs4w/62wulULDWTvdrEwuumveukMJkwLX7ETXtS4etWDKi+dooKR4BAzMQ/W0cB7lXFxFKZ+XS1GCKwGa+trZV+nkUSCtqiYL3kKx/ubN7wZDDl94vug1LFxxwIvu5IkTW0/iJRF2R9Y9U9qsTLXYrfYvLeQX7127X0oJJg5DSx/4K9gt1pr18JT1PStve7uWoQE3X5ltC2rhT1TUVIQMoM9WZWdbOWjrG68efPZ41tDGEmebdHtgqwyxGnZaNNbmzmqXsTrVv+95Zkw3u9+32/7c7NtGWwJ6xKG0zKGLCmtqgCLh+eTvn5/7c2bm0CSoSHXt3x0CIooqAjbEk3gtPZ4kR/JpXMpqlyGpNDB/nEgkKWF7Yen21RhfKo9lQh5UAYvzlH6SMxP+Oncz2/evPHmLWCvCVsPswqLZV4AJ9OO3pxVF57fnExDg1KqtHDPH0j1ZKCrTkrr6a9f+DZdpcoySa4xDg52pcf79++HCEXe38RA3nx+b1IHLxdD71ReItMwIchQe10Elf/yDZIp9YHrfkD2Du8C4NwIdGXwK22uO7a+IsPootysO2EcH9qZ5v3nGzdufMbrBuB4cw2+xq/c2Hzv5oA1kbC6mcxg0QbeMc3V7UJfIZuS2r7uCWRxr0JaJrxK65KASYLj7JZv5z+66tzP1964rJufXZnsY94hJqBEeMgGMJpXjIVj9xS1tr2/6AFkqUgaNqY82zXAtWNaFTwa9rAeV2+0Qbn22UtWXqJmpwMwlcDQjCp6FrVYkplfW3AHUj0oQpIi51cAxfrRUU/ztYMYys0WKNduXPVxvXhHoKBBEWjDz5DxX4mcrM+4Aak9JvTwL+TiqFp3EIz1dXbff77p4KpNXyeyKSb4I7h4UC2LB4kv73a7ALmyRYWpf2bsCBfWRICzu2nT5OZ73zd+SNoEECFVGZwYI31pvyy3A1kvETkPSiXjGKSZOOdfPvN5uCFi1RuMddXVDbbf+mF4xXZUQtVgSTPE6XrtDJC5wW0qXB1X0qVgi97gLYeQBJDkdTIfrV6N0tDBWayeBVKZxgBz0TodvDRWi1XHKpfor2tXA948HDHBR+o+a/3VFiBXSOKamoz0m4IJctNSuVdB6D8/CyJJNCBmueTuUguQWgU07zcUkSAfAgly82pDFQeSJOlGEiR651Sy8MyrWy1AlqD66Zm4nkeuCAMJ8tlhyK/euPk5KI6fcNMtmuhPEqtlKGZJCJF0L4u+oWaMDakRidi/Jyhh8r41xr16NYi3hvm2ZCD2JeL+yXmr1zHWPLPmbQozpDQo4FBEUuZDEyTqGjojJayyoUPN17udyCTJwpUmEJMgnupPMjIaR5LNTDMjtzL8+ryBfLDNOxJ1VYAGBJrTfKpA4HKVzUNBAGRvqaucokZ9WmhYpOh4a+Iax/yXtTnr9bkvm7egKwrzAGZpUfHRQJtQVBztaQBZXhjFNiTAFhpQK0SSbCuRfPL8gdh+iqhxqi4q86H6U0q3LSCLQTaEJc1XautrFwKkYd1ZFM4STJkdglUCZGZrzbeFhjU01ZC5Vvf9QjjLRW+F6xBcJkD2SDjlUxABpQXNV5A/QaHdk86EJKKbYkZYpR8ESDcYQ58UKbuBdRbHkWyTYAefF8FZ0d2UxCY5o7NeBSCHIdxepIhEBTOXDYhpSio1DKQbOGs0uHWcxQIo2azFTlwOIIlP4HCVDjCQ9XqE9kU2XIzbOZCJqO3N+RycDalciVUXqLDdcqwi21Z2/rIAIf0p5eJc7HYRBheECUQkQ6AZJazH2Kn+bdhAUqDn51k2BG+lsJsSq9RD9WEiGbsnNKfzNpAPFwoE6QLWlIKmCb9qGTGIItRCLdYF+uur/wkq7MJB/YXWmkkadNFANGK7TE/Vr02QnGMo3RqMkZS1r/JlxQwHvRXOVvcLB6JotCZD2cfQGdoPCOl86tkbjC2VgrKLCkd6RVjd2Th9UTLyvgnEgEBITfC/0n5tNsRHwf5v7AU5gTQZAARzlfKXABlm7fQZqfkwGf9uRxK3l3bARVkIalYmLgrDCZyze/rn1e+Qr/qFZm1BgP98RQSGFFDUrUUAYraP+7diKoZKalUZkT8fy+5RhnNYdl7noLFOUv0ixEQWVNXpEolHapVQDf1oIw41RDEgYh8aGhoKg2Mo+THp8l6niyLJYqC/8QnMenGGAKnCyQTqz8BAAIe7G2pTAbs5jfi53sXw62OOZT3r0BD++lmj1vbxYywW+/5xzBdIqLQpBlLa2jMjxB93gSTZcE4K6xOPDL1OxuT772DFYh+tlbSohJ/+XXPdvy/9S4y9a2MxZzzCosAwcRIqV10zjZj9ECQ/zDwQZ2arPUIEHMYjJImyHLPXu3cfobMDUMQwSrxEUZT+RTYEI0m2yvyHZoSIxIymxWUl0IdPLdh5repRuLOsosY0+2jaatKY7WNWrohlX70ijYyK8i9RBupgEJLS1p2txGLJMXefkfTTQSQnBnXPFrttIHPFoAQ2IYRIDkgYHkIy9vrjd7cyEw5jxFhMQq7e36v7sZiTvWwRgY5JVZYzjF+D4wpxs04WmxTpL5VTZZ8MNoL2P2ydfjV06NWzXky24ngXE195OZyeJxFegaCMjbXltTI06c5mRcGjRG3rXojXG0BqJkm8NTA5jmeAhVWahTdnppGoK++tk3z441+Y85INmth23fbrmv0D7hKyur7szMaTKPEb7537FYAg2EMxmqR2mMShsaFYzFssWT8grKhx8aGx1nS8aNfAsauS8ctpnS63ACEFXe+zSHB0SoNjRqhxHrLFAR5Lxr774MBA5FZ7JEkiWbJs6PHf39JcjCBpFkgwEOv3obgXEB5sSN0+cmXVR8wcnZeUQDsp6YDn5Uz2bGkaG4k/OE4zQK3CUvBCLQenEzYQJMn/yaia9rtAlplkgk6zGMhJsz6S5ezWe+FMYrA167A9+KAVyEyXb5JO0hiu0eoi2b5oftgEEhNIy9BbDj/b75qmqWo8oxuyqDTQWECwaRAawZK94AcZ+s67sSFHxYpVsVJhicfl8Ira89ez62fr7HPkzIh3hYS1c+I6ZzMX8YCx+bjDNJfjAd8K6n/M3hsTiKRaPVJuK54cciYe7nO0YChIUq2OTa98VrWtYaBaWQsOec0ejmZUAqZk7PUfb+m37U9GsDwRyDkTAILg/A/5zlvnIv+CfGys1T0hh5SB8TLIsyWb2j1o70Wpdm9TwdkU+P3OoAQrrrEYdrffui2TPFwGK205gTJADvs7Z2j4Voh/TNp9wAg6vYENGc8qD7HpR45WFEfnQw+c2Rvf9MfBtHYWo5evX8e9+cXc7N9FRYYTFcxbj3dx/45j9/GlnaDRTRuoyJ5+fDZXpqiHPe79WnMkB/zNz3e8D06K6uzVnXj9IXaHM/nI4zEZ+n8MI8OZ7GeRqYmBE+7EYx+x9m2qLKwjA6YQkMxJ6pdjj8azWldANhs7W5rBOXtqSOiefPc9fgerUsIyrQrpLfmPEX5/Yn0NXHQnHv/jO1ngHWPnGCvwZ3awbvKv7znRLCm4Pa95tQJWD0xPxet0DvZ78E5hK6844gQclmATkIy9i33//scfcXOpd+5gZG8tJfWWsf+kOfW76deTIGWIhFs4+GptFoDTld7nRNHkeKFAHf0y49Oc2U1o4hGZYBzM/yoKZnZVdeT+oBOwGQ1CCPUsiYMoHADGMc+dWcL3pOOdQ81YtyUyhONKbidTVtjECgx4KlNrxRPfvt9lkoig0m7xJm/Vrcylsu4NKc0HxM/6LHanVT8J74bGgnPX0CTv1uSPNr6OwMit1emu/sF7/g3Myz+66mSYFnIr62J1yAkattq9stik2srwmTDPgQWQWPoWMxr33TUzgRlrYqXFVDESdrGERy46N3e/v//kN7dbAc72/c4MPJ2lChjKl6kzU9qQjNWhRHrKAdYGG9zWODb2nWuqMzr+eiyoBPpIj+uEGqBYlLZW7DL1f+FnPuz3PD36FSYmpn3yEQojSMENmkNDH+80gNCM8G4ssCtIJg0WjKZDg2b8rJiw6fKs1wg3FyD7fXtz/b3UuE93I2vQDiA+SF7HBdvR/Z4cCyxJPzIyqsBZoigo7cxVbkSE4U4rzD1P+c4/Us5U3bE5+eCaAx1KNlNASbd3fEg2D1uxogSFSiUryr3Y2RfajQmfLqz2LEYAclDyrv2gDVkEY7Ki9zZ3jJ/wKDM4U3Vu55OGmx3+CVkQ5Gb41Sy8tmQWqdJ6+PPsc8WCZ2yiZMCJpQ0p0xIp+J4g8WwvbTnHB9NrmICBCVNYdt3HT7rOfDicLXiN28EhDw054Ixw1sNGL5NRs/HJl47fgHFwgqfb3vROCsXq7ZBA+gZGPVOoEg5CFeMJnLA6O8xkhRxPGopQC2mZmWhgrQt+gyb5u4uFroPQFMGhyagXEJh4ImK1YnZLs61p7onQ5xA/YK5ybASvKI90EcIvOIPmzV75P6nC7K3lkECulLyBQDRtwNQKSJ8poiG3DDBj0XC4AtCH4WFneoI1tEzTkjzxHlwDFJldvxf2ZGjJJztvDpQidl0mbW6Zs6cqA6lCqNGCX2eaYg4zXzyHLkAkMru+HwXIlE/UrgEZWOxLPFG1tjwzi+Cga9ITBBxubT0JDkdBGXv2QkJRGZ336f0LDwRYyzunzcq60gAkIsUQrGktjnc4jrM3EXzwOtCOuZXRxUxzsgCSfdO94VnrxTYVPAdeaRx5xJIvtCsa3h4wkEw2zuQPD7uMGGARpoBB0r1c8AA0mEQXXtiPn4LLGFAtkq2qMQw20lnezQyzKwhhPGTl8+5TH5AuSPOKJXtc4LkRmDBQcr15yRXI9igVeHBBpzlCM4MBGyYJ0Qd/NQgrJ6yz5Zwbac+4vxjI7tJeSCD7JDM0GQgEmZICKQ8yXCviQqLMJ+bj5s9jEKIciCT/rQwtTaGdxqWucuBYKpGkOu6bOFg5cDNdmJMDNSuSQoUoYIED7jJ8f+RLpEk1UPgpB57BANmAJloi8SxmMGLqkRgODwkyOThBh8gsNJgsAAYkwGeEs25rhxFHt40HTGlEGRgEIEgNiwYHB0WNURXEBykfVtYMqyapK7qVyYChNQFTAknDRgQ33qpgBbUHQhrUql+hOM2pHDmKjl3K+Ia5xe0/IYlEu8HUQBlKHyrDqDotEL2yIQhB06DISbfHkcYbFkM1bOqabLeJ6eSwJQbG/grN54qeAVrx8y19XzjiJZM/kQppPpXZwOwlWDadFYPUBQu9WauH1QhAas9DjQVsDK2BzZVN3yVhTf/SSVMPchwpZDNmdYqk84Ea2Gc3WPEtvBKyx5cM0+uONst0LSihfSaGZzKGVXEg1FEEcoBlo5lsAeWgipKYIXYnIT+hdZXJsOa01nCqOwup67v3ok2X7YIKXejDfBLDcPgBFYvNjEQcO4EazzpOWosmACIfBvmLYxgy00UIYdEJQb6Sg0gPogE5rEcZkys6WiiBIhIMZeUQjsI2mgRpZHewfLDW0QHykqhmQrVPE1Ev1aqRgMzNkcHFYUmCt7vpuwqMpmITIzCS0UxNoeY4UMP0CdCdxvi6kD3L5GBC8UUno6RDDp3EVN/Q7RQqBoIZTVEERncc6wUgr1qAkGEYEcbvoW/lFFVfjzwTe6kU6chrc1ehY5f+Lzw5FoJHDkegIfcma5EIU4twpBY6rgvF2l7kufGV0D3zZ3ZOIKNm5vXWMh0I+zxp9WQaWUpX39+/L/ZWBwPwibiPR7+RAHGk8QarpZZpcoioX0XSGbqjOeVk2m/poAMgL/xPi3pvnS6QkFumHSOxE2amh+G4RiIp6m8lDQLP5zq57eJgOnSv4xmPijx/Fkt767PIcMJJ0zuKwLJUoy82OpCZnlT0kesO8b9vZNv7naTOLgGxuhdrHQGp3i5RIY+WXPiaJBLyojMgg+Zhn9zU333jBf/FvEGpWO30siES8lLjX6f+xkthWGTBKMxudX6P1aF10c+3ScT+PTDyn3LW9XKr/ndA+gN5UaTK5vVL470B17N2DtTnKqsp+1au1a6tmZnOgcw8OOyaDbi+2JLGbOeCPOneWjY18m3culps9vH6zsxP3vU2M/DQvms9l57MuvIY+jreuXIbGU+fpTaPmte9pepdPSfB92+GuX2ve+FounF94Cimy9lJMivZbxQ11TkQitxbZh/4R9nJrznzdnrsJ04fLdw+r2sEF+/d66+U7HvXUuPfRiazeZLKnccfO/KNSqVHO79eKV2qPF4jdyJ++jQykv6zeS09Nh2VpeP9mfMCAiZluW+gsjtKWfdhpkbHc3+mycqNU4Wjrf56xx4AP146XO6ZxRRImVdFkpsvC1Rqdrfyy/XFsJe6RrgztPZj4CncGEpRZfOKT7zgE3/twgr+qGPe+kLVuwf3eh4eQb6jDBuVGq3PdhV/6emOcqFzxFtcq4cL26fT0yn7ds+1h9vrc1DkKnRIEpQrmM55d2X79OFp6fThw9O7C7duR72PNiKQ2uJ+X99S//Ou4m6pVNotVvp3+parcHKj3NmdV+wIFM5niCT2/fbb4pWZvt/6jveXI9+u3dFNx9W95R8716/DxcQWC+/dqhdGO9HAUIJaOI9rm8/pfvblwa4CNT4ZOQr7Ml6gSoeDlwfI4ODJNFVIRbyAmgfvfLUy81cAuXIl5C8ikXEq0tXmqBeS0ne79/4CIFdCAxlc6iEzNyfDEoWdIqM8j3YWBy8XkMEZOPVbTqVD3ZLKZkeIL3U0cE6sfW4yQsamkSt4w/AXMmGslq4PXkIgM7X+kuVZZn3DE4sa1FrXzvFlBIJpcn2hXjCDl0mv8BiHrua1rNTu+o/z++jzBYINyq1i3fb324WFz06mTed2tPT0x3l+8HkDwd5KT8m+5Lk1a8HmGyio1dXtw/P92PMHUt3f2yo1r91ujHFmNyfT9uXr9cfXjxcvOxCQ+h0c6lsPPY7j4zyOvtJ2vJTaXej7sX/en3khQADLyVMz1MfxxWhv8+741GzXQPdFfOBFAYEkeE9pmmpda6d3D2sX82kXCGRxf/l2pWutiaJU2To+XnzxjwNCwFw/qezOAkcVIQCfubhPumAgoI67T7aLAycHLy72Yy4eCF73qscX/hn/D3F6sAFQYF7OAAAAAElFTkSuQmCC";
+
+
+        // ===== Pendaftaran Regu =====
+        function lombaBerjalan() { return state.phase === 'final' || state.teams.some(t => t.eliminated || (t.skor || 0) > 0 || t.members.some(m => !m)); }
+        function bukaReg() { renderReg(); document.getElementById('reg-modal').style.display = 'flex'; }
+        function renderReg() {
+            const lock = lombaBerjalan();
+            document.getElementById('reg-info').innerHTML = lock
+                ? '<div class="jp-kunci" style="border-color:var(--merah-gagal)">🔒 Lomba sudah berjalan: nama regu, asal, dan nama anggota masih bisa diubah, tetapi tambah/hapus regu dan impor dikunci. Gunakan <b>Reset Data</b> untuk memulai ulang.</div>'
+                : `<div class="jp-kunci">Jumlah regu terdaftar: <b>${state.teams.length}</b> (minimal 5). Tambah/hapus regu atau impor CSV masih bisa dilakukan sebelum lomba dimulai.</div>`;
+            document.getElementById('reg-info').innerHTML += `<div style="margin-top:.4rem">Aturan gugur: regu gugur jika <input type="number" min="1" max="${ANGGOTA}" value="${gugurN()}" style="width:3.5rem" onchange="setGugur(this.value)" ${lock ? 'disabled' : ''}> dari ${ANGGOTA} anggota salah.</div>`;
+            ['reg-add', 'reg-imp'].forEach(id => { const e = document.getElementById(id); e.style.opacity = lock ? .4 : 1; e.style.pointerEvents = lock ? 'none' : 'auto'; });
+            document.getElementById('reg-list').innerHTML = '<div class="reg-row reg-head"><span>No</span><span>Nama Regu</span><span>Asal / Pangkalan</span>' + ANG.map(j => `<span>Anggota ${j + 1}</span>`).join('') + '<span></span></div>' +
+                state.teams.map((t, i) => {
+                    const a = t.anggota || [];
+                    return `<div class="reg-row"><b>${i + 1}</b>
+                        <input value="${esc(t.name)}" oninput="editReg(${i},'name',this.value)" placeholder="Regu ${i + 1}">
+                        <input value="${esc(t.asal || '')}" oninput="editReg(${i},'asal',this.value)" placeholder="Pangkalan / sekolah">
+                        ${ANG.map(j => `<input value="${esc(a[j] || '')}" oninput="editReg(${i},'a',this.value,${j})" placeholder="Nama">`).join('')}
+                        <button class="sk-btn" ${lock ? 'disabled' : ''} onclick="hapusReg(${i})">🗑</button></div>`;
+                }).join('');
+        }
+        function editReg(i, k, v, j) {
+            const t = state.teams[i];
+            if (k === 'name') t.name = v; else if (k === 'asal') t.asal = v;
+            else { t.anggota = t.anggota || Array(ANGGOTA).fill(''); t.anggota[j] = v; }
+            saveData();
+        }
+        function regBaru(n) { return { id: Math.max(0, ...state.teams.map(t => t.id)) + 1, name: 'Regu ' + n, asal: '', anggota: Array(ANGGOTA).fill(''), members: Array(ANGGOTA).fill(true), eliminated: false }; }
+        function tambahReg() { if (lombaBerjalan()) return; state.teams.push(regBaru(state.teams.length + 1)); state.history = []; saveData(); renderReg(); }
+        function hapusReg(i) {
+            if (lombaBerjalan()) return;
+            if (state.teams.length <= 5) { toast('Minimal 5 regu (target Grand Final)'); return; }
+            state.teams.splice(i, 1); state.history = []; saveData(); renderReg();
+        }
+        function tutupReg() {
+            state.teams.forEach((t, i) => { if (!String(t.name).trim()) t.name = 'Regu ' + (i + 1); });
+            document.getElementById('reg-modal').style.display = 'none';
+            saveData(); buildCover(); render();
+        }
+        function eksporReg() {
+            const q = s => '"' + String(s || '').replace(/"/g, '""') + '"';
+            const rows = state.teams.map(t => [t.name, t.asal || ''].concat(ANG.map(j => (t.anggota || [])[j] || '')).map(q).join(';'));
+            const csv = 'nama_regu;asal;' + ANG.map(j => 'anggota_' + (j + 1)).join(';') + '\n' + rows.join('\n');
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(new Blob(['\uFEFF' + csv], { type: 'text/csv' }));
+            a.download = 'pendaftaran_regu.csv'; a.click();
+        }
+        function imporReg(inp) {
+            const f = inp.files[0]; if (!f || lombaBerjalan()) return;
+            const rd = new FileReader();
+            rd.onload = () => {
+                const lines = rd.result.replace(/^\uFEFF/, '').split(/\r?\n/).filter(l => l.trim());
+                if (!lines.length) return;
+                const d = lines[0].includes(';') ? ';' : ',';
+                const rows = lines.map(l => splitCSV(l, d));
+                if (/^nama/i.test(rows[0][0])) rows.shift();
+                const baru = rows.filter(r => r[0]).map((r, i) => Object.assign(regBaru(i + 1), { id: i + 1, name: r[0], asal: r[1] || '', anggota: ANG.map(j => r[2 + j] || '') }));
+                if (baru.length < 5) { toast('Minimal 5 regu di file CSV'); return; }
+                if (!confirm('Ganti seluruh daftar regu dengan ' + baru.length + ' regu dari file ini?')) return;
+                state.teams = baru; state.history = []; saveData(); renderReg(); toast('✅ ' + baru.length + ' regu diimpor');
+                inp.value = '';
+            };
+            rd.readAsText(f);
+        }
+
+
+        // ===== Layar Peserta (penyisihan): ketik jawaban -> Cek Jawaban; waktu habis = terkunci & dinilai otomatis =====
+        let pz = { armed: '', busy: false, retryAt: 0 };
+        function pzId() { try { return JSON.parse(sessionStorage.getItem('lcc_pid')); } catch (e) { return null; } }
+        function pzDone(k) { try { return (JSON.parse(sessionStorage.getItem('lcc_pz_done')) || {})[k] || null; } catch (e) { return null; } }
+        function pzSimpan(k, r) { let d = {}; try { d = JSON.parse(sessionStorage.getItem('lcc_pz_done')) || {}; } catch (e) {} d[k] = r; sessionStorage.setItem('lcc_pz_done', JSON.stringify(d)); }
+        function pzPilihRegu(id) { window._pzSel = id; window._pzKey = ''; renderBel(); }
+        function pzPilihNo(no) { sessionStorage.setItem('lcc_pid', JSON.stringify({ regu: window._pzSel, no })); window._pzKey = ''; renderBel(); }
+        function pzGanti() { sessionStorage.removeItem('lcc_pid'); sessionStorage.removeItem('lcc_pz_done'); window._pzSel = null; window._pzKey = ''; renderBel(); }
+        function pzPilih() {
+            const sel = window._pzSel && tById(window._pzSel);
+            if (!sel) return '<div class="pn-q" style="font-size:1.6rem">Pilih Regu Anda</div><div class="jp-btns" style="justify-content:center">' + (state.teams || []).map(t => `<button class="btn btn-primary" onclick="pzPilihRegu(${t.id})">${esc(t.name)}</button>`).join('') + '</div>';
+            return `<div class="pn-q" style="font-size:1.6rem">${esc(sel.name)}<br>Pilih Nomor Peserta Anda</div><div class="jp-btns" style="justify-content:center">` +
+                ANG.map(j => j + 1).map(n => `<button class="btn btn-primary" onclick="pzPilihNo(${n})">${n}${(sel.anggota || [])[n - 1] ? ' · ' + esc(sel.anggota[n - 1]) : ''}</button>`).join('') +
+                '</div><div style="text-align:center;margin-top:.8rem"><a href="#" onclick="pzGanti();return false">← pilih regu lain</a></div>';
+        }
+        function pzAktif(me) { const t = me && tById(me.regu); return !!(t && !t.eliminated && t.members[me.no - 1]); }
+        function pzBody(L, me, qi, aktif, done) {
+            if (state.phase !== 'penyisihan') return `<div class="pn-q">${state.phase === 'cover' ? 'Lomba belum dimulai…' : 'Babak penyisihan telah selesai'}</div>`;
+            if (!me) return pzPilih();
+            const t = tById(me.regu), nm = ((t && t.anggota) || [])[me.no - 1] || '';
+            const head = `<div class="buzz" style="background:var(--coklat-tua);font-size:1.1rem">${esc(t ? t.name : '?')} · Peserta no. ${me.no}${nm ? ' (' + esc(nm) + ')' : ''} <a href="#" style="color:var(--kuning-pramuka);margin-left:1rem" onclick="pzGanti();return false">ganti</a></div>`;
+            if (!L.tampil) return head + (aktif ? '' : '<div class="buzz" style="background:var(--merah-gagal)">Nomor peserta Anda sudah gugur</div>') + '<div class="pn-q">Menunggu juri menampilkan soal…</div>';
+            const q = `<div class="pn-q">${esc(L.t)}</div>`;
+            if (done) return head + q + `<div class="feedback ${done.ok ? 'benar' : 'salah'}" style="font-size:2rem;display:block">${done.ok ? '✅ JAWABAN BENAR!' : '❌ JAWABAN SALAH'}</div>`;
+            if (!aktif) return head + q + '<div class="buzz" style="background:var(--merah-gagal)">Nomor peserta Anda (atau regu Anda) sudah gugur. Pantau layar penonton.</div>';
+            return head + q + `<div id="pz-wait" class="buzz" style="background:#777">Menunggu juri memulai waktu…</div>
+                <div class="jp-btns" style="justify-content:center"><input id="pz-in" placeholder="Ketik jawaban…" autocomplete="off" disabled style="padding:.9rem;font-size:1.3rem;border:3px solid var(--kuning-pramuka);border-radius:10px;min-width:260px" onkeydown="if(event.key==='Enter')pzKirim()">
+                <button id="pz-btn" class="btn btn-primary" disabled onclick="pzKirim()">Cek Jawaban</button></div>`;
+        }
+        function renderPeserta(v) {
+            const L = getLive(), me = pzId(), qi = L.qi || 0, aktif = pzAktif(me);
+            const dk = me ? me.regu + '|' + me.no + '|' + qi : '', done = (me && L.tampil && state.phase === 'penyisihan') ? pzDone(dk) : null;
+            const myTurn = !!(me && L.tampil && state.phase === 'penyisihan' && aktif && !done);
+            const key = [state.phase, L.tampil, qi, L.t, me && me.regu, me && me.no, window._pzSel, aktif, done ? done.ok : '-'].join('|');
+            const menu = '<div style="text-align:center;margin-top:1rem"><a href="#" style="color:#888" onclick="gantiPeran();return false">↩ Menu peran</a></div>';
+            if (window._pzKey !== key || !document.getElementById('pz-timer')) {
+                window._pzKey = key;
+                v.innerHTML = '<div id="pz-timer"></div>' + pzBody(L, me, qi, aktif, done) + menu;
+            }
+            const pct = L.total ? L.left / L.total * 100 : 0, col = pct > 50 ? 'var(--hijau-sukses)' : pct > 25 ? 'var(--kuning-pramuka)' : 'var(--merah-gagal)';
+            document.getElementById('pz-timer').innerHTML = L.run && !L.gfT ? `<div class="timer-row"><div class="timer"><div class="timer-fill" style="width:${pct}%;background:${col};transition:none"></div></div><div class="timer-text">${fmtT(L.left)}</div></div>` : '';
+            if (myTurn) {
+                const jalan = !!L.run && L.left > 0;
+                if (L.run) pz.armed = dk;
+                if ((L.run && L.left <= 0) || (!L.run && pz.armed === dk)) pzKirim();       // waktu habis: kunci & nilai otomatis
+                const inp = document.getElementById('pz-in'), btn = document.getElementById('pz-btn'), w = document.getElementById('pz-wait');
+                if (inp && !pz.busy) { inp.disabled = !jalan; btn.disabled = !jalan; w.style.display = jalan ? 'none' : 'block'; }
+            }
+        }
+        async function pzKirim() {
+            const L = getLive(), me = pzId(), qi = L.qi || 0;
+            if (!me || pz.busy || Date.now() < pz.retryAt) return;
+            const dk = me.regu + '|' + me.no + '|' + qi; if (pzDone(dk)) return;
+            pz.busy = true;
+            const inp = document.getElementById('pz-in'), ans = inp ? inp.value : '';
+            if (inp) { inp.disabled = true; document.getElementById('pz-btn').disabled = true; }
+            let ok = false, sent = true;
+            if (REMOTE) {
+                let r = null; for (let i = 0; i < 3 && !(r && r.ok); i++) r = await api('jawab', { regu: me.regu, no: me.no, qi, ans });
+                if (r && r.ok) ok = !!r.benar; else if (r && r.err && /gugur/.test(r.err)) ok = false; else sent = false;
+            } else {
+                ok = !!ans.trim() && !!bankSoal[qi] && cocok(ans, bankSoal[qi]);
+                try { localStorage.setItem('lcc_jawab', JSON.stringify({ regu: me.regu, no: me.no, qi, ans, ok, ts: Date.now() })); } catch (e) {}
+            }
+            pz.busy = false;
+            if (!sent) { pz.retryAt = Date.now() + 3000; toast('Gagal mengirim jawaban, mencoba lagi…'); return; }
+            pzSimpan(dk, { ok }); window._pzKey = ''; renderBel();
+        }
+
+        // ===== Juri menerima jawaban peserta & memperbarui status nomor peserta =====
+        function terapkanJawaban(m) {
+            if (state.phase !== 'penyisihan') return;
+            state.jawab = state.jawab || {};
+            const key = m.regu + '|' + m.qi + '|' + m.no, t = tById(m.regu);
+            if (!t || state.jawab[key] !== undefined || t.eliminated || t.members[m.no - 1] === false) return;   // peserta/regu yang sudah gugur tidak dihitung lagi
+            const was = t.eliminated;
+            state.jawab[key] = m.ok ? 1 : 0;
+            if (!m.ok) { t.members[m.no - 1] = false; t.eliminated = t.members.filter(x => !x).length >= gugurN(); }
+            cloudLog('Jawaban Peserta', t.name + ' no ' + m.no + ' soal ' + (m.qi + 1) + ': ' + (m.ok ? 'benar' : 'salah'));
+            if (!m.ok) sfx(t.eliminated && !was ? 'gugur' : 'salah');
+            saveData(); render();
+        }
+        async function jawabPollCloud() {
+            if (!GAS_AKTIF || PENONTON || BEL || PICK || state.phase !== 'penyisihan') return;
+            const r = await api('jawabPoll');
+            if (!r || !r.ok || !r.items || !r.items.length) return;
+            r.items.forEach(terapkanJawaban);
+            api('jawabClear', { rows: r.items.map(x => x.row) });
+        }
+        function tutupSoal() {
+            const qi = state.currentSoalIndex || 0; state.jawab = state.jawab || {};
+            const pend = [];
+            state.teams.forEach(t => { if (!t.eliminated) t.members.forEach((m, i) => { if (m && state.jawab[t.id + '|' + qi + '|' + (i + 1)] === undefined) pend.push({ regu: t.id, no: i + 1, qi, ok: false }); }); });
+            if (!pend.length) { toast('Semua peserta aktif sudah menjawab'); return; }
+            if (!confirm(pend.length + ' peserta aktif belum menjawab soal ini. Nyatakan salah?')) return;
+            stopTimer(); pushHistory(); pend.forEach(terapkanJawaban); toast('⛔ Soal ditutup (bisa dibatalkan dengan Undo)');
+        }
+        window.addEventListener('storage', e => {
+            if (PENONTON || BEL || PICK || e.key !== 'lcc_jawab' || !e.newValue) return;
+            try { terapkanJawaban(JSON.parse(e.newValue)); } catch (x) {}
+        });
+
+
+        // ===== Layar Regu (Grand Final): 1 perangkat per regu, hanya regu yang lolos =====
+        const MENU_LINK = '<div style="text-align:center;margin-top:1rem"><a href="#" style="color:#888" onclick="gantiPeran();return false">↩ Menu peran</a></div>';
+        function reguId() { return Number(sessionStorage.getItem('lcc_regu')) || null; }
+        function pilihRegu(id) { sessionStorage.setItem('lcc_regu', id); window._belSemua = false; renderBel(); }
+        function gantiRegu() { sessionStorage.removeItem('lcc_regu'); window._belSemua = false; renderBel(); }
+        function belSemua() { window._belSemua = true; renderBel(); }
+        function renderRegu(v) {
+            if (state.phase !== 'final' || !(state.teams || []).length) { v.innerHTML = '<div class="pn-q">Babak Grand Final belum dimulai…</div>' + MENU_LINK; return; }
+            const t = tById(reguId());
+            if (!t) {
+                v.innerHTML = '<div class="pn-q" style="font-size:1.6rem">Pilih Regu Anda<br><small>Hanya regu yang lolos ke Grand Final</small></div><div class="jp-btns" style="justify-content:center">' +
+                    tim().map(x => `<button class="btn btn-sm" style="background:${warna(x.id)};color:#fff;font-size:1.2rem;padding:.9rem 1.4rem" onclick="pilihRegu(${x.id})">${esc(x.name)}</button>`).join('') +
+                    '</div><div style="text-align:center;margin-top:1rem"><a href="#" style="color:#888" onclick="belSemua();return false">Mode 1 layar untuk semua regu</a></div>' + MENU_LINK;
+                return;
+            }
+            if (t.eliminated) { v.innerHTML = `<div class="pn-q">Regu <b>${esc(t.name)}</b> tidak lolos ke Babak Grand Final</div><div style="text-align:center"><a href="#" onclick="gantiRegu();return false">pilih regu lain</a></div>` + MENU_LINK; return; }
+            const s = G().s1, b = s.buzz ? tById(s.buzz) : null;
+            const open = G().sesi === 1 && s.on && !s.buzz && Date.now() > belKunci && !s.blk.includes(t.id);
+            const info = b ? (b.id === t.id ? '🔔 REGU ANDA yang menjawab!' : '🔔 ' + esc(b.name) + ' menjawab') : open ? 'BEL DIBUKA — tekan tombol!'
+                : G().sesi !== 1 ? 'Sesi ' + G().sesi + ' sedang berlangsung (bel dipakai di Sesi 1)' : s.blk.includes(t.id) ? 'Regu Anda sudah mencoba di soal ini' : 'Menunggu bel dibuka…';
+            v.innerHTML = `<div class="buzz" style="background:${warna(t.id)}">${esc(t.name)}${t.asal ? ' · ' + esc(t.asal) : ''} · ⭐ ${t.gf || 0}</div>
+                <div class="pn-q" style="font-size:2rem">${info}</div>
+                <button class="bel-btn" style="background:${warna(t.id)};width:100%;min-height:50vh" ${open ? '' : 'disabled'} onclick="belTekan(${t.id})">🔔<br>${esc(t.name)}</button>
+                <div style="text-align:center;margin-top:1rem"><a href="#" style="color:#888" onclick="gantiRegu();return false">ganti regu</a> · <a href="#" style="color:#888" onclick="gantiPeran();return false">↩ Menu peran</a></div>`;
+        }
+        document.addEventListener('keydown', e => {
+            if (!MODE_REGU || window._belSemua || state.phase !== 'final' || /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+            if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); if (reguId()) belTekan(reguId()); }
+        });
+
         // Eksekusi Awal
         document.getElementById('input-jawaban').addEventListener('keydown', e => { if (e.key === 'Enter') cekJawaban(); });
         document.addEventListener('keydown', e => {
             if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && state.viewMode === 'juri') { e.preventDefault(); undo(); }
         });
-        if (PENONTON) { initPenonton(); } else if (BEL) { initBel(); } else { buildCover(); updateMuteUI(); initApp(); updateTimerUI(); cloudInit(); setInterval(belPollCloud, 1500); }
+        initBrand();
+        if (PICK) { initPick(); } else if (PENONTON) { initPenonton(); } else if (BEL) { initBel(); } else { buildCover(); updateMuteUI(); initApp(); if (state.phase === 'cover') mulaiLomba(); aturBabakJuri(); updateTimerUI(); cloudInit(); setInterval(belPollCloud, 1500); setInterval(jawabPollCloud, 1500); }
     </script>
+<footer id="app-foot">
+    <div>© 2026 · Dikembangkan oleh <b>J D Ace | Sigma04, an1mo</b></div>
+    <div>LCC Kepanduan · Kemah Kerja Madrasah Season 5 · MAN 1 Boalemo</div>
+    <small>Dibangun dengan HTML, Google Apps Script &amp; Google Sheets · Kurikulum Merdeka berbasis cinta, dengan literasi dan numerasi</small>
+</footer>
 </body>
 </html>
