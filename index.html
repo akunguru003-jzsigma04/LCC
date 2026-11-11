@@ -445,7 +445,7 @@
 
     <div id="reg-modal" class="modal" style="display:none"><div class="modal-box" style="max-width:1250px">
         <h2>📝 Pendaftaran Regu — Sistem Gugur</h2>
-        <small>Setiap regu terdiri dari 3 anggota. Aturan gugur dapat diatur di bawah; 5 regu terbaik lolos ke Grand Final. Data tersimpan otomatis.</small>
+        <small>Setiap regu terdiri dari 3 anggota. Jumlah regu bebas (bisa dimulai dari nol). Aturan gugur dan jumlah regu yang lolos ke Grand Final diatur di bawah. Data tersimpan otomatis.</small>
         <div id="reg-info" style="margin:.6rem 0"></div>
         <div id="reg-list"></div>
         <div class="jp-btns">
@@ -505,7 +505,7 @@
         // =====================================================================
         //  KONFIGURASI GOOGLE APPS SCRIPT  (ganti nilai di bawah ini)
         // =====================================================================
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbwaldawHXZggS3LXcLeK3jLDli_MBF5W7EqnUUuI7-zaYshFqxrQ6UL5lq3nfL2kH_afg/exec";   // tempel URL Web App (berakhiran /exec)
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbwntYul-8RxNpxQRkr7hccdmCflNzpbbe5PwhJmtkZXB0ZKeg4G9lYYK6jGh7gy9XMLkQ/exec";   // tempel URL Web App (berakhiran /exec)
         const GAS_KEY = "";                      // opsional, samakan dengan API_KEY di Code.gs
         const JURI_PIN = "";                     // opsional: isi PIN (mis. "1234") agar menu Juri meminta PIN
         const POLL_MS = 2000;                    // interval layar penonton/bel mengambil data (ms)
@@ -514,7 +514,6 @@
         const PENONTON = location.hash === '#penonton', BEL = location.hash === '#bel' || location.hash === '#regu', MODE_REGU = location.hash === '#regu';
         const PICK = !PENONTON && !BEL && sessionStorage.getItem('lcc_role') !== 'juri';  // tampilkan menu pilihan peran
         // State Management
-        const TARGET_GF = 5;
         const ANGGOTA = 3;   // jumlah anggota per regu
         const ANG = Array.from({ length: ANGGOTA }, (_, i) => i);
         let state = {
@@ -545,13 +544,7 @@
         }
 
         function generateInitialData() {
-            state.teams = Array.from({ length: 14 }, (_, i) => ({
-                id: i + 1,
-                name: `Regu ${i + 1}`,
-                // true = aktif/benar, false = gugur/salah
-                members: Array(ANGGOTA).fill(true),
-                eliminated: false
-            }));
+            state.teams = [];   // mulai kosong: regu ditambah lewat 📝 Pendaftaran Regu (tanpa batas jumlah)
             state.phase = 'cover';
             state.history = [];
             state.gf = null;
@@ -563,7 +556,8 @@
         }
 
         function saveData() {
-            state.ver = Date.now();
+            state.ver = srvNow();
+            state.cfg = Object.assign({}, CFG);   // pengaturan waktu & aturan gugur ikut tersinkron antar perangkat
             localStorage.setItem('lcc_data_v1', JSON.stringify(state));
             cloudSchedule();
         }
@@ -704,6 +698,7 @@
             }, 1000);
         }
         function jedaTimer() {
+            if (window._mirror) { toast('Timer dijalankan dari perangkat juri lain — jeda/lanjutkan dari perangkat itu'); return; }
             if (timerId !== null) { clearInterval(timerId); timerId = null; tPaused = true; updateTimerUI(); toast('⏸ Dijeda'); }
             else if (tPaused && timerLeft > 0) { tPaused = false; jalanTimer(); toast('▶ Dilanjutkan'); }
             else toast('Tidak ada timer berjalan');
@@ -749,7 +744,7 @@
             const o = document.createElement('div'); o.id = 'cek-ov';
             o.style.cssText = 'position:fixed;inset:0;z-index:9997;background:#000a;display:flex;align-items:center;justify-content:center';
             o.innerHTML = `<div style="background:#fff;color:#222;border-radius:14px;padding:1.2rem 1.6rem;max-width:520px;width:92%;max-height:85vh;overflow:auto"><h3>✅ Cek Kesiapan Lomba</h3>` +
-                L(ts.length >= 5, `Regu terdaftar: ${ts.length}`) + L(ts.length > 0 && ts.every(t => (t.anggota || []).filter(Boolean).length === ANGGOTA), `Nama ${ANGGOTA} anggota terisi di semua regu`) +
+                L(ts.length >= 1, `Regu terdaftar: ${ts.length} (target lolos Grand Final: ${gfN()})`) + L(ts.length > 0 && ts.every(t => (t.anggota || []).filter(Boolean).length === ANGGOTA), `Nama ${ANGGOTA} anggota terisi di semua regu`) +
                 L(isi(bankSoal) === bankSoal.length && bankSoal.every(q => /^(benar|salah)$/i.test(q.j)), `Soal Penyisihan (Benar/Salah) terisi: ${isi(bankSoal)}/${bankSoal.length}`) + L(isi(bankGF) === bankGF.length, `Soal Sesi 1 terisi: ${isi(bankGF)}/${bankGF.length}`) +
                 L(pb.length === 0, pb.length ? `Papan Sesi 2 belum lengkap (soal, 12 gambar, 5 kunci): papan ${pb.join(', ')}` : 'Kelima papan Sesi 2 lengkap') +
                 L(isi(bankK) === 25 && kat === 25, `Soal Sesi 3 terisi: ${isi(bankK)}/25 · berkategori: ${kat}/25`) +
@@ -907,15 +902,9 @@
                 
                 // Update Dashboard Stat
                 activeCountEl.innerText = activeCount;
-                if (activeCount === TARGET_GF) {
-                    activeCountEl.className = 'target-reached';
-                    btnGf.disabled = false;
-                    btnGf.innerText = "Mulai Grand Final Sekarang! 🚀";
-                } else {
-                    activeCountEl.className = '';
-                    btnGf.disabled = true;
-                    btnGf.innerText = `Menuju Grand Final (${activeCount}/5)`;
-                }
+                activeCountEl.className = activeCount === gfN() ? 'target-reached' : '';
+                btnGf.disabled = !state.teams.length;   // Grand Final selalu bisa dibuka (tidak terkunci)
+                btnGf.innerText = activeCount === gfN() ? 'Mulai Grand Final Sekarang! 🚀' : `Buka Grand Final (aktif ${activeCount} · target lolos ${gfN()})`;
 
                 // Gambar Kartu Regu
                 penyisihanView.innerHTML = state.teams.map((team, tIndex) => {
@@ -939,6 +928,7 @@
                         </div>
                     `;
                 }).join('');
+                if (!state.teams.length) penyisihanView.innerHTML = '<div class="pn-q" style="grid-column:1/-1">Belum ada regu terdaftar.<br><button class="btn btn-primary" onclick="bukaReg()">📝 Buka Pendaftaran Regu</button></div>';
 
             } else {
                 penyisihanView.style.display = 'none';
@@ -961,19 +951,24 @@
 
         // Navigasi & Reset
         function startGrandFinal() {
-            const activeTeams = state.teams.filter(t => !t.eliminated);
-            if (activeTeams.length !== TARGET_GF) {
-                alert(`Harus tersisa tepat ${TARGET_GF} regu! Saat ini ada ${activeTeams.length} regu.`);
-                return;
-            }
+            const act = state.teams.filter(t => !t.eliminated), N = gfN();
+            if (!state.teams.length) { alert('Belum ada regu terdaftar. Tambahkan regu lewat Pendaftaran Regu.'); return; }
+            if (!act.length) { alert('Tidak ada regu yang masih aktif.'); return; }
+            if (act.length > N) {
+                const top = act.slice().sort((x, y) => (y.skor || 0) - (x.skor || 0));
+                const seri = top.slice(N).some(t => (t.skor || 0) === (top[N - 1].skor || 0));
+                if (confirm(`Regu aktif: ${act.length}, target lolos Grand Final: ${N}.\n\nOK = ambil ${N} regu dengan skor penyisihan tertinggi${seri ? ' (ada skor seri di batas lolos, urutan mengikuti daftar regu)' : ''}; sisanya dicoret dan bisa dipulihkan lewat "Kembali ke Penyisihan".\nBatal = buka Grand Final dengan semua ${act.length} regu aktif.`))
+                    top.slice(N).forEach(t => { t.eliminated = true; t.cut = true; });
+            } else if (act.length < N && !confirm(`Regu aktif hanya ${act.length} (target lolos ${N}). Tetap buka Grand Final?`)) return;
             state.phase = 'final';
-            cloudLog('Fase', 'Grand Final dimulai');
+            cloudLog('Fase', 'Grand Final dimulai · ' + state.teams.filter(t => !t.eliminated).length + ' regu');
             saveData();
             render();
             sfx('final'); confetti();
         }
 
         function backToPenyisihan() {
+            state.teams.forEach(t => { if (t.cut) { t.eliminated = false; delete t.cut; } });   // pulihkan regu yang dicoret saat memilih finalis
             state.phase = 'penyisihan';
             saveData();
             render();
@@ -1100,7 +1095,7 @@
             try { localStorage.setItem('lcc_live', JSON.stringify(L)); } catch (e) {}
             if (GAS_AKTIF) {
                 const k = [L.gfT, L.run, L.total, L.t, L.qi, L.tampil, L.cd, L.jeda].join('|');
-                if (k !== window._liveK) { window._liveK = k; state.live = Object.assign({}, L, { endAt: srvNow() + timerLeft * 1000 }); state.ver = Date.now(); cloudSchedule(); }
+                if (k !== window._liveK) { window._liveK = k; state.live = Object.assign({}, L, { endAt: srvNow() + timerLeft * 1000 }); state.ver = srvNow(); cloudSchedule(); }
             }
         }
         function renderPenonton() {
@@ -1161,12 +1156,13 @@
         function katIk(c) { return KAT[c] || '❓'; }
         const papanBaru = () => Array.from({ length: 5 }, () => ({ soal: '', g: Array.from({ length: 12 }, () => ({ img: '', t: '', b: false })) }));
         let papan = (() => { try { const p = JSON.parse(localStorage.getItem('lcc_papan')); if (Array.isArray(p) && p.length === 5) return p; } catch (e) {} return papanBaru(); })();
+        function gfN() { return Math.max(1, Math.round(+CFG.gfN) || 5); }   // jumlah regu yang lolos ke Grand Final (diatur di Pendaftaran Regu)
         function gugurN() { return Math.min(ANGGOTA, Math.max(1, Math.round(+CFG.gugur) || 3)); }
         function setGugur(v) {
             if (lombaBerjalan()) { toast('Aturan gugur dikunci saat lomba berjalan'); renderReg(); return; }
             CFG.gugur = Math.min(ANGGOTA, Math.max(1, Math.round(+v) || 3));
             try { localStorage.setItem('lcc_cfg', JSON.stringify(CFG)); } catch (e) {}
-            toast('✅ Aturan gugur disimpan'); renderReg();
+            toast('✅ Aturan gugur disimpan'); saveData(); renderReg();
         }
         function rapikan() {
             (state.teams || []).forEach(t => {
@@ -1175,8 +1171,8 @@
             });
         }
         let edP = 0, cfgOpen = false;
-        let CFG = Object.assign({ s1: 180, s2: 60, s3: 15, gugur: 3 }, (() => { try { return JSON.parse(localStorage.getItem('lcc_cfg')); } catch (e) { return null; } })() || {});
-        function setCfg(k, v) { v = Math.max(1, Math.round(+v) || CFG[k]); CFG[k] = v; try { localStorage.setItem('lcc_cfg', JSON.stringify(CFG)); } catch (e) {} toast('⏱ Waktu disimpan'); renderGF(); }
+        let CFG = Object.assign({ s1: 180, s2: 60, s3: 15, gugur: 3, gfN: 5 }, (() => { try { return JSON.parse(localStorage.getItem('lcc_cfg')); } catch (e) { return null; } })() || {});
+        function setCfg(k, v) { v = Math.max(1, Math.round(+v) || CFG[k]); CFG[k] = v; try { localStorage.setItem('lcc_cfg', JSON.stringify(CFG)); } catch (e) {} toast('⏱ Waktu disimpan'); saveData(); renderGF(); }
         let edBank = 'p', gambarOpen = false;
         function EB() { return edBank === 'g' ? bankGF : edBank === 'k' ? bankK : bankSoal; }
         function setEB(x) { if (edBank === 'g') bankGF = x; else if (edBank === 'k') bankK = x; else bankSoal = x; }
@@ -1271,23 +1267,49 @@
         }
         function s1Ctl() {
             const s = G().s1, q = bankGF[s.idx % bankGF.length];
-            return `<div class="jp-kunci" style="width:100%">Soal ${s.idx + 1} · 🔑 ${esc(q.j)} &nbsp;<small>(peserta menekan warna regunya di Layar Bel Peserta)</small></div>` +
+            return `<div class="jp-kunci" style="width:100%">Soal ${s.idx + 1} · 🔑 <b>${esc(q.j)}</b>${q.a && q.a.length ? ' <small>(juga diterima: ' + esc(q.a.join(', ')) + ')</small>' : ''} &nbsp;<small>(peserta menekan warna regunya di Layar Bel Peserta)</small></div>` +
                 B('▶ Mulai ' + fmtT(CFG.s1) + ' dtk', 's1Mulai()') + B('■ Stop', 's1Stop()', 'btn-danger') +
+                `<div class="s1-cek" style="width:100%;display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;background:${s.buzz ? '#fff8e1' : '#f5f5f5'};border:2px dashed ${s.buzz ? '#ffb300' : '#ccc'};border-radius:10px;padding:.6rem">
+                    <b>🔍 Cek jawaban</b>
+                    <input id="s1-ans" value="${esc(window._s1Ans || '')}" ${s.buzz ? '' : 'disabled'} placeholder="${s.buzz ? 'Ketik jawaban regu yang menekan bel…' : 'Menunggu regu menekan bel…'}" style="flex:1;min-width:220px;padding:.6rem;border:2px solid #ddd;border-radius:8px;font-size:1.1rem" oninput="window._s1Ans=this.value;document.getElementById('s1-v').innerHTML=s1VerdictHTML()" onkeydown="if(event.key==='Enter')s1Cek()">
+                    ${B('Cek', 's1Cek()', 'btn-primary', s.buzz ? '' : 'disabled')}
+                    <span id="s1-v" style="display:contents">${s1VerdictHTML()}</span>
+                </div>` +
                 B('📱 Buka Layar Regu (bel)', 'bukaBel()', 'btn-outline') + `<details style="width:100%"><summary><small>Cadangan manual (jika layar bel bermasalah)</small></summary>${tim().map((t, i) => B(`🔔 ${i + 1}. ${esc(t.name)}`, `s1Bel(${t.id})`, 'btn-outline', `style="background:${warna(t.id)};color:#fff;border-color:${warna(t.id)}" ${s.blk.includes(t.id) ? 'disabled' : ''}`)).join('')}</details>` +
                 B('✓ Benar +10', 's1Nilai(true)') + B('✗ Salah (0)', 's1Nilai(false)', 'btn-danger') + B('Soal berikut ➡', 's1Next()', 'btn-outline');
         }
+        function s1Reset() { window._s1Ans = ''; window._s1Cek = null; }
+        function verdictHTML(ans, q, terapkan) {
+            const ok = cocok(ans, q);
+            return ok ? '<b style="color:#2e7d32;font-size:1.1rem">✅ COCOK dengan kunci</b> ' + B('Terapkan: ✓ Benar', terapkan + '(true)')
+                      : '<b style="color:#c62828;font-size:1.1rem">❌ TIDAK COCOK</b> ' + B('Terapkan: ✗ Salah', terapkan + '(false)', 'btn-danger');
+        }
+        function s1VerdictHTML() {
+            const s = G().s1, a = (window._s1Ans || '').trim();
+            if (!s.buzz || !a) return '';
+            return verdictHTML(a, bankGF[s.idx % bankGF.length], 's1Nilai') + '<small style="width:100%">Hasil otomatis dari kunci (saran); juri boleh menilai manual dengan tombol ✓ / ✗ di bawah.</small>';
+        }
+        function s1Cek() {
+            const s = G().s1; if (!s.buzz) { toast('Tunggu regu menekan bel dulu'); return; }
+            const inp = document.getElementById('s1-ans'), ans = (inp ? inp.value : window._s1Ans) || '';
+            if (!ans.trim()) { toast('Ketik jawaban regu dulu'); return; }
+            window._s1Ans = ans; window._s1Cek = { ok: cocok(ans, bankGF[s.idx % bankGF.length]) };
+            sfx(window._s1Cek.ok ? 'tick' : 'salah'); renderGF();
+        }
+        function s1Terapkan() { if (window._s1Cek) s1Nilai(window._s1Cek.ok); }
         function s1Mulai() { hitung(s1Jalan); }
         function s1Jalan() { api('belClear'); G().s1.on = true; gfTimer(CFG.s1, () => { G().s1.on = false; saveData(); render(); toast('⏰ Sesi 1 selesai!'); }); saveData(); render(); }
         function s1Stop() { stopTimer(); G().s1.on = false; saveData(); render(); }
-        function s1Bel(id) { const s = G().s1; const tt = tById(id); if (!tt || tt.eliminated || !s.on || tPaused || s.buzz || s.blk.includes(id)) return; s.buzz = id; tone(880, .4, 'triangle'); saveData(); render(); }
+        function s1Bel(id) { const s = G().s1; const tt = tById(id); if (!tt || tt.eliminated || !s.on || tPaused || s.buzz || s.blk.includes(id)) return; s.buzz = id; s1Reset(); tone(880, .4, 'triangle'); saveData(); render(); }
         function s1Nilai(ok) {
             const s = G().s1; if (!s.buzz) return;
+            s1Reset();
             gfAksi(() => {
                 if (ok) { addGF(s.buzz, 10); sfx('benar'); s.idx++; s.buzz = null; s.blk = []; }
                 else { s.blk.push(s.buzz); s.buzz = null; sfx('salah'); }
             });
         }
-        function s1Next() { gfAksi(() => { const s = G().s1; s.idx++; s.buzz = null; s.blk = []; }); }
+        function s1Next() { s1Reset(); gfAksi(() => { const s = G().s1; s.idx++; s.buzz = null; s.blk = []; }); }
 
         // ---- Sesi 2: Cepat Cermat ----
         function S2() { const s = G().s2; s.pap = s.pap || {}; return s; }
@@ -1298,7 +1320,7 @@
             const t = tById(a), bd = s2Bd(s);
             if (!bd) {
                 return `<div class="buzz" style="background:${warna(a)}">${esc(t.name)} · pilih 1 dari 5 kartu soal</div><div class="kg" style="grid-template-columns:repeat(5,1fr);max-width:none">` +
-                    papan.map((_, k) => { const own = Object.keys(s.pap).find(id => s.pap[id] === k); return `<div class="kc" style="flex-direction:column;font-size:${jr ? '1.6rem' : '3rem'};aspect-ratio:.8;background:${own ? warna(+own) : '#ffca28'};color:${own ? '#fff' : '#3e2723'}" ${jr && !own ? `onclick="s2Kartu(${k})"` : ''}><span>${own ? '🔒' : '🎴'}</span>${k + 1}</div>`; }).join('') + '</div>';
+                    papan.map((_, k) => { const own = tim().length > papan.length ? undefined : Object.keys(s.pap).find(id => s.pap[id] === k); return `<div class="kc" style="flex-direction:column;font-size:${jr ? '1.6rem' : '3rem'};aspect-ratio:.8;background:${own ? warna(+own) : '#ffca28'};color:${own ? '#fff' : '#3e2723'}" ${jr && !own ? `onclick="s2Kartu(${k})"` : ''}><span>${own ? '🔒' : '🎴'}</span>${k + 1}</div>`; }).join('') + '</div>';
             }
             const p = s.pil[a] || [], hs = s.hasil[a] || [], lihat = jr || s.mulai || s.done[a] || s.buka;
             const cells = bd.g.map((g, i) => {
@@ -1343,7 +1365,7 @@
         function s2Tim(id) { const s = S2(); if (s.mulai || cdN) return; s.aktif = id; s.buka = false; saveData(); render(); }
         function s2Kartu(k) {
             const s = S2(), a = s.aktif; if (!a || s.mulai || s.pap[a] !== undefined) return;
-            if (Object.values(s.pap).includes(k)) { toast('Kartu sudah dipilih regu lain'); return; }
+            if (tim().length <= papan.length && Object.values(s.pap).includes(k)) { toast('Kartu sudah dipilih regu lain'); return; }   // jika regu > papan, kartu boleh dipakai bersama
             gfAksi(() => { s.pap[a] = k; sfx('tick'); });
         }
         function s2Ganti() {
@@ -1373,7 +1395,7 @@
 
         // ---- Sesi 3: Kotak Katik ----
         function s3Init() {
-            const g = G(); if (g.s3) return;
+            const g = G(); if (g.s3 || !tim().length) return;
             const arr = Array(25).fill('biasa'), idx = [...Array(25).keys()].sort(() => Math.random() - .5);
             ['ask', 'ask', 'ask', 'double', 'double', 'extra', 'extra', 'extra', 'bom', 'bom', 'bom'].forEach((j, k) => arr[idx[k]] = j);
             g.s3 = { k: arr.map(j => ({ j, o: null })), gil: tim()[0].id, akt: null, extra: false, mulai: false, selesai: false, bonus: null };
@@ -1395,21 +1417,30 @@
                     `<div class="buzz" style="background:${warna(s.gil)}">Giliran: ${esc(tById(s.gil).name)}${s.extra ? ' · EXTRA BOX, pilih 1 kotak lagi!' : ''}</div>`) + info + ov;
         }
         function s3Ctl() {
-            const s = G().s3, i = s.akt;
+            const s = G().s3; if (!s) return '<small>Belum ada regu aktif.</small>';
+            const i = s.akt;
             return tim().map(t => B(esc(t.name), `s3Gil(${t.id})`, s.gil === t.id ? 'btn-primary' : 'btn-outline')).join('') +
                 B('▶ Mulai ' + CFG.s3 + ' Menit', 's3Mulai()') + B('■ Akhiri Sesi', 's3Akhiri()', 'btn-danger') +
-                (i !== null ? `<div class="jp-kunci" style="width:100%">🔑 ${esc(bankK[i].j)} · ${katIk(bankK[i].c)} ${esc(bankK[i].c || 'Umum')}</div>` +
-                    (s.fase === 'soal' ? B('✓ Benar', 's3Nilai(true)') + B('✗ Salah', 's3Nilai(false)', 'btn-danger') : B('📖 Tampilkan Soal', 's3Soal()')) + B('Batal pilih', 's3Batal()', 'btn-outline') : '<small>Klik nomor kotak untuk memilih.</small>');
+                (i !== null ? `<div class="jp-kunci" style="width:100%">🔑 <b>${esc(bankK[i].j)}</b>${bankK[i].a && bankK[i].a.length ? ' <small>(juga diterima: ' + esc(bankK[i].a.join(', ')) + ')</small>' : ''} · ${katIk(bankK[i].c)} ${esc(bankK[i].c || 'Umum')}</div>` +
+                    (s.fase === 'soal' ? `<div style="width:100%;display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;background:#fff8e1;border:2px dashed #ffb300;border-radius:10px;padding:.6rem"><b>🔍 Cek jawaban</b>
+                        <input id="s3-ans" value="${esc(window._s3Ans || '')}" placeholder="Ketik jawaban regu…" style="flex:1;min-width:220px;padding:.6rem;border:2px solid #ddd;border-radius:8px;font-size:1.1rem" oninput="window._s3Ans=this.value;document.getElementById('s3-v').innerHTML=s3VerdictHTML()">
+                        <span id="s3-v" style="display:contents">${s3VerdictHTML()}</span></div>` + B('✓ Benar', 's3Nilai(true)') + B('✗ Salah', 's3Nilai(false)', 'btn-danger') : B('📖 Tampilkan Soal', 's3Soal()')) + B('Batal pilih', 's3Batal()', 'btn-outline') : '<small>Klik nomor kotak untuk memilih.</small>');
+        }
+        function s3VerdictHTML() {
+            const s = G().s3, a = (window._s3Ans || '').trim();
+            if (!s || s.akt === null || s.fase !== 'soal' || !a) return '';
+            return verdictHTML(a, bankK[s.akt], 's3Nilai');
         }
         function s3Gil(id) { gfAksi(() => { G().s3.gil = id; }); }
-        function s3Pilih(i) { const s = G().s3; if (s.selesai) return; s.akt = i; s.fase = 'kategori'; s.hasil = null; sfx('tick'); saveData(); render(); }
+        function s3Pilih(i) { window._s3Ans = ''; const s = G().s3; if (s.selesai) return; s.akt = i; s.fase = 'kategori'; s.hasil = null; sfx('tick'); saveData(); render(); }
         function s3Soal() { const s = G().s3; if (s.akt === null) return; s.fase = 'soal'; saveData(); render(); }
-        function s3Batal() { const s = G().s3; s.akt = null; s.fase = null; saveData(); render(); }
+        function s3Batal() { window._s3Ans = ''; const s = G().s3; s.akt = null; s.fase = null; saveData(); render(); }
         function s3Mulai() { hitung(s3Jalan); }
         function s3Jalan() { G().s3.mulai = true; gfTimer(CFG.s3 * 60, () => { G().s3.selesai = true; saveData(); render(); toast('⏰ Waktu Kotak Katik habis!'); }); saveData(); render(); }
         function s3Akhiri() { stopTimer(); G().s3.selesai = true; saveData(); render(); }
         function s3Nilai(ok) {
             const s = G().s3, i = s.akt; if (i === null || s.fase !== 'soal') return;
+            window._s3Ans = '';
             gfAksi(() => {
                 const b = s.k[i], id = s.gil;
                 if (ok) {
@@ -1425,7 +1456,7 @@
         document.addEventListener('keydown', e => {
             if (!BEL || (MODE_REGU && !window._belSemua) || state.phase !== 'final' || /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
             const i = +e.key - 1;
-            if (G().sesi === 1 && i >= 0 && i < 5 && tim()[i]) belTekan(tim()[i].id);
+            if (G().sesi === 1 && i >= 0 && i < 9 && tim()[i]) belTekan(tim()[i].id);
         });
 
 
@@ -1513,13 +1544,19 @@
         function badge(t, c) { const e = document.getElementById('cloud-badge'); if (e) { e.innerText = t; e.style.background = c || '#777'; } }
         function readLocal() { if (REMOTE) return; try { state = JSON.parse(localStorage.getItem('lcc_data_v1')) || state; } catch (e) {} }
 
-        async function api(action, data) {
+        async function api(action, data, ms) {
             if (!GAS_AKTIF) return null;
-            const ac = new AbortController(), to = setTimeout(() => ac.abort(), 20000);
+            const ac = new AbortController(), to = setTimeout(() => ac.abort(), ms || 20000);
             try {
                 // body teks biasa = "simple request", tidak memicu preflight CORS pada GAS
+                const t0 = Date.now();
                 const r = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action, key: GAS_KEY, pin: sessionStorage.getItem('lcc_pin') || '', data }), signal: ac.signal });
-                const j = await r.json();
+                const j = await r.json(), t1 = Date.now();
+                if (j && j.recv && j.now) {   // selisih jam = rata-rata beda saat kirim & saat terima; pakai sampel dengan latensi terkecil
+                    const rtt = (t1 - t0) - (j.now - j.recv);
+                    if (rtt >= 0 && (window._rtt === undefined || rtt <= window._rtt + 150)) { clockOff = ((j.recv - t0) + (j.now - t1)) / 2; window._rtt = rtt; }
+                    else window._rtt += 60;   // sampel terbaik perlahan "kedaluwarsa"
+                }
                 if (j && j.err === 'PIN juri salah') { sessionStorage.removeItem('lcc_pin'); badge('🔒 PIN juri salah — muat ulang halaman', '#c62828'); }
                 return j;
             } catch (e) { return { ok: false, err: String(e) }; }
@@ -1528,27 +1565,34 @@
         function cloudLog(aksi, detail) { if (GAS_AKTIF && !PENONTON && !BEL) logQ.push([new Date().toLocaleString('id-ID'), aksi, detail || '']); }
         function cloudSchedule(d) {
             if (!GAS_AKTIF || PENONTON || BEL) return;
-            badge('☁️ Menyimpan…', '#f39c12');
+            badge('☁️ Menyimpan…', '#f39c12'); window._pend = true;
             clearTimeout(cloudTimer); cloudTimer = setTimeout(cloudFlush, d || 500);
         }
         async function cloudFlush() {
             if (cloudBusy) { cloudTimer = setTimeout(cloudFlush, 800); return; }
-            cloudBusy = true;
+            cloudBusy = true; window._pend = false;
             const data = { state: Object.assign({}, state, { history: [] }), logs: logQ.splice(0) };
             const sb = cloudDirty.b, sm = cloudDirty.m; cloudDirty = { b: false, m: false };
             if (sb) data.banks = { p: bankSoal, g: bankGF, k: bankK };
-            if (sm) data.media = { papan, logo: localStorage.getItem('lcc_logo') || '' };
-            const r = await api('save', data);
+            const r = await api('save', data, 60000);
+            let rm = { ok: true };
+            // gambar (besar) dikirim terpisah agar tidak menghambat data lomba & soal
+            if (r && r.ok && sm) { badge('☁️ Mengirim gambar…', '#f39c12'); rm = await api('save', { media: { papan, logo: localStorage.getItem('lcc_logo') || '' } }, 120000); }
             cloudBusy = false;
-            if (r && r.ok) { clockOff = r.now - Date.now(); badge('☁️ Tersimpan ' + new Date().toLocaleTimeString('id-ID'), '#2e7d32'); }
+            if (r && r.ok && sb && r.bver) window._cb = r.bver;
+            if (rm && rm.ok && sm && rm.mver) window._cm = rm.mver;
+            if (r && r.ok && rm && rm.ok) { badge('☁️ Tersimpan ' + new Date().toLocaleTimeString('id-ID'), '#2e7d32'); }
             else {
-                badge('☁️ Gagal menyimpan, mencoba lagi…', '#c62828');
-                if (sb) cloudDirty.b = true; if (sm) cloudDirty.m = true; data.logs.forEach(l => logQ.push(l));
-                cloudTimer = setTimeout(cloudFlush, 8000);
+                const er = String((r && !r.ok ? r.err : rm && rm.err) || '').slice(0, 60);
+                badge('☁️ Gagal menyimpan' + (er ? ' (' + er + ')' : '') + ', mencoba lagi…', '#c62828');
+                if (r && r.ok) cloudDirty.m = true;
+                else { if (sb) cloudDirty.b = true; if (sm) cloudDirty.m = true; data.logs.forEach(l => logQ.push(l)); }
+                window._pend = true; cloudTimer = setTimeout(cloudFlush, 8000);
             }
         }
         function applyCloud(r) {
             state = Object.assign({}, r.state, { history: [] });
+            if (state.cfg) { Object.assign(CFG, state.cfg); try { localStorage.setItem('lcc_cfg', JSON.stringify(CFG)); } catch (e) {} }
             localStorage.setItem('lcc_data_v1', JSON.stringify(state));
             if (r.banks) {
                 bankSoal = r.banks.p || bankSoal; bankGF = r.banks.g || bankGF; bankK = r.banks.k || bankK;
@@ -1565,14 +1609,58 @@
             badge('☁️ Menghubungkan…', '#f39c12');
             if (sessionStorage.getItem('lcc_pin') === null) sessionStorage.setItem('lcc_pin', prompt('PIN juri (kosongkan jika belum diatur di Code.gs):') || '');
             const r = await api('load');
-            if (!r || !r.ok) { badge('☁️ Gagal terhubung ke GAS', '#c62828'); return; }
-            clockOff = r.now - Date.now();
-            if (r.state && (r.state.ver || 0) > (state.ver || 0) &&
-                confirm('Data lomba di Google Sheets lebih baru daripada data di perangkat ini.\n\nOK = muat dari Google Sheets\nBatal = tetap pakai data perangkat ini')) {
-                applyCloud(r); badge('☁️ Data dimuat dari Sheets', '#2e7d32'); return;
-            }
-            cloudDirty = { b: true, m: true }; cloudSchedule();
+            if (!r || !r.ok) { badge('☁️ Gagal terhubung ke GAS', '#c62828'); window._jready = true; return; }
+            if (r.state && (r.state.ver || 0) >= (state.ver || 0)) {
+                // Google Sheets adalah sumber data utama: perangkat juri lain otomatis mengikuti, tanpa menimpa data di Sheets
+                if ((r.state.ver || 0) > (state.ver || 0)) applyCloud(r);
+                window._cb = r.bver || 0; window._cm = r.mver || 0;
+                badge('☁️ Tersinkron dengan Sheets', '#2e7d32');
+            } else { cloudDirty = { b: true, m: true }; cloudSchedule(); }   // data perangkat ini lebih baru (atau Sheets masih kosong)
+            window._jready = true;
         }
+        // ---- beberapa perangkat juri: ikuti perubahan dari perangkat juri lain ----
+        function cloudIdle() { return !cloudBusy && !window._pend && !cloudDirty.b && !cloudDirty.m && !logQ.length; }
+        async function juriSync() {
+            if (!GAS_AKTIF || !window._jready || PENONTON || BEL || PICK || window._jsync || window._resetting || !cloudIdle()) return;
+            window._jsync = true;
+            try {
+                const r = await api('juriPoll', { ver: state.ver || 0, bver: window._cb || 0, mver: window._cm || 0 }, 45000);
+                if (!r || !r.ok || !cloudIdle()) return;   // ada perubahan lokal selama menunggu: jangan ditimpa
+                let ch = false;
+                if (r.state && (r.state.ver || 0) > (state.ver || 0)) {
+                    const vm = state.viewMode;
+                    state = Object.assign({}, r.state, { history: [] }); if (vm) state.viewMode = vm;
+                    if (state.cfg) { Object.assign(CFG, state.cfg); try { localStorage.setItem('lcc_cfg', JSON.stringify(CFG)); } catch (e) {} }
+                    try { localStorage.setItem('lcc_data_v1', JSON.stringify(state)); } catch (e) {}
+                    ch = true;
+                }
+                if (r.banks) {
+                    bankSoal = r.banks.p || bankSoal; bankGF = r.banks.g || bankGF; bankK = r.banks.k || bankK; window._cb = r.bver;
+                    try { localStorage.setItem('lcc_soal', JSON.stringify(bankSoal)); localStorage.setItem('lcc_soal_gf', JSON.stringify(bankGF)); localStorage.setItem('lcc_soal_k', JSON.stringify(bankK)); } catch (e) {}
+                    ch = true;
+                }
+                if (r.media) {
+                    if (r.media.papan) { papan = r.media.papan; try { localStorage.setItem('lcc_papan', JSON.stringify(papan)); } catch (e) {} }
+                    if (r.media.logo) { try { localStorage.setItem('lcc_logo', r.media.logo); } catch (e) {} }
+                    window._cm = r.mver; ch = true;
+                }
+                if (ch) { buildCover(); render(); if (document.getElementById('editor-modal').style.display === 'flex') renderEditor(); badge('☁️ Diperbarui dari perangkat juri lain ' + new Date().toLocaleTimeString('id-ID'), '#2e7d32'); }
+            } finally { window._jsync = false; }
+        }
+        setInterval(juriSync, 3000);
+        // timer di perangkat juri lain ikut berjalan (hanya tampilan; jeda/stop/lanjut tetap dari perangkat yang memulai timer)
+        function paintTimer() {
+            const pct = timerTotal ? (timerLeft / timerTotal) * 100 : 0;
+            document.querySelectorAll('.timer-fill').forEach(e => { e.style.width = pct + '%'; e.style.background = pct > 50 ? 'var(--hijau-sukses)' : pct > 25 ? 'var(--kuning-pramuka)' : 'var(--merah-gagal)'; });
+            document.querySelectorAll('.timer-text').forEach(e => e.innerText = (tPaused ? '⏸ ' : '') + fmtT(timerLeft));
+        }
+        setInterval(() => {
+            if (!GAS_AKTIF || PENONTON || BEL || PICK || !window._jready || timerId !== null || cdN) { window._mirror = false; return; }
+            const L = state.live; if (!L) return;
+            const left = L.run ? Math.max(0, Math.ceil((L.endAt - srvNow()) / 1000)) : (L.left || 0);
+            window._mirror = !!L.run;
+            if (timerLeft !== left || timerTotal !== (L.total || timerTotal) || tPaused !== !!L.jeda) { timerLeft = left; timerTotal = L.total || timerTotal; tPaused = !!L.jeda; paintTimer(); }
+        }, 500);
         async function cloudMuatManual() {
             if (!GAS_AKTIF) { toast('Isi GAS_URL dulu'); return; }
             const r = await api('load');
@@ -1586,11 +1674,14 @@
 
         // ---- perangkat lain (penonton / bel) membaca dari Sheets ----
         async function cloudPoll() {
-            if (!REMOTE) return;
-            const r = await api('poll', { ver: state.ver || 0, bver: window._cb || 0, mver: window._cm || 0 });
+            if (!REMOTE || window._polling) return;   // jangan menumpuk permintaan saat data besar sedang diunduh
+            window._polling = true;
+            try { await cloudPollOnce(); } finally { window._polling = false; }
+        }
+        async function cloudPollOnce() {
+            const r = await api('poll', { ver: state.ver || 0, bver: window._cb || 0, mver: window._cm || 0 }, 45000);
             if (!r || !r.ok) return;
-            clockOff = r.now - Date.now();
-            if (r.state) state = r.state;
+            if (r.state) { state = r.state; if (state.cfg) Object.assign(CFG, state.cfg); }
             if (r.banks) { bankSoal = r.banks.p || bankSoal; bankGF = r.banks.g || bankGF; bankK = r.banks.k || bankK; }
             if (r.bver !== undefined) window._cb = r.bver;
             if (r.media) { if (r.media.papan) papan = r.media.papan; if (r.media.logo) localStorage.setItem('lcc_logo', r.media.logo); }
@@ -1658,9 +1749,7 @@
             const bb = sessionStorage.getItem('lcc_babak'); sessionStorage.removeItem('lcc_babak');
             if (!bb) return;
             if (bb === 'final' && state.phase !== 'final') {
-                const n = state.teams.filter(t => !t.eliminated).length;
-                if (n !== TARGET_GF) { alert(`Babak Grand Final belum bisa dimulai: regu yang bertahan harus tepat ${TARGET_GF} (saat ini ${n}). Lanjutkan Babak Gugur terlebih dahulu.`); return; }
-                if (confirm('Mulai Babak Grand Final dengan ' + TARGET_GF + ' regu yang lolos?')) startGrandFinal();
+                startGrandFinal();
             } else if (bb === 'gugur' && state.phase === 'final') {
                 if (confirm('Kembali ke Babak Gugur? Skor Grand Final tetap tersimpan.')) backToPenyisihan();
             }
@@ -1683,10 +1772,10 @@
         function renderReg() {
             const lock = lombaBerjalan();
             document.getElementById('reg-info').innerHTML = lock
-                ? '<div class="jp-kunci" style="border-color:var(--merah-gagal)">🔒 Lomba sudah berjalan: nama regu, asal, dan nama anggota masih bisa diubah, tetapi tambah/hapus regu dan impor dikunci. Gunakan <b>Reset Data</b> untuk memulai ulang.</div>'
-                : `<div class="jp-kunci">Jumlah regu terdaftar: <b>${state.teams.length}</b> (minimal 5). Tambah/hapus regu atau impor CSV masih bisa dilakukan sebelum lomba dimulai.</div>`;
-            document.getElementById('reg-info').innerHTML += `<div style="margin-top:.4rem">Aturan gugur: regu gugur jika <input type="number" min="1" max="${ANGGOTA}" value="${gugurN()}" style="width:3.5rem" onchange="setGugur(this.value)" ${lock ? 'disabled' : ''}> dari ${ANGGOTA} anggota salah.</div>`;
-            ['reg-add', 'reg-imp'].forEach(id => { const e = document.getElementById(id); e.style.opacity = lock ? .4 : 1; e.style.pointerEvents = lock ? 'none' : 'auto'; });
+                ? '<div class="jp-kunci" style="border-color:var(--merah-gagal)">🔒 Lomba sudah berjalan: nama regu, asal, dan nama anggota masih bisa diubah, tetapi hapus regu dan impor dikunci (tambah regu tetap bisa). Gunakan <b>Reset Data</b> untuk memulai ulang.</div>'
+                : `<div class="jp-kunci">Jumlah regu terdaftar: <b>${state.teams.length}</b> (tanpa batas). Hapus regu dan impor CSV hanya bisa sebelum lomba dimulai; tambah regu bisa kapan saja.</div>`;
+            document.getElementById('reg-info').innerHTML += `<div style="margin-top:.4rem">Aturan gugur: regu gugur jika <input type="number" min="1" max="${ANGGOTA}" value="${gugurN()}" style="width:3.5rem" onchange="setGugur(this.value)" ${lock ? 'disabled' : ''}> dari ${ANGGOTA} anggota salah. &nbsp;·&nbsp; Regu yang lolos ke Grand Final: <input type="number" min="1" value="${gfN()}" style="width:3.5rem" onchange="setGfN(this.value)"> regu.</div>`;
+            ['reg-imp'].forEach(id => { const e = document.getElementById(id); e.style.opacity = lock ? .4 : 1; e.style.pointerEvents = lock ? 'none' : 'auto'; });
             document.getElementById('reg-list').innerHTML = '<div class="reg-row reg-head"><span>No</span><span>Nama Regu</span><span>Asal / Pangkalan</span>' + ANG.map(j => `<span>Anggota ${j + 1}</span>`).join('') + '<span></span></div>' +
                 state.teams.map((t, i) => {
                     const a = t.anggota || [];
@@ -1704,10 +1793,10 @@
             saveData();
         }
         function regBaru(n) { return { id: Math.max(0, ...state.teams.map(t => t.id)) + 1, name: 'Regu ' + n, asal: '', anggota: Array(ANGGOTA).fill(''), members: Array(ANGGOTA).fill(true), eliminated: false }; }
-        function tambahReg() { if (lombaBerjalan()) return; state.teams.push(regBaru(state.teams.length + 1)); state.history = []; saveData(); renderReg(); }
+        function setGfN(v) { CFG.gfN = Math.max(1, Math.round(+v) || 5); try { localStorage.setItem('lcc_cfg', JSON.stringify(CFG)); } catch (e) {} toast('✅ Regu lolos ke Grand Final: ' + CFG.gfN); saveData(); render(); renderReg(); }
+        function tambahReg() { state.teams.push(regBaru(state.teams.length + 1)); state.history = []; saveData(); renderReg(); }
         function hapusReg(i) {
             if (lombaBerjalan()) return;
-            if (state.teams.length <= 5) { toast('Minimal 5 regu (target Grand Final)'); return; }
             state.teams.splice(i, 1); state.history = []; saveData(); renderReg();
         }
         function tutupReg() {
@@ -1733,7 +1822,7 @@
                 const rows = lines.map(l => splitCSV(l, d));
                 if (/^nama/i.test(rows[0][0])) rows.shift();
                 const baru = rows.filter(r => r[0]).map((r, i) => Object.assign(regBaru(i + 1), { id: i + 1, name: r[0], asal: r[1] || '', anggota: ANG.map(j => r[2 + j] || '') }));
-                if (baru.length < 5) { toast('Minimal 5 regu di file CSV'); return; }
+                if (!baru.length) { toast('File CSV tidak berisi regu'); return; }
                 if (!confirm('Ganti seluruh daftar regu dengan ' + baru.length + ' regu dari file ini?')) return;
                 state.teams = baru; state.history = []; saveData(); renderReg(); toast('✅ ' + baru.length + ' regu diimpor');
                 inp.value = '';
@@ -1899,5 +1988,6 @@
     <div>LCC Kepanduan · Kemah Kerja Madrasah Season 5 · MAN 1 Boalemo</div>
     <small>Dibangun dengan HTML, Google Apps Script &amp; Google Sheets · Kurikulum Merdeka berbasis cinta, dengan literasi dan numerasi</small>
 </footer>
+<div id="app-ver" style="position:fixed;bottom:2px;left:6px;font-size:10px;opacity:.45;z-index:5;pointer-events:none">v2026.11.11-g</div>
 </body>
 </html>
