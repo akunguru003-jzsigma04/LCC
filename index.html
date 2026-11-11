@@ -457,10 +457,10 @@
     </div></div>
     <div id="editor-modal" class="modal" style="display:none"><div class="modal-box">
         <h2>✏️ Editor Bank Soal</h2>
-        <select onchange="edBank=this.value;renderEditor()" style="padding:.5rem;font-weight:bold"><option value="p">Bank Penyisihan</option><option value="g">Grand Final · Sesi 1 (Cepat Tepat)</option><option value="k">Grand Final · Sesi 3 (25 soal Kotak Katik)</option></select>
-        <small>Kolom: Soal · Jawaban utama · Jawaban alternatif (pisahkan dengan tanda | ). Tersimpan otomatis.</small>
+        <select onchange="edBank=this.value;renderEditor()" style="padding:.5rem;font-weight:bold"><option value="p">Bank Penyisihan</option><option value="g">Grand Final · Sesi 1 (Cepat Tepat)</option><option value="papan">Grand Final · Sesi 2 (5 papan gambar)</option><option value="k">Grand Final · Sesi 3 (25 soal Kotak Katik)</option></select>
+        <small id="editor-hint">Kolom: Soal · Jawaban utama · Jawaban alternatif (pisahkan dengan tanda | ). Tersimpan otomatis.</small>
         <div id="editor-list" style="margin-top:1rem"></div>
-        <div class="jp-btns">
+        <div class="jp-btns" id="editor-btns">
             <button class="btn btn-primary btn-sm" onclick="tambahSoal()">＋ Tambah Soal</button>
             <label class="btn btn-primary btn-outline btn-sm">📥 Impor CSV<input type="file" accept=".csv,.txt" hidden onchange="imporCSV(this)"></label>
             <button class="btn btn-primary btn-outline btn-sm" onclick="eksporCSV()">📤 Ekspor CSV</button>
@@ -1021,6 +1021,15 @@
             saveData(); render();
         }
         function renderEditor() {
+            const isP = edBank === 'papan', hint = document.getElementById('editor-hint'), btns = document.getElementById('editor-btns');
+            document.querySelectorAll('#editor-modal select').forEach(e => { e.value = edBank; });
+            if (btns) [...btns.children].forEach(c => { if (!/Selesai/.test(c.textContent)) c.style.display = isP ? 'none' : ''; });
+            if (isP) {
+                if (hint) hint.innerText = 'Papan Sesi 2 (Cepat Cermat): tiap papan = 1 kalimat soal + 12 gambar, tepat 5 gambar dicentang ✓ sebagai kunci. Kunci benar: ' + papan.map((b, k) => (k + 1) + '=' + b.g.filter(g => g.b).length + '/5').join(' ') + '. Tersimpan otomatis.';
+                document.getElementById('editor-list').innerHTML = papanEdHTML();
+                return;
+            }
+            if (hint) hint.innerText = 'Kolom: Soal · Jawaban utama · Jawaban alternatif (pisahkan dengan tanda | ). Tersimpan otomatis.';
             document.getElementById('editor-list').innerHTML = EB().map((q, i) => `
                 <div class="ed-row"><b>${i + 1}</b>
                     <input value="${esc(q.t)}" placeholder="Soal" oninput="editSoal(${i},'t',this.value)">
@@ -1304,12 +1313,21 @@
                 B('▶ Mulai ' + CFG.s2 + ' dtk', 's2Mulai()') + B('↩ Batal pilihan terakhir', 's2Undo()', 'btn-outline') + B('■ Selesai Regu', 's2Selesai()', 'btn-danger') + B('🎴 Ganti Kartu', 's2Ganti()', 'btn-outline') + B(s.buka ? '🙈 Tutup Kunci' : '👁 Buka Kunci', 's2Buka()', 'btn-outline') +
                 `<div style="width:100%"><small>Pilih regu → regu memilih 1 dari 5 kartu → Mulai → ketuk nomor yang disebut regu. ✓/✗ otomatis dari kunci (bingkai hijau hanya tampak di layar juri).</small></div>` +
                 `<details style="width:100%" ${gambarOpen ? 'open' : ''} ontoggle="gambarOpen=this.open"><summary><b>🖼 Atur 5 Papan Soal</b> · kunci benar: ${papan.map((b, k) => (k + 1) + '=' + b.g.filter(g => g.b).length + '/5').join(' ')}</summary>
-                <div class="jp-btns" style="margin:.4rem 0">${papan.map((_, k) => B('Papan ' + (k + 1), `edP=${k};renderGF()`, edP === k ? 'btn-primary' : 'btn-outline')).join('')}</div>
+                ${papanEdHTML()}</details>`;
+        }
+        function papanEdHTML() {
+            const P = papan[edP];
+            return `<div class="jp-btns" style="margin:.4rem 0">${papan.map((_, k) => B('Papan ' + (k + 1), `edP=${k};refreshPapan()`, edP === k ? 'btn-primary' : 'btn-outline')).join('')}</div>
                 <input style="width:100%;margin:.4rem 0" value="${esc(P.soal)}" placeholder="Soal papan ${edP + 1}, mis. Pilih 5 gambar simpul yang ..." oninput="papan[edP].soal=this.value;simpanGambar()">` +
                 P.g.map((g, i) => `<div class="ed-row" style="grid-template-columns:2rem 1fr 2fr 3.5rem"><b>${i + 1}${g.img ? '✅' : ''}</b>
                     <input type="file" accept="image/*" onchange="muatGambar(${i},this)">
                     <input value="${esc(g.t)}" placeholder="Nama gambar (tampil saat kunci dibuka)" oninput="papan[edP].g[${i}].t=this.value;simpanGambar()">
-                    <label><input type="checkbox" ${g.b ? 'checked' : ''} onchange="papan[edP].g[${i}].b=this.checked;simpanGambar();renderGF()"> ✓</label></div>`).join('') + '</details>';
+                    <label><input type="checkbox" ${g.b ? 'checked' : ''} onchange="papan[edP].g[${i}].b=this.checked;simpanGambar();refreshPapan()"> ✓</label></div>`).join('');
+        }
+        function refreshPapan() {
+            const m = document.getElementById('editor-modal');
+            if (m && m.style.display === 'flex' && edBank === 'papan') renderEditor();
+            else if (state.phase === 'final') renderGF();
         }
         function muatGambar(i, inp) {
             const f = inp.files[0]; if (!f) return; const P = papan[edP];
@@ -1318,7 +1336,7 @@
                 const k = Math.min(1, 420 / im.width), c = document.createElement('canvas');
                 c.width = im.width * k; c.height = im.height * k;
                 c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
-                P.g[i].img = c.toDataURL('image/jpeg', .6); simpanGambar(); URL.revokeObjectURL(u); renderGF();
+                P.g[i].img = c.toDataURL('image/jpeg', .6); simpanGambar(); URL.revokeObjectURL(u); refreshPapan();
             };
             im.src = u;
         }
