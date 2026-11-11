@@ -557,6 +557,7 @@
             state.gf = null;
             state.lastPhase = null;
             state.jawab = {};
+            state.rid = Date.now();   // penanda reset: perangkat peserta menghapus riwayat jawaban lokalnya
             state.viewMode = 'juri';
             state.currentSoalIndex = 0;
         }
@@ -978,13 +979,20 @@
             render();
         }
 
-        function resetData() {
-            if(confirm('Yakin ingin mereset seluruh data lomba? Semua nama dan skor akan terhapus!')) {
-                localStorage.removeItem('lcc_data_v1'); localStorage.removeItem('lcc_panel'); stopTimer(); buildCover();
-                generateInitialData();
-                saveData();
-                render();
+        async function resetData() {
+            if (!confirm('Yakin ingin mereset seluruh data lomba? Semua nama, skor, dan jawaban peserta (termasuk di Google Sheets) akan terhapus!')) return;
+            window._resetting = true;
+            if (GAS_AKTIF) {
+                toast('Menghapus data di Google Sheets…');
+                let r = null; for (let i = 0; i < 3 && !(r && r.ok); i++) r = await api('reset');
+                if (!(r && r.ok) && !confirm('Gagal menghapus jawaban di Google Sheets (' + ((r && r.err) || 'tidak ada respons') + '). Tetap reset data di aplikasi?\n\n(Sebaiknya pastikan Code.gs sudah di-deploy ulang.)')) { window._resetting = false; return; }
             }
+            localStorage.removeItem('lcc_data_v1'); localStorage.removeItem('lcc_panel'); localStorage.removeItem('lcc_jawab'); stopTimer(); buildCover();
+            generateInitialData();
+            saveData();
+            render();
+            window._resetting = false;
+            cloudLog('Reset', 'Data lomba direset');
         }
 
 
@@ -1749,6 +1757,7 @@
                 <div id="pz-sel" style="text-align:center;margin-top:.5rem;font-size:1.1rem"></div>`;
         }
         function renderPeserta(v) {
+            if (state.rid && sessionStorage.getItem('lcc_rid') !== String(state.rid)) { sessionStorage.setItem('lcc_rid', String(state.rid)); sessionStorage.removeItem('lcc_pz_done'); window._pzKey = ''; window._pzAns = ''; }
             const L = getLive(), me = pzId(), qi = L.qi || 0, aktif = pzAktif(me);
             const dk = me ? me.regu + '|' + me.no + '|' + qi : '', done = (me && L.tampil && state.phase === 'penyisihan') ? pzDone(dk) : null;
             const myTurn = !!(me && L.tampil && state.phase === 'penyisihan' && aktif && !done);
@@ -1809,7 +1818,7 @@
             saveData(); render();
         }
         async function jawabPollCloud() {
-            if (!GAS_AKTIF || PENONTON || BEL || PICK || state.phase !== 'penyisihan') return;
+            if (!GAS_AKTIF || PENONTON || BEL || PICK || window._resetting || state.phase !== 'penyisihan') return;
             const r = await api('jawabPoll');
             if (!r || !r.ok || !r.items || !r.items.length) return;
             r.items.forEach(terapkanJawaban);
