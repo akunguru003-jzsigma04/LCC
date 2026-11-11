@@ -395,8 +395,11 @@
                 <div class="soal-kategori">Bank Soal Penyisihan</div>
                 <div class="soal-teks" id="soal-teks-display">Memuat soal...</div>
                 <div class="jawaban-area">
-                    <input type="text" id="input-jawaban" class="jawaban-input" placeholder="Ketik jawaban di sini..." autocomplete="off">
-                    <button class="btn btn-primary" style="font-size: 1.2rem; padding: 0.8rem 2rem;" onclick="cekJawaban()">Cek Jawaban</button>
+                    <input type="hidden" id="input-jawaban">
+                    <div class="jp-btns" style="justify-content:center">
+                        <button class="btn btn-primary" style="font-size: 1.6rem; padding: 1rem 2.5rem; background:#2e7d32" onclick="document.getElementById('input-jawaban').value='Benar';cekJawaban()">✅ BENAR</button>
+                        <button class="btn btn-danger" style="font-size: 1.6rem; padding: 1rem 2.5rem" onclick="document.getElementById('input-jawaban').value='Salah';cekJawaban()">❌ SALAH</button>
+                    </div>
                     <div id="feedback-jawaban" class="feedback"></div>
                 </div>
             </div>
@@ -487,7 +490,7 @@
             <h2 id="rm-title" style="margin-top:1.5rem">Masuk sebagai</h2>
             <div class="rm-grid">
                 <button class="rm-btn" onclick="pilihPeran('juri')"><span>🧑‍⚖️</span><b>Juri</b><small>Mengatur lomba, menilai jawaban, dan mengontrol layar</small></button>
-                <button class="rm-btn" id="rm-p" onclick="pilihPeran('peserta')"><span>✍️</span><b>Peserta</b><small>Ketik &amp; cek jawaban</small></button>
+                <button class="rm-btn" id="rm-p" onclick="pilihPeran('peserta')"><span>✍️</span><b>Peserta</b><small>Pilih Benar / Salah</small></button>
                 <button class="rm-btn" onclick="pilihPeran('penonton')"><span>🖥️</span><b>Penonton</b><small>Layar proyektor (hanya tampilan)</small></button>
             </div>
             <div class="rm-credit">© 2026 · J D Ace | Sigma04, an1mo</div>
@@ -502,7 +505,7 @@
         // =====================================================================
         //  KONFIGURASI GOOGLE APPS SCRIPT  (ganti nilai di bawah ini)
         // =====================================================================
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbxjgn4uwHn0TFOBesQHYNgv8sZ46p7gVhSpagAx_EL_wG_8hFcGdSvhZ3xD4u3Pr0IJKw/exec";   // tempel URL Web App (berakhiran /exec)
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbw5L3xpwSBpZXzXMTCPVW1p28aQFhlMB998KZKmb_9gJHz2h0NyJkmgV2NjMAWXLexM_w/exec";   // tempel URL Web App (berakhiran /exec)
         const GAS_KEY = "";                      // opsional, samakan dengan API_KEY di Code.gs
         const JURI_PIN = "";                     // opsional: isi PIN (mis. "1234") agar menu Juri meminta PIN
         const POLL_MS = 2000;                    // interval layar penonton/bel mengambil data (ms)
@@ -522,11 +525,11 @@
         };
 
         const SOAL_DEFAULT = [
-            { t: "Siapakah Bapak Pandu Dunia?", j: "Baden Powell", a: ["Robert Baden Powell", "Lord Baden Powell"] },
-            { t: "Apa lambang Gerakan Pramuka Indonesia?", j: "Tunas Kelapa", a: [] },
-            { t: "Tanggal berapakah Hari Pramuka Indonesia diperingati?", j: "14 Agustus", a: ["14 Agustus 1961"] },
-            { t: "Sebutkan tingkatan Pramuka setelah Siaga!", j: "Penggalang", a: ["Pramuka Penggalang"] },
-            { t: "Berapa usia anggota Pramuka Penegak?", j: "16-20 tahun", a: ["16 sampai 20 tahun", "16 sd 20 tahun", "16 - 20 tahun"] }
+            { t: "Bapak Pandu Sedunia adalah Robert Baden-Powell.", j: "Benar", a: [] },
+            { t: "Lambang Gerakan Pramuka Indonesia adalah tunas kelapa.", j: "Benar", a: [] },
+            { t: "Hari Pramuka diperingati setiap tanggal 17 Agustus.", j: "Salah", a: [] },
+            { t: "Tri Satya Pramuka terdiri dari 5 butir.", j: "Salah", a: [] },
+            { t: "Pramuka Penegak berusia 16-20 tahun.", j: "Benar", a: [] }
         ];
         let bankSoal = JSON.parse(localStorage.getItem('lcc_soal') || 'null') || JSON.parse(JSON.stringify(SOAL_DEFAULT));
 
@@ -593,6 +596,8 @@
             return d[a.length][b.length];
         }
         function cocok(input, q) {
+            const kj = norm(q.j);
+            if (kj === 'benar' || kj === 'salah') return norm(input) === kj;   // soal Benar/Salah: harus persis
             const n = norm(input), NEG = /(^| )(bukan|bukanlah|tidak|jangan)( |$)/;
             if (!n) return false;
             return [q.j, ...(q.a || [])].some(k => {
@@ -605,7 +610,7 @@
             const raw = document.getElementById('input-jawaban').value;
             const fb = document.getElementById('feedback-jawaban');
             if (raw.trim() === '') {
-                fb.innerText = '⚠️ Jawaban tidak boleh kosong!';
+                fb.innerText = '⚠️ Pilih BENAR atau SALAH!';
                 fb.className = 'feedback salah';
                 return;
             }
@@ -614,7 +619,7 @@
                 fb.className = 'feedback benar';
                 stopTimer(); sfx('benar');
             } else {
-                fb.innerText = '❌ JAWABAN SALAH / KURANG TEPAT';
+                fb.innerText = '❌ JAWABAN SALAH';
                 fb.className = 'feedback salah';
                 sfx('salah');
             }
@@ -744,7 +749,7 @@
             o.style.cssText = 'position:fixed;inset:0;z-index:9997;background:#000a;display:flex;align-items:center;justify-content:center';
             o.innerHTML = `<div style="background:#fff;color:#222;border-radius:14px;padding:1.2rem 1.6rem;max-width:520px;width:92%;max-height:85vh;overflow:auto"><h3>✅ Cek Kesiapan Lomba</h3>` +
                 L(ts.length >= 5, `Regu terdaftar: ${ts.length}`) + L(ts.length > 0 && ts.every(t => (t.anggota || []).filter(Boolean).length === ANGGOTA), `Nama ${ANGGOTA} anggota terisi di semua regu`) +
-                L(isi(bankSoal) === bankSoal.length, `Soal Penyisihan terisi: ${isi(bankSoal)}/${bankSoal.length}`) + L(isi(bankGF) === bankGF.length, `Soal Sesi 1 terisi: ${isi(bankGF)}/${bankGF.length}`) +
+                L(isi(bankSoal) === bankSoal.length && bankSoal.every(q => /^(benar|salah)$/i.test(q.j)), `Soal Penyisihan (Benar/Salah) terisi: ${isi(bankSoal)}/${bankSoal.length}`) + L(isi(bankGF) === bankGF.length, `Soal Sesi 1 terisi: ${isi(bankGF)}/${bankGF.length}`) +
                 L(pb.length === 0, pb.length ? `Papan Sesi 2 belum lengkap (soal, 12 gambar, 5 kunci): papan ${pb.join(', ')}` : 'Kelima papan Sesi 2 lengkap') +
                 L(isi(bankK) === 25 && kat === 25, `Soal Sesi 3 terisi: ${isi(bankK)}/25 · berkategori: ${kat}/25`) +
                 L(!!localStorage.getItem('lcc_logo'), 'Logo kegiatan terpasang') + L(GAS_AKTIF, GAS_AKTIF ? 'Terhubung ke Google Sheets (lihat lencana ☁️ di pojok)' : 'Mode offline (GAS_URL belum diisi)') +
@@ -1011,15 +1016,15 @@
             document.getElementById('editor-list').innerHTML = EB().map((q, i) => `
                 <div class="ed-row"><b>${i + 1}</b>
                     <input value="${esc(q.t)}" placeholder="Soal" oninput="editSoal(${i},'t',this.value)">
-                    <input value="${esc(q.j)}" placeholder="Jawaban" oninput="editSoal(${i},'j',this.value)">
-                    <input value="${esc((q.a || []).join(' | '))}" placeholder="Alternatif (pisah |)" oninput="editSoal(${i},'a',this.value)">${edBank === 'k' ? `<input list="kat-list" value="${esc(q.c || '')}" placeholder="Kategori" oninput="editSoal(${i},'c',this.value)"><datalist id="kat-list">${Object.keys(KAT).map(k => `<option value="${k}">`).join('')}</datalist>` : ''}
+                    ${edBank === 'p' ? `<select onchange="editSoal(${i},'j',this.value)" style="padding:.5rem;border:2px solid #ddd;border-radius:6px"><option value="" ${!q.j ? 'selected' : ''}>Pilih…</option><option ${q.j === 'Benar' ? 'selected' : ''}>Benar</option><option ${q.j === 'Salah' ? 'selected' : ''}>Salah</option></select>` : `<input value="${esc(q.j)}" placeholder="Jawaban" oninput="editSoal(${i},'j',this.value)">`}
+                    <input value="${esc((q.a || []).join(' | '))}" placeholder="Alternatif (pisah |)" ${edBank === 'p' ? 'style="visibility:hidden"' : ''} oninput="editSoal(${i},'a',this.value)">${edBank === 'k' ? `<input list="kat-list" value="${esc(q.c || '')}" placeholder="Kategori" oninput="editSoal(${i},'c',this.value)"><datalist id="kat-list">${Object.keys(KAT).map(k => `<option value="${k}">`).join('')}</datalist>` : ''}
                     <button class="sk-btn" onclick="hapusSoal(${i})">🗑</button></div>`).join('');
         }
         function editSoal(i, k, v) {
             EB()[i][k] = k === 'a' ? v.split('|').map(s => s.trim()).filter(Boolean) : v;
             simpanSoal();
         }
-        function tambahSoal() { EB().push({ t: '', j: '', a: [], c: edBank === 'k' ? 'Umum' : undefined }); simpanSoal(); renderEditor(); }
+        function tambahSoal() { EB().push({ t: '', j: edBank === 'p' ? 'Benar' : '', a: [], c: edBank === 'k' ? 'Umum' : undefined }); simpanSoal(); renderEditor(); }
         function hapusSoal(i) {
             if (EB().length <= 1) { toast('Minimal harus ada 1 soal'); return; }
             EB().splice(i, 1); simpanSoal(); renderEditor();
@@ -1598,7 +1603,7 @@
             document.getElementById('rm-title').innerText = (f ? 'Babak Grand Final' : 'Babak Gugur') + ' — masuk sebagai';
             document.getElementById('rm-p').innerHTML = f
                 ? '<span>👥</span><b>Regu</b><small>Tombol bel regu · 1 perangkat per regu (hanya regu yang lolos)</small>'
-                : '<span>✍️</span><b>Peserta</b><small>Ketik &amp; cek jawaban · 1 perangkat per anggota</small>';
+                : '<span>✍️</span><b>Peserta</b><small>Pilih Benar / Salah · 1 perangkat per anggota</small>';
             document.getElementById('rm-logo').src = logoSrc();
             document.getElementById('role-menu').style.display = 'flex';
         }
@@ -1737,8 +1742,11 @@
             if (done) return head + q + `<div class="feedback ${done.ok ? 'benar' : 'salah'}" style="font-size:2rem;display:block">${done.ok ? '✅ JAWABAN BENAR!' : '❌ JAWABAN SALAH'}</div>`;
             if (!aktif) return head + q + '<div class="buzz" style="background:var(--merah-gagal)">Nomor peserta Anda (atau regu Anda) sudah gugur. Pantau layar penonton.</div>';
             return head + q + `<div id="pz-wait" class="buzz" style="background:#777">Menunggu juri memulai waktu…</div>
-                <div class="jp-btns" style="justify-content:center"><input id="pz-in" placeholder="Ketik jawaban…" autocomplete="off" disabled style="padding:.9rem;font-size:1.3rem;border:3px solid var(--kuning-pramuka);border-radius:10px;min-width:260px" onkeydown="if(event.key==='Enter')pzKirim()">
-                <button id="pz-btn" class="btn btn-primary" disabled onclick="pzKirim()">Cek Jawaban</button></div>`;
+                <div class="jp-btns" style="justify-content:center;gap:1rem">
+                    <button id="pz-b" class="btn pz-opt" disabled onclick="pzPilihJawab('Benar')" style="font-size:2rem;padding:1.2rem 2.2rem;min-width:200px">✅ BENAR</button>
+                    <button id="pz-s" class="btn pz-opt" disabled onclick="pzPilihJawab('Salah')" style="font-size:2rem;padding:1.2rem 2.2rem;min-width:200px">❌ SALAH</button></div>
+                <div class="jp-btns" style="justify-content:center"><button id="pz-btn" class="btn btn-primary" disabled onclick="pzKirim()">🔒 Kunci Jawaban</button></div>
+                <div id="pz-sel" style="text-align:center;margin-top:.5rem;font-size:1.1rem"></div>`;
         }
         function renderPeserta(v) {
             const L = getLive(), me = pzId(), qi = L.qi || 0, aktif = pzAktif(me);
@@ -1756,17 +1764,24 @@
                 const jalan = !!L.run && L.left > 0;
                 if (L.run) pz.armed = dk;
                 if ((L.run && L.left <= 0) || (!L.run && !L.jeda && !L.cd && L.left <= 0 && pz.armed === dk)) pzKirim();       // hanya saat waktu benar-benar habis (bukan saat dijeda/direset)
-                const inp = document.getElementById('pz-in'), btn = document.getElementById('pz-btn'), w = document.getElementById('pz-wait');
-                if (inp && !pz.busy) { inp.disabled = !jalan; btn.disabled = !jalan; w.style.display = jalan ? 'none' : 'block'; }
+                if (window._pzAnsK !== dk) { window._pzAnsK = dk; window._pzAns = ''; }
+                const bb = document.getElementById('pz-b'), bs = document.getElementById('pz-s'), btn = document.getElementById('pz-btn'), w = document.getElementById('pz-wait');
+                if (bb && !pz.busy) {
+                    bb.disabled = bs.disabled = !jalan; btn.disabled = !jalan || !window._pzAns; w.style.display = jalan ? 'none' : 'block';
+                    bb.style.background = window._pzAns === 'Benar' ? '#2e7d32' : '#cfd8dc'; bb.style.color = window._pzAns === 'Benar' ? '#fff' : '#333';
+                    bs.style.background = window._pzAns === 'Salah' ? '#c62828' : '#cfd8dc'; bs.style.color = window._pzAns === 'Salah' ? '#fff' : '#333';
+                    document.getElementById('pz-sel').innerText = window._pzAns ? 'Pilihan Anda: ' + window._pzAns.toUpperCase() + ' (boleh diganti sebelum dikunci)' : '';
+                }
             }
         }
+        function pzPilihJawab(v) { window._pzAns = v; renderBel(); }
         async function pzKirim() {
             const L = getLive(), me = pzId(), qi = L.qi || 0;
             if (!me || pz.busy || Date.now() < pz.retryAt) return;
             const dk = me.regu + '|' + me.no + '|' + qi; if (pzDone(dk)) return;
             pz.busy = true;
-            const inp = document.getElementById('pz-in'), ans = inp ? inp.value : '';
-            if (inp) { inp.disabled = true; document.getElementById('pz-btn').disabled = true; }
+            const ans = (window._pzAnsK === dk ? window._pzAns : '') || '';
+            ['pz-b', 'pz-s', 'pz-btn'].forEach(id => { const e = document.getElementById(id); if (e) e.disabled = true; });
             let ok = false, sent = true;
             if (REMOTE) {
                 let r = null; for (let i = 0; i < 3 && !(r && r.ok); i++) r = await api('jawab', { regu: me.regu, no: me.no, qi, ans });
