@@ -1755,7 +1755,7 @@
             if (myTurn) {
                 const jalan = !!L.run && L.left > 0;
                 if (L.run) pz.armed = dk;
-                if ((L.run && L.left <= 0) || (!L.run && pz.armed === dk)) pzKirim();       // waktu habis: kunci & nilai otomatis
+                if ((L.run && L.left <= 0) || (!L.run && !L.jeda && !L.cd && L.left <= 0 && pz.armed === dk)) pzKirim();       // hanya saat waktu benar-benar habis (bukan saat dijeda/direset)
                 const inp = document.getElementById('pz-in'), btn = document.getElementById('pz-btn'), w = document.getElementById('pz-wait');
                 if (inp && !pz.busy) { inp.disabled = !jalan; btn.disabled = !jalan; w.style.display = jalan ? 'none' : 'block'; }
             }
