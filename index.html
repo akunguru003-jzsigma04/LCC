@@ -336,6 +336,11 @@
         .asal { font-size: .8rem; opacity: .7; text-align: center; margin: -.3rem 0 .6rem; }
 
         .member.now { box-shadow: 0 0 0 4px var(--kuning-pramuka); }
+        .kc.kc3 { position:relative; perspective:900px; background:transparent !important; border:0 !important; padding:0; }
+        .kc3-in { position:absolute; inset:0; transform-style:preserve-3d; transition:transform .75s cubic-bezier(.4,.2,.2,1); }
+        .kc3-f { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; backface-visibility:hidden; -webkit-backface-visibility:hidden; border-radius:10px; border:2px solid var(--coklat-muda); box-shadow:0 2px 6px rgba(0,0,0,.18); }
+        .kc3-b { transform:rotateY(180deg); background:var(--kuning-pramuka); }
+        .kc3-b .ik { font-size:2.2rem; line-height:1; } .kc3-b small { font-size:.8rem; font-weight:800; text-align:center; padding:0 .2rem; }
         .bigcd { text-align:center; font-weight:900; font-size:clamp(6rem,22vw,15rem); line-height:1; margin:.3rem 0; font-variant-numeric:tabular-nums; text-shadow:0 6px 24px rgba(0,0,0,.25); }
         .bigcd small { display:block; font-size:1.1rem; letter-spacing:.25em; font-weight:700; opacity:.75; text-shadow:none; }
         .bigcd.ok { color:var(--hijau-sukses); } .bigcd.mid { color:#e6a800; } .bigcd.low { color:var(--merah-gagal); animation:bigpulse .45s ease-in-out infinite alternate; }
@@ -670,6 +675,7 @@
                 gugur: () => { tone(220, .2, 'square'); tone(147, .5, 'square', .2); },
                 tick: () => tone(1000, .05, 'square', 0, .08),
                 habis: () => { tone(130, .8, 'sawtooth', 0, .25); tone(65, 1.3, 'sawtooth', 0, .3); tone(520, .25, 'square', 0, .12); },
+                flip: () => { tone(380, .09, 'triangle', 0, .18); tone(620, .12, 'triangle', .07, .16); },
                 tampil: () => [180, 240, 320, 430, 580, 780].forEach((f, i) => tone(f, .18, 'triangle', i * .07, .16)),
                 mulai: () => { tone(60, .5, 'sine', 0, .5); [392, 523, 659, 784].forEach((f, i) => tone(f, .35, 'triangle', .05 + i * .09, .22)); },
                 final: () => [523, 659, 784, 1047].forEach((f, i) => tone(f, .3, 'triangle', i * .15))
@@ -1237,6 +1243,18 @@
         function urutGF(ts) { return ts.slice().sort((a, b) => (b.gf || 0) - (a.gf || 0)); }
         function gfAksi(fn) { pushHistory(); fn(); saveData(); render(); }
         function setSesi(n) { if (n === 3) s3Init(); G().sesi = n; G().podium = false; saveData(); render(); }
+        const kcPrev = {};
+        function kcAnim() {
+            document.querySelectorAll('.kc3').forEach(c => {
+                const k = c.dataset.k, r = +c.dataset.r, inn = c.firstElementChild, p = kcPrev[k];
+                if (inn && p !== undefined && p !== r) {
+                    inn.style.transition = 'none'; inn.style.transform = 'rotateY(' + p + 'deg)'; void inn.offsetWidth;
+                    inn.style.transition = ''; inn.style.transform = 'rotateY(' + r + 'deg)';
+                }
+                kcPrev[k] = r;
+            });
+        }
+        new MutationObserver(kcAnim).observe(document.body, { childList: true, subtree: true });
         function bigCdHTML(left, total, label, jeda) {
             const p = total ? left / total : 0, cls = left <= 5 ? 'low' : p > .5 ? 'ok' : 'mid';
             return `<div class="bigcd ${cls}"><small>${label}</small>${jeda ? '⏸ ' : ''}${fmtT(left)}</div>`;
@@ -1457,9 +1475,12 @@
             const s = G().s3; if (!s) return '';
             const b = s.akt !== null ? s.k[s.akt] : null, q = b ? bankK[s.akt] : null, fz = jr ? '1.4rem' : '2.6rem';
             if (b && s.fase === 'soal' && !jr) return `<div class="buzz" style="background:${warna(s.gil)}">${esc(tById(s.gil).name)} · Kotak ${s.akt + 1} · ${katIk(q.c)} ${esc(q.c || '')}</div><div class="pn-q" style="font-size:${fz}">${NM[b.j]}<br>${esc(q.t)}</div>`;
+            // Kartu 3D: depan = nomor (atau warna regu bila benar), belakang = mata pelajaran. Rotasi: 0 nomor · 180 terpilih (mapel) · 360 dibuka (warna regu)
             const grid = `<div class="kg" style="grid-template-columns:repeat(5,1fr)">` + s.k.map((x, i) => {
-                const open = x.o !== null;
-                return `<div class="kc" style="background:${open ? warna(x.o) : s.akt === i ? 'var(--kuning-pramuka)' : '#fff'};color:${open ? '#fff' : 'inherit'}" ${jr && !open && s.akt === null && !s.selesai ? `onclick="s3Pilih(${i})"` : ''}>${open ? IK[x.j] + '<small style="font-size:.9rem">' + katIk((bankK[i] || {}).c) + '</small>' : i + 1}</div>`;
+                const open = x.o !== null, sel = s.akt === i, rot = open ? 360 : sel ? 180 : 0, kc = sel ? bankK[i] || {} : null;
+                return `<div class="kc kc3" data-k="${jr ? 'j' : 'p'}${i}" data-r="${rot}" ${jr && !open && s.akt === null && !s.selesai ? `onclick="s3Pilih(${i})"` : ''}><div class="kc3-in" style="transform:rotateY(${rot}deg)">` +
+                    `<div class="kc3-f" style="background:${open ? warna(x.o) : '#fff'};color:inherit">${open ? '' : i + 1}</div>` +
+                    `<div class="kc3-f kc3-b">${sel ? `<span class="ik">${katIk(kc.c)}</span><small>${esc(kc.c || 'Umum')}</small>` : ''}</div></div></div>`;
             }).join('') + '</div>';
             const info = !b ? '' : s.fase === 'soal' ? `<div class="pn-q" style="font-size:${fz}">Kotak ${s.akt + 1} · ${NM[b.j]}<br>${esc(q.t)}</div>` :
                 `<div class="pn-q" style="font-size:${fz}">Kotak ${s.akt + 1}<br><span style="font-size:3em">${katIk(q.c)}</span><br>${esc(q.c || 'Umum')}</div>`;
@@ -1484,7 +1505,7 @@
             return verdictHTML(a, bankK[s.akt], 's3Nilai');
         }
         function s3Gil(id) { gfAksi(() => { G().s3.gil = id; }); }
-        function s3Pilih(i) { window._s3Ans = ''; aStop(); const s = G().s3; if (s.selesai) return; s.akt = i; s.fase = 'kategori'; s.hasil = null; sfx('tick'); saveData(); render(); }
+        function s3Pilih(i) { window._s3Ans = ''; aStop(); const s = G().s3; if (s.selesai) return; s.akt = i; s.fase = 'kategori'; s.hasil = null; sfx('flip'); saveData(); render(); }
         function s3Soal() { const s = G().s3; if (s.akt === null) return; s.fase = 'soal'; aStart(CFG.a3); saveData(); render(); }
         function s3Batal() { window._s3Ans = ''; aStop(); const s = G().s3; s.akt = null; s.fase = null; saveData(); render(); }
         function s3Mulai() { hitung(s3Jalan); }
@@ -2121,6 +2142,6 @@
     <div>LCC Kepanduan · Kemah Kerja Madrasah Season 5 · MAN 1 Boalemo</div>
     <small>Dibangun dengan HTML, Google Apps Script &amp; Google Sheets · Kurikulum Merdeka berbasis cinta, dengan literasi dan numerasi</small>
 </footer>
-<div id="app-ver" style="position:fixed;bottom:2px;left:6px;font-size:10px;opacity:.45;z-index:5;pointer-events:none">v2026.11.11-i</div>
+<div id="app-ver" style="position:fixed;bottom:2px;left:6px;font-size:10px;opacity:.45;z-index:5;pointer-events:none">v2026.11.11-j</div>
 </body>
 </html>
