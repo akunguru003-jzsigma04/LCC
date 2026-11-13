@@ -1444,6 +1444,15 @@
         }
         new MutationObserver(recs => { if (window._istOn) recs.forEach(r => r.addedNodes.forEach(istNode)); }).observe(document.body, { childList: true, subtree: true });
         ['alert', 'confirm', 'prompt'].forEach(k => { const f = window[k].bind(window); window[k] = (m, d) => f(istStr(String(m)), d); });
+        function brandStatik() {   // teks statis di HTML (judul, menu peran, footer). Dipanggil juga saat halaman selesai dimuat karena <footer> ada setelah <script>
+            const b = BR();
+            const set = (id, h) => { const e = document.getElementById(id); if (e) e.innerHTML = h; };
+            set('hd-title', esc(b.nama) + ': ' + esc(b.edisi)); set('rm-ribbon', esc(b.edisi).toUpperCase()); set('rm-title1', esc(b.nama));
+            set('rm-sub', esc(b.acara) + ' · ' + esc(b.lembaga)); set('ft-nama', esc(b.nama));
+            set('ft-brand', esc(b.nama) + ' · ' + esc(b.edisi) + ' · ' + esc(b.acara) + ' · ' + esc(b.lembaga));
+            document.title = b.nama + ' · ' + b.edisi;
+        }
+        document.addEventListener('DOMContentLoaded', brandStatik);
         function terapBrand() {
             const b = BR(), key = JSON.stringify(b);
             if (window._brKey === key) return;
@@ -1451,9 +1460,7 @@
             try { localStorage.setItem('lcc_brand', key); } catch (e) {}
             if (b.istilah !== ISTILAH || (b.istilah !== 'Regu' && !window._istOn)) setIstilah(b.istilah);
             document.title = b.nama + ' · ' + b.edisi;
-            const set = (id, h) => { const e = document.getElementById(id); if (e) e.innerHTML = h; };
-            set('hd-title', esc(b.nama) + ': ' + esc(b.edisi)); set('rm-ribbon', esc(b.edisi).toUpperCase()); set('rm-title1', esc(b.nama));
-            set('rm-sub', esc(b.acara) + ' · ' + esc(b.lembaga)); set('ft-brand', esc(b.nama) + ' · ' + esc(b.edisi) + ' · ' + esc(b.acara) + ' · ' + esc(b.lembaga));
+            brandStatik();
             const cv = document.getElementById('cover-view'); if (cv && cv.innerHTML && window._brBuilt && !PENONTON && !BEL) buildCover();
             window._brBuilt = true;
         }
@@ -1790,7 +1797,7 @@
                 <div class="cv-t1">${esc(BR().nama)}</div>
                 <div class="cv-rope"></div>
                 <div class="cv-t2">${esc(BR().edisi)}</div>
-                <div class="cv-inst">${esc((BR().acara + ' · ' + BR().lembaga).toUpperCase())}</div><div class="cv-credit">© 2026 · J D Ace | Sigma04, an1mo</div>
+                <div class="cv-inst">${esc((BR().acara + ' · ' + BR().lembaga).toUpperCase())}</div><div class="cv-credit">© 2026 · ${esc(BR().nama)} · J D Ace | Sigma04, an1mo</div>
                 
                 ${landing ? '<button class="btn-start" onclick="bukaMenuPeran()">Mulai 🚀</button>' : jr ? '<button class="btn-start" onclick="mulaiLomba()">' + (state.lastPhase ? 'Lanjutkan Lomba ▶' : 'Mulai Lomba 🚀') + '</button><button class="cv-link" onclick="bukaPenonton()">🖥 Buka Layar Penonton</button><button class="cv-link" onclick="gantiPeran()">🔀 Ganti Peran</button>' : ''}
                 <div class="cv-motto">${BR().tagline ? '“' + esc(BR().tagline) + '”' : ''}</div>
@@ -2342,10 +2349,10 @@
         if (PICK) { initPick(); } else if (PENONTON) { initPenonton(); } else if (BEL) { initBel(); } else { buildCover(); updateMuteUI(); initApp(); if (state.phase === 'cover') mulaiLomba(); aturBabakJuri(); updateTimerUI(); cloudInit(); setInterval(belPollCloud, 1500); setInterval(jawabPollCloud, 1500); }
     </script>
 <footer id="app-foot">
-    <div>© 2026 · Dikembangkan oleh <b>J D Ace | Sigma04, an1mo</b></div>
+    <div>© 2026 · <span id="ft-nama">Battle of Minds</span> · Dikembangkan oleh <b>J D Ace | Sigma04, an1mo</b></div>
     <div id="ft-brand">Battle of Minds · Scout Edition · Kemah Kerja Madrasah · Season 5 · MAN 1 Boalemo</div>
     <small>Dibangun dengan HTML, Google Apps Script &amp; Google Sheets · Kurikulum Merdeka berbasis cinta, dengan literasi dan numerasi</small>
 </footer>
-<div id="app-ver" style="position:fixed;bottom:2px;left:6px;font-size:10px;opacity:.45;z-index:5;pointer-events:none">v2026.11.11-n</div>
+<div id="app-ver" style="position:fixed;bottom:2px;left:6px;font-size:10px;opacity:.45;z-index:5;pointer-events:none">v2026.11.11-o</div>
 </body>
 </html>
