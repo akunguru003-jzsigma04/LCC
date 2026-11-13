@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LCC Kepanduan · MAN 1 Boalemo</title>
+    <title>Battle of Minds</title>
     <style>
         :root {
             --coklat-tua: #4E342E;
@@ -12,6 +12,9 @@
             --hijau-sukses: #43A047;
             --merah-gagal: #E53935;
             --bg-body: #F5F5F6;
+            /* turunan tema (dihitung ulang otomatis oleh terapTema) */
+            --gelap-terang: #6D4C41; --gelap-pekat: #2B1D19; --aksen-tua: #FFB300; --aksen-gelap: #F57F17;
+            --aksen-pucat: #FFF8E1; --aksen-lembut: #ffe082; --sedang-pucat: #d7ccc8; --footer-bg: rgba(43,29,25,.95);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -66,7 +69,7 @@
         }
 
         .btn-primary { background: var(--kuning-pramuka); color: var(--coklat-tua); }
-        .btn-primary:hover { background: #FFB300; transform: translateY(-2px); }
+        .btn-primary:hover { background: var(--aksen-tua); transform: translateY(-2px); }
         .btn-primary:disabled { background: #ccc; color: #666; cursor: not-allowed; transform: none; }
         
         .btn-danger { background: transparent; color: var(--merah-gagal); border: 2px solid var(--merah-gagal); }
@@ -163,7 +166,7 @@
         .winner-banner { text-align: center; margin-bottom: 2rem; }
         .winner-banner h2 { font-size: 2.5rem; color: var(--coklat-tua); }
         .gf-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem; }
-        .gf-card { background: linear-gradient(135deg, var(--kuning-pramuka), #FFB300); padding: 2rem; border-radius: 12px; font-size: 1.5rem; font-weight: bold; color: var(--coklat-tua); box-shadow: 0 8px 15px rgba(0,0,0,0.1); width: 250px; text-align: center; }
+        .gf-card { background: linear-gradient(135deg, var(--kuning-pramuka), var(--aksen-tua)); padding: 2rem; border-radius: 12px; font-size: 1.5rem; font-weight: bold; color: var(--coklat-tua); box-shadow: 0 8px 15px rgba(0,0,0,0.1); width: 250px; text-align: center; }
         .gf-card .survivor-count { font-size: 1rem; font-weight: normal; margin-top: 10px; background: rgba(255,255,255,0.5); padding: 5px; border-radius: 4px; }
 
         /* Mode Peserta / Soal */
@@ -190,8 +193,8 @@
         .cover-inst { font-size: 1.6rem; margin-bottom: 4rem; color: #ccc; font-weight: 500; position: relative; z-index: 2; }
         
         .btn-start { font-size: 1.5rem; font-weight: bold; padding: 1.2rem 4rem; background: var(--kuning-pramuka); color: var(--coklat-tua); border: none; border-radius: 50px; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; box-shadow: 0 6px 0 #F57F17; transition: all 0.2s; animation: pulse 2s infinite; position: relative; z-index: 2; }
-        .btn-start:hover { transform: translateY(-4px); box-shadow: 0 10px 0 #F57F17; background: #FFB300; }
-        .btn-start:active { transform: translateY(4px); box-shadow: 0 2px 0 #F57F17; }
+        .btn-start:hover { transform: translateY(-4px); box-shadow: 0 10px 0 var(--aksen-gelap); background: var(--aksen-tua); }
+        .btn-start:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--aksen-gelap); }
         
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 202, 40, 0.7); } 70% { box-shadow: 0 0 0 20px rgba(255, 202, 40, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 202, 40, 0); } }
 
@@ -212,7 +215,7 @@
         .timer-row { display: flex; align-items: center; gap: 12px; margin-bottom: 1.2rem; }
         .juri-panel { background: #fff; border: 2px solid var(--kuning-pramuka); border-radius: 12px; padding: 1rem 1.5rem; margin-bottom: 1.5rem; }
         .jp-soal { font-size: 1.3rem; font-weight: bold; margin: .3rem 0; }
-        .jp-kunci { background: #FFF8E1; border-left: 5px solid var(--hijau-sukses); padding: .5rem .8rem; border-radius: 6px; margin-bottom: .8rem; }
+        .jp-kunci { background: var(--aksen-pucat); border-left: 5px solid var(--hijau-sukses); padding: .5rem .8rem; border-radius: 6px; margin-bottom: .8rem; }
         .jp-btns { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
         .jp-btns select { padding: .5rem; border-radius: 6px; border: 2px solid var(--coklat-muda); font-weight: bold; }
         .btn-sm { padding: .45rem .9rem; font-size: .9rem; }
@@ -224,11 +227,11 @@
         .member.sudah { position: relative; box-shadow: 0 0 0 3px #66bb6a; }
         .member.sudah::after { content: '✓'; position: absolute; top: -8px; right: -6px; font-size: .75rem; background: #2e7d32; color: #fff; border-radius: 50%; width: 1.2em; height: 1.2em; line-height: 1.2em; text-align: center; }
         .member.tunggu { opacity: .55; border-style: dashed; }
-        .cd-ov { position: fixed; inset: 0; z-index: 9998; display: flex; align-items: center; justify-content: center; background: #000b; color: #ffca28; font-size: 45vmin; font-weight: 900; pointer-events: none; animation: stampIn .4s; }
-        #app-foot { text-align: center; font-size: .8rem; line-height: 1.7; padding: 1rem .8rem 1.3rem; background: rgba(62,39,35,.95); color: #ffe082; margin-top: 1.5rem; }
-        #app-foot b { color: #fff; } #app-foot small { display: block; color: #d7ccc8; font-size: .72rem; }
-        .cv-credit { margin-top: 1.4rem; font-size: .8rem; color: #ffe082; opacity: .9; }
-        .rm-credit { margin-top: 1.2rem; font-size: .75rem; color: #8d6e63; }
+        .cd-ov { position: fixed; inset: 0; z-index: 9998; display: flex; align-items: center; justify-content: center; background: #000b; color: var(--kuning-pramuka); font-size: 45vmin; font-weight: 900; pointer-events: none; animation: stampIn .4s; }
+        #app-foot { text-align: center; font-size: .8rem; line-height: 1.7; padding: 1rem .8rem 1.3rem; background: var(--footer-bg); color: var(--aksen-lembut); margin-top: 1.5rem; }
+        #app-foot b { color: #fff; } #app-foot small { display: block; color: var(--sedang-pucat); font-size: .72rem; }
+        .cv-credit { margin-top: 1.4rem; font-size: .8rem; color: var(--aksen-lembut); opacity: .9; }
+        .rm-credit { margin-top: 1.2rem; font-size: .75rem; color: var(--coklat-muda); }
         .kc.g2c { position: relative; overflow: hidden; padding: 0; background: #455a64; }
         .kc.g2c img { width: 100%; height: 100%; object-fit: cover; }
         .kc .nm { position: absolute; left: 8px; bottom: 2px; color: #fff; font-size: 1.7rem; text-shadow: 0 2px 5px #000; }
@@ -278,9 +281,9 @@
         #cover-view { background: transparent !important; padding: 0 !important; box-shadow: none !important; border-radius: 0 !important; min-height: 0 !important; width: 100%; }
         #cover-view::before, #cover-view::after { display: none !important; }
         .cv-wrap { position: relative; width: 100%; min-height: 78vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 3rem 1.5rem; border-radius: 22px; overflow: hidden; color: #fff;
-            background: radial-gradient(circle at 50% 35%, #6D4C41 0%, #4E342E 55%, #2B1D19 100%);
-            box-shadow: inset 0 0 0 10px #4E342E, inset 0 0 0 14px var(--kuning-pramuka), inset 0 0 0 18px #4E342E, 0 12px 30px rgba(0,0,0,.35); }
-        .cv-wrap::before { content: ''; position: absolute; inset: -60%; background: repeating-conic-gradient(from 0deg at 50% 50%, rgba(255,202,40,.08) 0 6deg, transparent 6deg 12deg); animation: cvSpin 150s linear infinite; pointer-events: none; }
+            background: radial-gradient(circle at 50% 35%, var(--gelap-terang) 0%, var(--coklat-tua) 55%, var(--gelap-pekat) 100%);
+            box-shadow: inset 0 0 0 10px var(--coklat-tua), inset 0 0 0 14px var(--kuning-pramuka), inset 0 0 0 18px var(--coklat-tua), 0 12px 30px rgba(0,0,0,.35); }
+        .cv-wrap::before { content: ''; position: absolute; inset: -60%; background: repeating-conic-gradient(from 0deg at 50% 50%, color-mix(in srgb, var(--kuning-pramuka) 9%, transparent) 0 6deg, transparent 6deg 12deg); animation: cvSpin 150s linear infinite; pointer-events: none; }
         .cv-wrap > * { position: relative; z-index: 1; animation: cvIn .8s both; }
         .cv-wrap > *:nth-child(2) { animation-delay: .1s; } .cv-wrap > *:nth-child(3) { animation-delay: .2s; } .cv-wrap > *:nth-child(4) { animation-delay: .3s; }
         .cv-wrap > *:nth-child(5) { animation-delay: .4s; } .cv-wrap > *:nth-child(6) { animation-delay: .5s; } .cv-wrap > *:nth-child(7) { animation-delay: .6s; } .cv-wrap > *:nth-child(8) { animation-delay: .7s; }
@@ -292,7 +295,7 @@
         .cv-logo img { width: 100%; height: 100%; object-fit: contain; }
         .cv-logo.ph { background: rgba(255,255,255,.1); border-style: dashed; font-size: .85rem; color: var(--kuning-pramuka); font-weight: 700; }
         .cv-t1 { font-size: clamp(2.4rem, 8vw, 5.2rem); font-weight: 900; color: var(--kuning-pramuka); text-transform: uppercase; line-height: 1.05; text-shadow: 4px 4px 0 rgba(0,0,0,.45); }
-        .cv-rope { width: min(420px, 70%); height: 10px; margin: 1.2rem auto; border-radius: 6px; background: repeating-linear-gradient(135deg, #FFCA28 0 8px, #8D6E63 8px 16px); }
+        .cv-rope { width: min(420px, 70%); height: 10px; margin: 1.2rem auto; border-radius: 6px; background: repeating-linear-gradient(135deg, var(--kuning-pramuka) 0 8px, var(--coklat-muda) 8px 16px); }
         .cv-t2 { font-size: clamp(1.1rem, 3.5vw, 2rem); font-weight: 800; }
         .cv-inst { font-size: clamp(1rem, 3vw, 1.6rem); color: #ddd; letter-spacing: 3px; font-weight: 600; margin-top: .3rem; }
         .cv-chips { display: flex; gap: .6rem; flex-wrap: wrap; justify-content: center; margin: 1.2rem 0 2rem; }
@@ -305,7 +308,7 @@
         .pd-names { min-height: 90px; display: flex; flex-direction: column; justify-content: flex-end; gap: 6px; margin-bottom: 6px; }
         .pd-name { background: #fff; border: 4px solid var(--kuning-pramuka); border-radius: 12px; padding: .6rem; font-weight: 900; font-size: 1.4rem; }
         .pd-name small { display: block; font-weight: 700; font-size: .9rem; }
-        .pd-block { background: linear-gradient(#FFCA28, #c79100); border-radius: 10px 10px 0 0; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 2rem; color: var(--coklat-tua); }
+        .pd-block { background: linear-gradient(var(--kuning-pramuka), var(--aksen-gelap)); border-radius: 10px 10px 0 0; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 2rem; color: var(--coklat-tua); }
         .pd-block b { font-size: 2.6rem; }
 
         #cloud-badge { position: fixed; left: 12px; bottom: 12px; z-index: 950; color: #fff; font-size: .8rem; font-weight: 700; padding: .35rem .8rem; border-radius: 20px; background: #777; opacity: .92; pointer-events: none; }
@@ -318,7 +321,7 @@
         .pn-head { display: flex; align-items: center; gap: 12px; margin-bottom: 1rem; color: var(--coklat-tua); font-size: 1.1rem; }
         .pn-head img { height: 52px; }
         #role-menu, #babak-menu { position: fixed; inset: 0; z-index: 2000; overflow: auto; align-items: center; justify-content: center; padding: 1.5rem; text-align: center; color: #fff;
-            background: radial-gradient(circle at 50% 30%, #6D4C41 0%, #4E342E 55%, #2B1D19 100%); }
+            background: radial-gradient(circle at 50% 30%, var(--gelap-terang) 0%, var(--coklat-tua) 55%, var(--gelap-pekat) 100%); }
         .rm-box { max-width: 900px; width: 100%; }
         .rm-logo { display: block; margin: 0 auto; width: 130px; height: 130px; object-fit: contain; background: #fff; border-radius: 50%; border: 4px solid var(--kuning-pramuka); padding: 6px; box-sizing: border-box; }
         .rm-box h1 { color: var(--kuning-pramuka); font-size: clamp(2rem, 6vw, 3.4rem); text-transform: uppercase; margin: .6rem 0 .2rem; text-shadow: 3px 3px 0 rgba(0,0,0,.4); }
@@ -358,7 +361,7 @@
 
     <header id="main-header">
         <img class="hd-logo" id="hd-logo" alt="Logo">
-        <h1>LCC Kepanduan - Season 5</h1>
+        <h1 id="hd-title">Battle of Minds: Scout Edition</h1>
         <p>Aplikasi Penilaian Cerdas Cermat Sistem Gugur</p>
     </header>
 
@@ -373,6 +376,8 @@
         
         <div id="juri-buttons" style="display: flex; gap: 10px; flex-wrap: wrap;">
             <button class="btn btn-primary btn-outline" onclick="bukaReg()">📝 Daftar Regu</button>
+            <button class="btn btn-primary btn-outline" onclick="bukaBrand()" title="Nama lomba, edisi, tagline, dan istilah peserta (Regu/Tim/Kelas)">🏷 Nama Lomba</button>
+            <button class="btn btn-primary btn-outline" onclick="bukaTema()" title="Pilih warna tampilan (mengikuti logo madrasah / kegiatan)">🎨 Tema</button>
             <button class="btn btn-primary btn-outline" onclick="bukaPO()" title="Pendaftaran & penilaian play-off bila regu lolos kurang dari target">🥊 Play-off</button>
             <button class="btn btn-primary btn-outline" onclick="kembaliCover()">🏠 Cover</button>
             <button class="btn btn-primary btn-outline" onclick="gantiPeran()">🔀 Ganti Peran</button>
@@ -460,6 +465,18 @@
         </div>
     </div>
 
+    <div id="brand-modal" class="modal" style="display:none"><div class="modal-box" style="max-width:900px">
+        <h2>🏷 Nama Lomba &amp; Istilah</h2>
+        <div id="brand-body" data-noist></div>
+        <div class="jp-btns"><button class="btn btn-primary" onclick="tutupBrand()">Selesai</button></div>
+    </div></div>
+
+    <div id="tema-modal" class="modal" style="display:none"><div class="modal-box" style="max-width:900px">
+        <h2>🎨 Tema Tampilan</h2>
+        <div id="tema-body"></div>
+        <div class="jp-btns"><button class="btn btn-primary" onclick="tutupTema()">Selesai</button></div>
+    </div></div>
+
     <div id="po-modal" class="modal" style="display:none"><div class="modal-box" style="max-width:900px">
         <h2>🥊 Play-off — Pendaftaran &amp; Hasil</h2>
         <div id="po-body"></div>
@@ -498,8 +515,8 @@
             <h1>Pilih Babak</h1>
             <p>Pilih babak lomba terlebih dahulu, lalu pilih peran Anda.</p>
             <div class="rm-grid">
-                <button class="rm-btn" onclick="pilihBabak('gugur')"><span>⚔️</span><b>Babak Gugur</b><small>Penyisihan sistem gugur · semua regu terdaftar</small></button>
-                <button class="rm-btn" onclick="pilihBabak('final')"><span>🏆</span><b>Babak Grand Final</b><small>3 sesi · hanya regu yang lolos dari Babak Gugur</small></button>
+                <button class="rm-btn" onclick="pilihBabak('gugur')"><span>⚔️</span><b>Babak Penyisihan</b><small>Seleksi awal · semua regu terdaftar</small></button>
+                <button class="rm-btn" onclick="pilihBabak('final')"><span>🏆</span><b>Babak Utama</b><small>3 sesi · hanya regu yang lolos dari Babak Penyisihan</small></button>
             </div>
             <button class="cv-link" onclick="tampilLanding()">↩ Kembali ke cover</button>
         </div>
@@ -507,9 +524,9 @@
     <div id="role-menu" style="display:none">
         <div class="rm-box">
             <img id="rm-logo" class="rm-logo" alt="Logo MAN 1 Boalemo">
-            <div class="cv-ribbon" style="display:inline-block;margin-top:1rem">LCC KEPANDUAN</div>
-            <h1>Lomba Cerdas Cermat</h1>
-            <p>Kemah Kerja Madrasah · Season 5 · MAN 1 Boalemo</p>
+            <div class="cv-ribbon" id="rm-ribbon" style="display:inline-block;margin-top:1rem">SCOUT EDITION</div>
+            <h1 id="rm-title1">Battle of Minds</h1>
+            <p id="rm-sub">Kemah Kerja Madrasah · Season 5 · MAN 1 Boalemo</p>
             <h2 id="rm-title" style="margin-top:1.5rem">Masuk sebagai</h2>
             <div class="rm-grid">
                 <button class="rm-btn" onclick="pilihPeran('juri')"><span>🧑‍⚖️</span><b>Juri</b><small>Mengatur lomba, menilai jawaban, dan mengontrol layar</small></button>
@@ -812,7 +829,7 @@
             const c = document.createElement('canvas');
             c.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:999';
             c.width = innerWidth; c.height = innerHeight; document.body.appendChild(c);
-            const x = c.getContext('2d'), cols = ['#FFCA28', '#43A047', '#E53935', '#8D6E63', '#ffffff'];
+            const x = c.getContext('2d'), cols = [getComputedStyle(document.documentElement).getPropertyValue('--kuning-pramuka').trim() || '#FFCA28', '#43A047', '#E53935', getComputedStyle(document.documentElement).getPropertyValue('--coklat-muda').trim() || '#8D6E63', '#ffffff'];
             const ps = Array.from({ length: 160 }, () => ({ x: Math.random() * c.width, y: -Math.random() * c.height * .6, vx: Math.random() * 4 - 2, vy: 2 + Math.random() * 4, s: 6 + Math.random() * 8, c: cols[Math.random() * 5 | 0], r: Math.random() * 6 }));
             let f = 0;
             (function a() {
@@ -848,7 +865,7 @@
 
         // Edit Nama Regu
         function updateTeamName(teamIndex, newName) {
-            state.teams[teamIndex].name = newName.trim() || `Regu ${teamIndex + 1}`;
+            state.teams[teamIndex].name = newName.trim() || `${ISTILAH} ${teamIndex + 1}`;
             saveData();
         }
 
@@ -872,6 +889,7 @@
 
         // Render UI
         function render() {
+            terapTema(); terapBrand();
             rapikan();
             const mainHeader = document.getElementById('main-header');
             const dashboardBar = document.getElementById('dashboard-bar');
@@ -1156,6 +1174,7 @@
             }
         }
         function renderPenonton() {
+            terapTema(); terapBrand();
             rapikan();
             const pv = document.getElementById('penonton-view'), ts = state.teams || [];
             const L = getLive();
@@ -1163,7 +1182,7 @@
                 pv.innerHTML = coverHTML(false);
                 return;
             }
-            let h = '<div class="pn-head"><img src="' + logoSrc() + '" alt=""><b>LCC KEPANDUAN · Kemah Kerja Madrasah Season 5 · MAN 1 BOALEMO</b></div>';
+            let h = '<div class="pn-head"><img src="' + logoSrc() + '" alt=""><b>' + esc((BR().nama + ' · ' + BR().edisi + ' · ' + BR().acara + ' · ' + BR().lembaga).toUpperCase()) + '</b></div>';
             if (L.cd > 0) h += '<div class="cd-ov">' + L.cd + '</div>';
             if (state.po && state.po.mulai && !state.po.selesai && state.phase === 'penyisihan') { pv.innerHTML = h + poBoardHTML(); return; }
             if (L.tampil && state.phase === 'penyisihan') {
@@ -1248,6 +1267,210 @@
         function urutGF(ts) { return ts.slice().sort((a, b) => (b.gf || 0) - (a.gf || 0)); }
         function gfAksi(fn) { pushHistory(); fn(); saveData(); render(); }
         function setSesi(n) { if (n === 3) s3Init(); G().sesi = n; G().podium = false; saveData(); render(); }
+        // ================= TEMA WARNA (mengikuti logo madrasah / kegiatan) =================
+        const TEMA_PRESET = [
+            { id: 'klasik', nama: 'Pramuka Klasik', c: { gelap: '#4E342E', sedang: '#8D6E63', aksen: '#FFCA28', bg: '#F5F5F6' } },
+            { id: 'hijau', nama: 'Hijau & Emas', c: { gelap: '#0F5132', sedang: '#4C9A73', aksen: '#F4C430', bg: '#F2F7F4' } },
+            { id: 'biru', nama: 'Biru & Emas', c: { gelap: '#0D2B5C', sedang: '#4A74B8', aksen: '#FFC72C', bg: '#F1F4FA' } },
+            { id: 'maroon', nama: 'Maroon & Emas', c: { gelap: '#6A1427', sedang: '#B05A6B', aksen: '#F2B705', bg: '#F8F3F4' } },
+            { id: 'ungu', nama: 'Ungu & Kuning', c: { gelap: '#3B1D6B', sedang: '#8366BF', aksen: '#FFD54F', bg: '#F5F2FA' } },
+            { id: 'tosca', nama: 'Tosca & Oranye', c: { gelap: '#00494F', sedang: '#2C8E97', aksen: '#FF9F1C', bg: '#F0F6F7' } }
+        ];
+        const clampN = (x, a, b) => Math.min(b, Math.max(a, x));
+        function hex2rgb(h) { h = String(h).replace('#', ''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16) || 0; return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
+        function rgb2hex(r, g, b) { return '#' + [r, g, b].map(v => Math.round(clampN(v, 0, 255)).toString(16).padStart(2, '0')).join(''); }
+        function rgb2hsl(r, g, b) {
+            r /= 255; g /= 255; b /= 255; const mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2, d = mx - mn; let h = 0, s = 0;
+            if (d) { s = l > .5 ? d / (2 - mx - mn) : d / (mx + mn); h = mx === r ? (g - b) / d + (g < b ? 6 : 0) : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; h *= 60; }
+            return [h, s, l];
+        }
+        function hsl2hex(h, s, l) {
+            h = ((h % 360) + 360) % 360; s = clampN(s, 0, 1); l = clampN(l, 0, 1);
+            const c = (1 - Math.abs(2 * l - 1)) * s, x = c * (1 - Math.abs((h / 60) % 2 - 1)), m = l - c / 2; let r = 0, g = 0, b = 0;
+            if (h < 60) [r, g, b] = [c, x, 0]; else if (h < 120) [r, g, b] = [x, c, 0]; else if (h < 180) [r, g, b] = [0, c, x]; else if (h < 240) [r, g, b] = [0, x, c]; else if (h < 300) [r, g, b] = [x, 0, c]; else [r, g, b] = [c, 0, x];
+            return rgb2hex((r + m) * 255, (g + m) * 255, (b + m) * 255);
+        }
+        const hslOf = hex => rgb2hsl(...hex2rgb(hex));
+        function lumOf(hex) { const [r, g, b] = hex2rgb(hex).map(v => { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); }); return .2126 * r + .7152 * g + .0722 * b; }
+        function kontras(a, b) { const x = lumOf(a), y = lumOf(b); return (Math.max(x, y) + .05) / (Math.min(x, y) + .05); }
+        function turunan(hex, ds, dl) { const [h, s, l] = hslOf(hex); return hsl2hex(h, s + ds, l + dl); }
+        // pastikan tulisan warna aksen di atas warna gelap (judul, tombol) tetap terbaca
+        function rapikanTema(c) {
+            let aks = c.aksen, gel = c.gelap, n = 0;
+            while (kontras(aks, gel) < 4.5 && n++ < 30) { const [h, s, l] = hslOf(aks); if (l < .88) aks = hsl2hex(h, s, l + .03); else gel = turunan(gel, 0, -.03); }
+            return Object.assign({}, c, { aksen: aks, gelap: gel });
+        }
+        function setTemaVars(c) {
+            const R = document.documentElement.style, set = (k, v) => R.setProperty(k, v), [h, s, l] = hslOf(c.aksen), pekat = turunan(c.gelap, 0, -.09), [pr, pg, pb] = hex2rgb(pekat);
+            set('--coklat-tua', c.gelap); set('--coklat-muda', c.sedang); set('--kuning-pramuka', c.aksen); set('--bg-body', c.bg);
+            set('--gelap-terang', turunan(c.gelap, -.05, .1)); set('--gelap-pekat', pekat);
+            set('--aksen-tua', hsl2hex(h, Math.min(1, s + .05), l - .07)); set('--aksen-gelap', hsl2hex(h, s, Math.max(.2, l - .2)));
+            set('--aksen-pucat', hsl2hex(h, Math.min(1, s), .94)); set('--aksen-lembut', hsl2hex(h, s, .8));
+            set('--sedang-pucat', hsl2hex(hslOf(c.sedang)[0], .2, .82)); set('--footer-bg', `rgba(${pr},${pg},${pb},.95)`);
+        }
+        function temaAktif() { return (typeof state !== 'undefined' && state && state.tema && state.tema.c) ? state.tema : { id: 'klasik', c: TEMA_PRESET[0].c }; }
+        function terapTema() {
+            const t = temaAktif(), key = JSON.stringify(t.c); if (window._temaKey === key) return;
+            window._temaKey = key; setTemaVars(t.c);
+            try { localStorage.setItem('lcc_tema', JSON.stringify({ c: t.c })); } catch (e) {}
+        }
+        try { const t0 = JSON.parse(localStorage.getItem('lcc_tema') || 'null'); if (t0 && t0.c) { setTemaVars(t0.c); window._temaKey = JSON.stringify(t0.c); } } catch (e) {}   // tampilan awal sebelum data dimuat
+
+        // ---- ambil warna dominan dari logo ----
+        function warnaDominan(d) {   // d = data RGBA (Uint8ClampedArray)
+            const N = 24, w = Array(N).fill(0), hx = Array(N).fill(0), hy = Array(N).fill(0), ss = Array(N).fill(0), ll = Array(N).fill(0);
+            for (let i = 0; i < d.length; i += 4) {
+                if (d[i + 3] < 200) continue;
+                const [h, s, l] = rgb2hsl(d[i], d[i + 1], d[i + 2]);
+                if (s < .28 || l > .93 || l < .1) continue;                 // abaikan putih, hitam, abu-abu
+                const wt = s * (1 - Math.abs(l - .5) * 1.2), k = Math.floor(h / 15) % N;
+                w[k] += wt; ss[k] += s * wt; ll[k] += l * wt; hx[k] += Math.cos(h * Math.PI / 180) * wt; hy[k] += Math.sin(h * Math.PI / 180) * wt;
+            }
+            const tot = w.reduce((a, b) => a + b, 0), out = [], pakai = Array(N).fill(false);
+            if (!tot) return out;
+            for (let pick = 0; pick < 3; pick++) {
+                let best = -1, bw = 0;
+                for (let k = 0; k < N; k++) { if (pakai[k]) continue; const sw = w[k] + .5 * w[(k + 1) % N] + .5 * w[(k + N - 1) % N]; if (sw > bw) { bw = sw; best = k; } }
+                if (best < 0 || bw < tot * .08) break;
+                let W = 0, X = 0, Y = 0, S = 0, L = 0;
+                for (const o of [-1, 0, 1]) { const k = (best + o + N) % N; W += w[k]; X += hx[k]; Y += hy[k]; S += ss[k]; L += ll[k]; }
+                const h = (Math.atan2(Y, X) * 180 / Math.PI + 360) % 360;
+                out.push({ h, s: S / W, l: L / W, share: W / tot, hex: hsl2hex(h, S / W, L / W) });
+                for (let o = -3; o <= 3; o++) pakai[(best + o + N) % N] = true;   // warna berikut harus berbeda ±45°
+            }
+            return out;
+        }
+        function ekstrakLogo(src) {
+            return new Promise(res => {
+                const im = new Image();
+                im.onerror = () => res([]);
+                im.onload = () => {
+                    const sc = Math.min(72 / im.width, 72 / im.height), w = Math.max(1, Math.round(im.width * sc)), h = Math.max(1, Math.round(im.height * sc)), cv = document.createElement('canvas');
+                    cv.width = w; cv.height = h; const cx = cv.getContext('2d'); cx.drawImage(im, 0, 0, w, h);
+                    try { res(warnaDominan(cx.getImageData(0, 0, w, h).data)); } catch (e) { res([]); }
+                };
+                im.src = src;
+            });
+        }
+        function paletDariLogo(cols) {
+            const emas = { h: 45, s: .95, l: .58 }, c1 = cols[0], c2 = cols[1] || null;
+            const mk = (dom, acc, nama) => ({ id: 'logo', nama, c: rapikanTema({
+                gelap: hsl2hex(dom.h, clampN(dom.s, .4, .85), .2), sedang: hsl2hex(dom.h, clampN(dom.s * .7, .25, .6), .45),
+                aksen: hsl2hex(acc.h, clampN(acc.s, .75, 1), clampN(acc.l, .5, .62)), bg: hsl2hex(dom.h, .14, .96) }) });
+            return [mk(c1, c2 || emas, c2 ? 'Dari logo · utama + pendamping' : 'Dari logo + emas'), c2 ? mk(c2, c1, 'Dari logo · dibalik') : mk(c1, { h: (c1.h + 180) % 360, s: .9, l: .58 }, 'Dari logo + warna pelengkap')];
+        }
+
+        // ---- UI pemilih tema ----
+        function swatchTema(c) { return `<span style="display:flex;gap:4px">${['gelap', 'sedang', 'aksen', 'bg'].map(k => `<span style="width:26px;height:26px;border-radius:6px;border:1px solid #0003;background:${c[k]}"></span>`).join('')}</span>`; }
+        function kartuTema(t, fn, aktif) {
+            return `<div onclick="${fn}" style="cursor:pointer;border:3px solid ${aktif ? 'var(--hijau-sukses)' : '#ddd'};border-radius:10px;padding:.5rem;min-width:150px;background:#fff;display:flex;flex-direction:column;gap:.35rem">
+                <div style="background:${t.c.gelap};color:${t.c.aksen};padding:.25rem .5rem;border-radius:6px;font-weight:800;font-size:.85rem">LCC ${aktif ? '✓' : ''}</div>${swatchTema(t.c)}<b style="font-size:.85rem">${esc(t.nama)}</b></div>`;
+        }
+        function bukaTema() { renderTema(); document.getElementById('tema-modal').style.display = 'flex'; }
+        function tutupTema() { document.getElementById('tema-modal').style.display = 'none'; }
+        function setTema(id, c, rapi) { state.tema = { id, c: rapi === false ? c : rapikanTema(c) }; terapTema(); saveData(); renderTema(); }
+        function pilihTema(i) { setTema(TEMA_PRESET[i].id, TEMA_PRESET[i].c); }
+        function pilihTemaLogo(i) { setTema('logo', window._temaLogo[i].c); }
+        function temaKustom(k, v, simpan) {
+            const c = Object.assign({}, temaAktif().c); c[k] = v; state.tema = { id: 'kustom', c }; terapTema();
+            if (simpan) { saveData(); renderTema(); }
+        }
+        async function temaDariLogo() {
+            const src = localStorage.getItem('lcc_logo');
+            if (!src) { toast('Unggah logo madrasah dulu di halaman sampul'); return; }
+            toast('Membaca warna logo…');
+            const cols = await ekstrakLogo(src);
+            if (!cols.length) { toast('Logo tidak memiliki warna dominan (hitam/putih/abu-abu)'); return; }
+            window._temaChips = cols; window._temaLogo = paletDariLogo(cols); renderTema();
+        }
+        function renderTema() {
+            const t = temaAktif(), cmp = (a, b) => JSON.stringify(a) === JSON.stringify(b), ada = !!localStorage.getItem('lcc_logo');
+            let h = `<p><small>Tema ikut tampil di semua perangkat (layar penonton, peserta, bel, juri) dan tersimpan di Google Sheets. Untuk kegiatan lain, cukup ganti logo lalu ambil warna dari logo, atau pilih tema lain.</small></p>
+                <h3>Tema siap pakai</h3><div style="display:flex;gap:.6rem;flex-wrap:wrap">${TEMA_PRESET.map((p, i) => kartuTema(p, `pilihTema(${i})`, cmp(p.c, t.c))).join('')}</div>
+                <h3 style="margin-top:1rem">🖼 Dari warna logo</h3>
+                <div class="jp-btns">${B(ada ? '🎯 Ambil warna dari logo' : 'Logo belum diunggah (sampul)', 'temaDariLogo()', 'btn-primary', ada ? '' : 'disabled')}</div>`;
+            if (window._temaChips) h += `<div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin:.4rem 0"><small>Warna dominan logo:</small>${window._temaChips.map(c => `<span title="${c.hex}" style="display:inline-flex;align-items:center;gap:.3rem"><span style="width:26px;height:26px;border-radius:50%;border:1px solid #0003;background:${c.hex}"></span><small>${Math.round(c.share * 100)}%</small></span>`).join('')}</div>`;
+            if (window._temaLogo) h += `<div style="display:flex;gap:.6rem;flex-wrap:wrap">${window._temaLogo.map((p, i) => kartuTema(p, `pilihTemaLogo(${i})`, cmp(p.c, t.c))).join('')}</div>`;
+            h += `<h3 style="margin-top:1rem">🎛 Kustom</h3><div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:center">` +
+                [['gelap', 'Warna utama (header, teks)'], ['sedang', 'Warna pendukung'], ['aksen', 'Warna aksen (tombol, judul)'], ['bg', 'Warna latar']].map(([k, lb]) =>
+                    `<label style="display:flex;flex-direction:column;gap:.2rem;font-size:.85rem">${lb}<input type="color" value="${t.c[k]}" oninput="temaKustom('${k}',this.value,false)" onchange="temaKustom('${k}',this.value,true)" style="width:90px;height:40px;border:0;padding:0;background:none"></label>`).join('') + '</div>';
+            if (kontras(t.c.aksen, t.c.gelap) < 3) h += '<p style="color:var(--merah-gagal);font-weight:700">⚠ Warna aksen terlalu mirip dengan warna utama sehingga tulisan sulit dibaca.</p>';
+            h += `<div class="jp-btns">${B('↩ Kembali ke Pramuka Klasik', 'pilihTema(0)', 'btn-outline')}</div>`;
+            document.getElementById('tema-body').innerHTML = h;
+        }
+        // ================= BRANDING: nama lomba, edisi, tagline, istilah peserta =================
+        const BRAND_DEFAULT = { nama: 'Battle of Minds', edisi: 'Scout Edition', tagline: 'Cerdas, Cermat, Berkarakter', acara: 'Kemah Kerja Madrasah · Season 5', lembaga: 'MAN 1 Boalemo', istilah: 'Regu' };
+        const BRAND_PRESET = [
+            { label: 'Scout Edition', b: { edisi: 'Scout Edition', tagline: 'Cerdas, Cermat, Berkarakter', istilah: 'Regu' } },
+            { label: 'Class Clash (antar kelas)', b: { edisi: 'Class Clash', tagline: 'Satu Kelas, Satu Tim, Satu Juara', istilah: 'Kelas' } },
+            { label: 'Junior Edition (MTs/SMP)', b: { edisi: 'Junior Edition', tagline: 'Bintang Muda Beradu Ilmu', istilah: 'Tim' } },
+            { label: 'Milad Edition', b: { edisi: 'Milad Edition', tagline: 'Merayakan Milad dengan Prestasi', istilah: 'Tim' } },
+            { label: 'Madrasah Cup', b: { edisi: 'Madrasah Cup', tagline: 'Berlomba dalam Kebaikan, Berkompetisi dengan Ilmu', istilah: 'Tim' } }
+        ];
+        function BR() {
+            let b = null;
+            try { b = (typeof state !== 'undefined' && state && state.brand) || JSON.parse(localStorage.getItem('lcc_brand') || 'null'); } catch (e) {}
+            return Object.assign({}, BRAND_DEFAULT, b || {});
+        }
+        let ISTILAH = BR().istilah;
+        // Istilah peserta (Regu/Tim/Kelas): kata "regu" di seluruh tampilan diganti otomatis; teks asli disimpan agar bisa dikembalikan
+        const ORIG_T = new WeakMap(), ORIG_A = new WeakMap(), IST_RE = /regu|Pangkalan/i;
+        function istStr(t) {
+            const T = ISTILAH; if (T === 'Regu') return t;
+            return t.replace(/Asal \/ Pangkalan/g, T === 'Kelas' ? 'Wali Kelas / Asal' : 'Asal / Sekolah').replace(/Pangkalan \/ sekolah/g, T === 'Kelas' ? 'Wali kelas / keterangan' : 'Sekolah / asal')
+                .replace(/\bregu\b/g, T.toLowerCase()).replace(/\bRegu\b/g, T).replace(/\bREGU\b/g, T.toUpperCase());
+        }
+        function istText(n) {
+            const has = ORIG_T.has(n), o = has ? ORIG_T.get(n) : n.nodeValue;
+            if (!has) { if (!IST_RE.test(o)) return; ORIG_T.set(n, o); }
+            const v = istStr(o); if (n.nodeValue !== v) n.nodeValue = v;
+        }
+        function istAttr(el, a) {
+            const m = ORIG_A.get(el) || {}; if (!(a in m)) { const o = el.getAttribute(a); if (!IST_RE.test(o || '')) return; m[a] = o; ORIG_A.set(el, m); }
+            const v = istStr(m[a]); if (el.getAttribute(a) !== v) el.setAttribute(a, v);
+        }
+        function istNode(root) {
+            if (!root) return;
+            if (root.nodeType === 3) { if (!(root.parentElement && root.parentElement.closest('[data-noist],script,style,textarea'))) istText(root); return; }
+            if (root.nodeType !== 1 || root.closest('[data-noist]')) return;
+            const tw = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: n => (n.parentElement && n.parentElement.closest('[data-noist],script,style,textarea')) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
+            let n; while ((n = tw.nextNode())) istText(n);
+            [root, ...root.querySelectorAll('[title],[placeholder]')].forEach(el => ['title', 'placeholder'].forEach(a => { if (el.hasAttribute(a)) istAttr(el, a); }));
+        }
+        function setIstilah(t) {
+            ISTILAH = t;
+            if (t !== 'Regu') window._istWas = true;
+            if (window._istWas) { window._istOn = true; istNode(document.body); if (t === 'Regu') { window._istWas = false; window._istOn = false; } }
+        }
+        new MutationObserver(recs => { if (window._istOn) recs.forEach(r => r.addedNodes.forEach(istNode)); }).observe(document.body, { childList: true, subtree: true });
+        ['alert', 'confirm', 'prompt'].forEach(k => { const f = window[k].bind(window); window[k] = (m, d) => f(istStr(String(m)), d); });
+        function terapBrand() {
+            const b = BR(), key = JSON.stringify(b);
+            if (window._brKey === key) return;
+            window._brKey = key;
+            try { localStorage.setItem('lcc_brand', key); } catch (e) {}
+            if (b.istilah !== ISTILAH || (b.istilah !== 'Regu' && !window._istOn)) setIstilah(b.istilah);
+            document.title = b.nama + ' · ' + b.edisi;
+            const set = (id, h) => { const e = document.getElementById(id); if (e) e.innerHTML = h; };
+            set('hd-title', esc(b.nama) + ': ' + esc(b.edisi)); set('rm-ribbon', esc(b.edisi).toUpperCase()); set('rm-title1', esc(b.nama));
+            set('rm-sub', esc(b.acara) + ' · ' + esc(b.lembaga)); set('ft-brand', esc(b.nama) + ' · ' + esc(b.edisi) + ' · ' + esc(b.acara) + ' · ' + esc(b.lembaga));
+            const cv = document.getElementById('cover-view'); if (cv && cv.innerHTML && window._brBuilt && !PENONTON && !BEL) buildCover();
+            window._brBuilt = true;
+        }
+        function bukaBrand() { renderBrand(); document.getElementById('brand-modal').style.display = 'flex'; }
+        function tutupBrand() { document.getElementById('brand-modal').style.display = 'none'; }
+        function setBrand(patch, simpan) { state.brand = Object.assign({}, BR(), patch); terapBrand(); if (simpan) saveData(); }
+        function pilihBrand(i) { setBrand(BRAND_PRESET[i].b, true); renderBrand(); }
+        function renderBrand() {
+            const b = BR(), f = (k, lb, ph) => `<label style="display:flex;flex-direction:column;gap:.2rem;font-size:.85rem;flex:1;min-width:230px">${lb}<input value="${esc(b[k])}" placeholder="${ph}" oninput="setBrand({${k}:this.value},false)" onchange="saveData()" style="padding:.5rem;border:2px solid #ddd;border-radius:6px;font-size:1rem"></label>`;
+            document.getElementById('brand-body').innerHTML = `<p><small>Nama dan istilah ikut tampil di sampul, layar penonton, peserta, dan juri, serta tersinkron ke semua perangkat.</small></p>
+                <h3>Pilih cepat</h3><div class="jp-btns">${BRAND_PRESET.map((p, i) => B(p.label, `pilihBrand(${i})`, b.edisi === p.b.edisi ? 'btn-primary' : 'btn-outline')).join('')}</div>
+                <h3 style="margin-top:1rem">Atur sendiri</h3><div style="display:flex;gap:.8rem;flex-wrap:wrap">
+                ${f('nama', 'Nama lomba', 'Battle of Minds')}${f('edisi', 'Edisi / sub-judul', 'Class Clash')}${f('tagline', 'Tagline', 'Satu Kelas, Satu Tim, Satu Juara')}
+                ${f('acara', 'Nama kegiatan', 'Milad ke-20 · 2026')}${f('lembaga', 'Penyelenggara / madrasah', 'MAN 1 Boalemo')}
+                <label style="display:flex;flex-direction:column;gap:.2rem;font-size:.85rem;min-width:230px">Istilah peserta<select data-noist onchange="setBrand({istilah:this.value},true)" style="padding:.5rem;border:2px solid #ddd;border-radius:6px;font-size:1rem">${['Regu', 'Tim', 'Kelas'].map(t => `<option ${b.istilah === t ? 'selected' : ''}>${t}</option>`).join('')}</select></label></div>
+                <p><small>Istilah mengganti kata "regu" di seluruh tampilan (mis. "Daftar Kelas", "Kelas Bertahan") dan nama bawaan peserta baru. Nama yang sudah Anda ketik tidak diubah.</small></p>`;
+        }
         const kcPrev = {};
         function kcAnim() {
             document.querySelectorAll('.kc3').forEach(c => {
@@ -1327,7 +1550,7 @@
             const gfRows = pr.map(x => `<tr><td>${x.r}</td><td>${esc(x.t.name)}</td>${[1, 2, 3].map(n => `<td>${(x.t.gfs || {})[n] || 0}</td>`).join('')}<td><b>${x.t.gf || 0}</b></td></tr>`).join('');
             const pyRows = state.teams.map((t, i) => `<tr><td>${i + 1}</td><td>${esc(t.name)}</td><td>${t.members.filter(m => m).length}/${ANGGOTA}</td><td>${t.skor || 0}</td><td>${t.eliminated ? 'Gugur' : 'Lolos Grand Final'}</td></tr>`).join('');
             const w = window.open('', '_blank'); if (!w) { toast('Pop-up diblokir browser'); return; }
-            w.document.write(`<!DOCTYPE html><html lang="id"><head><meta charset="utf-8"><title>Rekap Hasil LCC</title><style>body{font-family:Arial,sans-serif;max-width:800px;margin:2rem auto;color:#222}h1,h2,p{text-align:center}h1{margin-bottom:0}table{width:100%;border-collapse:collapse;margin:1rem 0 2rem}th,td{border:1px solid #888;padding:6px 10px;text-align:center}th{background:#FFCA28}td:nth-child(2){text-align:left}@media print{button{display:none}}</style></head><body><img src="${logoSrc()}" style="display:block;margin:0 auto 8px;height:90px"><h1>REKAP HASIL LOMBA CERDAS CERMAT</h1><p>Kemah Kerja Madrasah · Season 5 · MAN 1 Boalemo<br>${tgl}</p><h2>Grand Final</h2><table><tr><th>Peringkat</th><th>Regu</th><th>Sesi 1<br>Cepat Tepat</th><th>Sesi 2<br>Cepat Cermat</th><th>Sesi 3<br>Kotak Katik</th><th>Total</th></tr>${gfRows}</table><h2>Babak Penyisihan</h2><table><tr><th>No</th><th>Regu</th><th>Anggota Bertahan</th><th>Skor</th><th>Status</th></tr>${pyRows}</table><p><button onclick="print()">🖨 Cetak / Simpan PDF</button></p></body></html>`);
+            w.document.write(`<!DOCTYPE html><html lang="id"><head><meta charset="utf-8"><title>Rekap Hasil ${esc(BR().nama)}</title><style>body{font-family:Arial,sans-serif;max-width:800px;margin:2rem auto;color:#222}h1,h2,p{text-align:center}h1{margin-bottom:0}table{width:100%;border-collapse:collapse;margin:1rem 0 2rem}th,td{border:1px solid #888;padding:6px 10px;text-align:center}th{background:#FFCA28}td:nth-child(2){text-align:left}@media print{button{display:none}}</style></head><body><img src="${logoSrc()}" style="display:block;margin:0 auto 8px;height:90px"><h1>REKAP HASIL LOMBA CERDAS CERMAT</h1><p>Kemah Kerja Madrasah · Season 5 · MAN 1 Boalemo<br>${tgl}</p><h2>Grand Final</h2><table><tr><th>Peringkat</th><th>Regu</th><th>Sesi 1<br>Cepat Tepat</th><th>Sesi 2<br>Cepat Cermat</th><th>Sesi 3<br>Kotak Katik</th><th>Total</th></tr>${gfRows}</table><h2>Babak Penyisihan</h2><table><tr><th>No</th><th>Regu</th><th>Anggota Bertahan</th><th>Skor</th><th>Status</th></tr>${pyRows}</table><p><button onclick="print()">🖨 Cetak / Simpan PDF</button></p></body></html>`);
             w.document.close();
         }
 
@@ -1522,13 +1745,14 @@
             if (REMOTE) { window._renderRemote = renderBel; cloudPoll(); setInterval(cloudPoll, POLL_MS); }
         }
         function renderBel() {
+            terapTema(); terapBrand();
             const v = document.getElementById('bel-view');
             if (MODE_REGU && !window._belSemua) { renderRegu(v); return; }
             if (!MODE_REGU) {
-                if (state.phase === 'final') { v.innerHTML = '<div class="pn-q">Babak Grand Final: masuk lewat menu <b>Regu</b></div>' + MENU_LINK; return; }
+                if (state.phase === 'final') { v.innerHTML = '<div class="pn-q">Babak Utama: masuk lewat menu <b>Regu</b></div>' + MENU_LINK; return; }
                 renderPeserta(v); return;
             }
-            if (state.phase !== 'final' || !(state.teams || []).length) { v.innerHTML = '<div class="pn-q">Babak Grand Final belum dimulai…</div>' + MENU_LINK; return; }
+            if (state.phase !== 'final' || !(state.teams || []).length) { v.innerHTML = '<div class="pn-q">Babak Utama belum dimulai…</div>' + MENU_LINK; return; }
             const s = G().s1, b = s.buzz ? tById(s.buzz) : null;
             const open = G().sesi === 1 && s.on && !s.buzz && Date.now() > belKunci;
             v.innerHTML = `<div class="pn-q" style="font-size:2rem">${b ? '🔔 ' + esc(b.name) + ' menjawab!' : open ? 'BEL DIBUKA — tekan warna regu Anda!' : G().sesi !== 1 ? 'Sesi ' + G().sesi + ' sedang berlangsung (bel dipakai di Sesi 1)' : 'Menunggu bel dibuka…'}</div>
@@ -1552,7 +1776,7 @@
 
 
         // ===== Cover =====
-        const EMBLEM = `<svg viewBox="0 0 120 120" width="130" height="130" aria-label="Tunas kelapa"><circle cx="60" cy="60" r="56" fill="#FFCA28" stroke="#fff" stroke-width="4"/><path d="M60 98C43 89 41 66 60 50C79 66 77 89 60 98Z" fill="#4E342E"/><path d="M60 54C50 37 36 35 25 41C38 41 48 47 56 58Z" fill="#43A047"/><path d="M60 54C70 37 84 35 95 41C82 41 72 47 64 58Z" fill="#43A047"/><path d="M60 54C55 36 57 24 60 15C63 24 65 36 60 54Z" fill="#2E7D32"/></svg>`;
+        const EMBLEM = `<svg viewBox="0 0 120 120" width="130" height="130" aria-label="Tunas kelapa"><circle cx="60" cy="60" r="56" style="fill:var(--kuning-pramuka)" stroke="#fff" stroke-width="4"/><path d="M60 98C43 89 41 66 60 50C79 66 77 89 60 98Z" style="fill:var(--coklat-tua)"/><path d="M60 54C50 37 36 35 25 41C38 41 48 47 56 58Z" fill="#43A047"/><path d="M60 54C70 37 84 35 95 41C82 41 72 47 64 58Z" fill="#43A047"/><path d="M60 54C55 36 57 24 60 15C63 24 65 36 60 54Z" fill="#2E7D32"/></svg>`;
         function logoSrc() { return localStorage.getItem('lcc_logo') || LOGO_DEFAULT; }
         function logoHTML(jr) {
             const inp = '<input type="file" accept="image/*" hidden onchange="muatLogo(this)">';
@@ -1561,15 +1785,15 @@
         }
         function coverHTML(jr, landing) {
             return `<div class="cv-wrap">
-                <div class="cv-ribbon">LCC KEPANDUAN</div>
+                <div class="cv-ribbon">LOMBA CERDAS CERMAT</div>
                 <div class="cv-row">${logoHTML(jr)}</div>
-                <div class="cv-t1">Lomba<br>Cerdas Cermat</div>
+                <div class="cv-t1">${esc(BR().nama)}</div>
                 <div class="cv-rope"></div>
-                <div class="cv-t2">Kemah Kerja Madrasah · Season 5</div>
-                <div class="cv-inst">MAN 1 BOALEMO</div><div class="cv-credit">© 2026 · J D Ace | Sigma04, an1mo</div>
-                <div class="cv-chips"><span class="cv-chip">⚔️ Sistem Gugur</span><span class="cv-chip">🏆 Grand Final 3 Sesi</span></div>
+                <div class="cv-t2">${esc(BR().edisi)}</div>
+                <div class="cv-inst">${esc((BR().acara + ' · ' + BR().lembaga).toUpperCase())}</div><div class="cv-credit">© 2026 · J D Ace | Sigma04, an1mo</div>
+                
                 ${landing ? '<button class="btn-start" onclick="bukaMenuPeran()">Mulai 🚀</button>' : jr ? '<button class="btn-start" onclick="mulaiLomba()">' + (state.lastPhase ? 'Lanjutkan Lomba ▶' : 'Mulai Lomba 🚀') + '</button><button class="cv-link" onclick="bukaPenonton()">🖥 Buka Layar Penonton</button><button class="cv-link" onclick="gantiPeran()">🔀 Ganti Peran</button>' : ''}
-                <div class="cv-motto">“Satyaku kudarmakan, darmaku kubaktikan”</div>
+                <div class="cv-motto">${BR().tagline ? '“' + esc(BR().tagline) + '”' : ''}</div>
             </div>`;
         }
         function buildCover() { document.getElementById('cover-view').innerHTML = coverHTML(true); }
@@ -1770,7 +1994,7 @@
         function pilihBabak(bb) {
             window._babak = bb; sembunyiMenu();
             const f = bb === 'final';
-            document.getElementById('rm-title').innerText = (f ? 'Babak Grand Final' : 'Babak Gugur') + ' — masuk sebagai';
+            document.getElementById('rm-title').innerText = (f ? 'Babak Utama' : 'Babak Penyisihan') + ' — masuk sebagai';
             document.getElementById('rm-p').innerHTML = f
                 ? '<span>👥</span><b>Regu</b><small>Tombol bel regu · 1 perangkat per regu (hanya regu yang lolos)</small>'
                 : '<span>✍️</span><b>Peserta</b><small>Pilih Benar / Salah · 1 perangkat per anggota</small>';
@@ -1804,10 +2028,11 @@
             if (bb === 'final' && state.phase !== 'final') {
                 startGrandFinal();
             } else if (bb === 'gugur' && state.phase === 'final') {
-                if (confirm('Kembali ke Babak Gugur? Skor Grand Final tetap tersimpan.')) backToPenyisihan();
+                if (confirm('Kembali ke Babak Penyisihan? Skor Babak Utama tetap tersimpan.')) backToPenyisihan();
             }
         }
         function initBrand() {
+            terapBrand();
             const l = logoSrc();
             document.getElementById('hd-logo').src = l;
             let f = document.querySelector('link[rel=icon]');
@@ -1897,7 +2122,7 @@
                 state.teams.map((t, i) => {
                     const a = t.anggota || [];
                     return `<div class="reg-row"><b>${i + 1}</b>
-                        <input value="${esc(t.name)}" oninput="editReg(${i},'name',this.value)" placeholder="Regu ${i + 1}">
+                        <input value="${esc(t.name)}" oninput="editReg(${i},'name',this.value)" placeholder="${ISTILAH} ${i + 1}">
                         <input value="${esc(t.asal || '')}" oninput="editReg(${i},'asal',this.value)" placeholder="Pangkalan / sekolah">
                         ${ANG.map(j => `<input value="${esc(a[j] || '')}" oninput="editReg(${i},'a',this.value,${j})" placeholder="Nama">`).join('')}
                         <button class="sk-btn" ${lock ? 'disabled' : ''} onclick="hapusReg(${i})">🗑</button></div>`;
@@ -1920,7 +2145,7 @@
             else { t.anggota = t.anggota || Array(ANGGOTA).fill(''); t.anggota[j] = v; syncAbsen(t); }
             saveData(); if (k === 'a') render();
         }
-        function regBaru(n) { return { id: Math.max(0, ...state.teams.map(t => t.id)) + 1, name: 'Regu ' + n, asal: '', anggota: Array(ANGGOTA).fill(''), absen: Array(ANGGOTA).fill(false), members: Array(ANGGOTA).fill(true), eliminated: false }; }
+        function regBaru(n) { return { id: Math.max(0, ...state.teams.map(t => t.id)) + 1, name: ISTILAH + ' ' + n, asal: '', anggota: Array(ANGGOTA).fill(''), absen: Array(ANGGOTA).fill(false), members: Array(ANGGOTA).fill(true), eliminated: false }; }
         function setGfN(v) { CFG.gfN = Math.max(1, Math.round(+v) || 5); try { localStorage.setItem('lcc_cfg', JSON.stringify(CFG)); } catch (e) {} toast('✅ Regu lolos ke Grand Final: ' + CFG.gfN); saveData(); render(); renderReg(); }
         function tambahReg() { state.teams.push(regBaru(state.teams.length + 1)); state.history = []; saveData(); renderReg(); }
         function hapusReg(i) {
@@ -1928,7 +2153,7 @@
             state.teams.splice(i, 1); state.history = []; saveData(); renderReg();
         }
         function tutupReg() {
-            state.teams.forEach((t, i) => { if (!String(t.name).trim()) t.name = 'Regu ' + (i + 1); syncAbsen(t); });
+            state.teams.forEach((t, i) => { if (!String(t.name).trim()) t.name = ISTILAH + ' ' + (i + 1); syncAbsen(t); });
             document.getElementById('reg-modal').style.display = 'none';
             saveData(); buildCover(); render();
         }
@@ -2085,7 +2310,7 @@
         function gantiRegu() { sessionStorage.removeItem('lcc_regu'); window._belSemua = false; renderBel(); }
         function belSemua() { window._belSemua = true; renderBel(); }
         function renderRegu(v) {
-            if (state.phase !== 'final' || !(state.teams || []).length) { v.innerHTML = '<div class="pn-q">Babak Grand Final belum dimulai…</div>' + MENU_LINK; return; }
+            if (state.phase !== 'final' || !(state.teams || []).length) { v.innerHTML = '<div class="pn-q">Babak Utama belum dimulai…</div>' + MENU_LINK; return; }
             const t = tById(reguId());
             if (!t) {
                 v.innerHTML = '<div class="pn-q" style="font-size:1.6rem">Pilih Regu Anda<br><small>Hanya regu yang lolos ke Grand Final</small></div><div class="jp-btns" style="justify-content:center">' +
@@ -2093,7 +2318,7 @@
                     '</div><div style="text-align:center;margin-top:1rem"><a href="#" style="color:#888" onclick="belSemua();return false">Mode 1 layar untuk semua regu</a></div>' + MENU_LINK;
                 return;
             }
-            if (t.eliminated) { v.innerHTML = `<div class="pn-q">Regu <b>${esc(t.name)}</b> tidak lolos ke Babak Grand Final</div><div style="text-align:center"><a href="#" onclick="gantiRegu();return false">pilih regu lain</a></div>` + MENU_LINK; return; }
+            if (t.eliminated) { v.innerHTML = `<div class="pn-q">Regu <b>${esc(t.name)}</b> tidak lolos ke Babak Utama</div><div style="text-align:center"><a href="#" onclick="gantiRegu();return false">pilih regu lain</a></div>` + MENU_LINK; return; }
             const s = G().s1, b = s.buzz ? tById(s.buzz) : null;
             const open = G().sesi === 1 && s.on && !s.buzz && Date.now() > belKunci && !s.blk.includes(t.id);
             const info = b ? (b.id === t.id ? '🔔 REGU ANDA yang menjawab!' : '🔔 ' + esc(b.name) + ' menjawab') : open ? 'BEL DIBUKA — tekan tombol!'
@@ -2118,9 +2343,9 @@
     </script>
 <footer id="app-foot">
     <div>© 2026 · Dikembangkan oleh <b>J D Ace | Sigma04, an1mo</b></div>
-    <div>LCC Kepanduan · Kemah Kerja Madrasah Season 5 · MAN 1 Boalemo</div>
+    <div id="ft-brand">Battle of Minds · Scout Edition · Kemah Kerja Madrasah · Season 5 · MAN 1 Boalemo</div>
     <small>Dibangun dengan HTML, Google Apps Script &amp; Google Sheets · Kurikulum Merdeka berbasis cinta, dengan literasi dan numerasi</small>
 </footer>
-<div id="app-ver" style="position:fixed;bottom:2px;left:6px;font-size:10px;opacity:.45;z-index:5;pointer-events:none">v2026.11.11-k</div>
+<div id="app-ver" style="position:fixed;bottom:2px;left:6px;font-size:10px;opacity:.45;z-index:5;pointer-events:none">v2026.11.11-n</div>
 </body>
 </html>
