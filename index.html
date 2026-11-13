@@ -336,6 +336,11 @@
         .asal { font-size: .8rem; opacity: .7; text-align: center; margin: -.3rem 0 .6rem; }
 
         .member.now { box-shadow: 0 0 0 4px var(--kuning-pramuka); }
+        .kunci-box { background:#e8f5e9; border:3px solid #43a047; border-radius:12px; padding:.6rem .9rem; }
+        .kunci-box .kb-top { display:flex; justify-content:space-between; align-items:center; gap:.5rem; flex-wrap:wrap; font-weight:700; }
+        .kunci-box .kb-q { margin:.3rem 0; font-size:1.05rem; }
+        .kunci-box .kb-k { font-size:1.9rem; font-weight:900; color:#1b5e20; line-height:1.2; }
+        .kunci-box .kb-a { font-size:1rem; opacity:.85; }
         .kc.kc3 { position:relative; perspective:900px; background:transparent !important; border:0 !important; padding:0; }
         .kc3-in { position:absolute; inset:0; transform-style:preserve-3d; transition:transform .75s cubic-bezier(.4,.2,.2,1); }
         .kc3-f { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; backface-visibility:hidden; -webkit-backface-visibility:hidden; border-radius:10px; border:2px solid var(--coklat-muda); box-shadow:0 2px 6px rgba(0,0,0,.18); }
@@ -1337,36 +1342,15 @@
         }
         function s1Ctl() {
             const s = G().s1, q = bankGF[s.idx % bankGF.length];
-            return `<div class="jp-kunci" style="width:100%">Soal ${s.idx + 1} · 🔑 <b>${esc(q.j)}</b>${q.a && q.a.length ? ' <small>(juga diterima: ' + esc(q.a.join(', ')) + ')</small>' : ''} &nbsp;<small>(peserta menekan warna regunya di Layar Bel Peserta)</small></div>` +
+            return `<div class="kunci-box" style="width:100%"><div class="kb-top"><span>Soal ${s.idx + 1}</span>${aBoxHTML()}</div>
+                    <div class="kb-q">${esc(q.t)}</div>
+                    <div class="kb-k">🔑 KUNCI JAWABAN: ${esc(q.j)}</div>${q.a && q.a.length ? `<div class="kb-a">Jawaban lain yang diterima: ${esc(q.a.join(', '))}</div>` : ''}
+                    <small>(peserta menekan warna regunya di Layar Bel Peserta)</small></div>` +
                 B('▶ Mulai ' + fmtT(CFG.s1) + ' dtk', 's1Mulai()') + B('■ Stop', 's1Stop()', 'btn-danger') +
-                `<div class="s1-cek" style="width:100%;display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;background:${s.buzz ? '#fff8e1' : '#f5f5f5'};border:2px dashed ${s.buzz ? '#ffb300' : '#ccc'};border-radius:10px;padding:.6rem">
-                    ${aBoxHTML()} <b>🔍 Cek jawaban</b>
-                    <input id="s1-ans" value="${esc(window._s1Ans || '')}" ${s.buzz ? '' : 'disabled'} placeholder="${s.buzz ? 'Ketik jawaban regu yang menekan bel…' : 'Menunggu regu menekan bel…'}" style="flex:1;min-width:220px;padding:.6rem;border:2px solid #ddd;border-radius:8px;font-size:1.1rem" oninput="window._s1Ans=this.value;document.getElementById('s1-v').innerHTML=s1VerdictHTML()" onkeydown="if(event.key==='Enter')s1Cek()">
-                    ${B('Cek', 's1Cek()', 'btn-primary', s.buzz ? '' : 'disabled')}
-                    <span id="s1-v" style="display:contents">${s1VerdictHTML()}</span>
-                </div>` +
                 B('📱 Buka Layar Regu (bel)', 'bukaBel()', 'btn-outline') + `<details style="width:100%"><summary><small>Cadangan manual (jika layar bel bermasalah)</small></summary>${tim().map((t, i) => B(`🔔 ${i + 1}. ${esc(t.name)}`, `s1Bel(${t.id})`, 'btn-outline', `style="background:${warna(t.id)};color:#fff;border-color:${warna(t.id)}" ${s.blk.includes(t.id) ? 'disabled' : ''}`)).join('')}</details>` +
                 B('✓ Benar +10', 's1Nilai(true)') + B('✗ Salah (0)', 's1Nilai(false)', 'btn-danger') + B('Soal berikut ➡', 's1Next()', 'btn-outline');
         }
-        function s1Reset() { window._s1Ans = ''; window._s1Cek = null; aStop(); }
-        function verdictHTML(ans, q, terapkan) {
-            const ok = cocok(ans, q);
-            return ok ? '<b style="color:#2e7d32;font-size:1.1rem">✅ COCOK dengan kunci</b> ' + B('Terapkan: ✓ Benar', terapkan + '(true)')
-                      : '<b style="color:#c62828;font-size:1.1rem">❌ TIDAK COCOK</b> ' + B('Terapkan: ✗ Salah', terapkan + '(false)', 'btn-danger');
-        }
-        function s1VerdictHTML() {
-            const s = G().s1, a = (window._s1Ans || '').trim();
-            if (!s.buzz || !a) return '';
-            return verdictHTML(a, bankGF[s.idx % bankGF.length], 's1Nilai') + '<small style="width:100%">Hasil otomatis dari kunci (saran); juri boleh menilai manual dengan tombol ✓ / ✗ di bawah.</small>';
-        }
-        function s1Cek() {
-            const s = G().s1; if (!s.buzz) { toast('Tunggu regu menekan bel dulu'); return; }
-            const inp = document.getElementById('s1-ans'), ans = (inp ? inp.value : window._s1Ans) || '';
-            if (!ans.trim()) { toast('Ketik jawaban regu dulu'); return; }
-            window._s1Ans = ans; window._s1Cek = { ok: cocok(ans, bankGF[s.idx % bankGF.length]) };
-            sfx(window._s1Cek.ok ? 'tick' : 'salah'); renderGF();
-        }
-        function s1Terapkan() { if (window._s1Cek) s1Nilai(window._s1Cek.ok); }
+        function s1Reset() { aStop(); }
         function s1Mulai() { hitung(s1Jalan); }
         function s1Jalan() { api('belClear'); G().s1.on = true; gfTimer(CFG.s1, () => { G().s1.on = false; saveData(); render(); toast('⏰ Sesi 1 selesai!'); }); saveData(); render(); }
         function s1Stop() { stopTimer(); G().s1.on = false; saveData(); render(); }
@@ -1494,26 +1478,21 @@
             const i = s.akt;
             return tim().map(t => B(esc(t.name), `s3Gil(${t.id})`, s.gil === t.id ? 'btn-primary' : 'btn-outline')).join('') +
                 B('▶ Mulai ' + CFG.s3 + ' Menit', 's3Mulai()') + B('■ Akhiri Sesi', 's3Akhiri()', 'btn-danger') +
-                (i !== null ? `<div class="jp-kunci" style="width:100%">🔑 <b>${esc(bankK[i].j)}</b>${bankK[i].a && bankK[i].a.length ? ' <small>(juga diterima: ' + esc(bankK[i].a.join(', ')) + ')</small>' : ''} · ${katIk(bankK[i].c)} ${esc(bankK[i].c || 'Umum')}</div>` +
-                    (s.fase === 'soal' ? `<div style="width:100%;display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;background:#fff8e1;border:2px dashed #ffb300;border-radius:10px;padding:.6rem">${aBoxHTML()} <b>🔍 Cek jawaban</b>
-                        <input id="s3-ans" value="${esc(window._s3Ans || '')}" placeholder="Ketik jawaban regu…" style="flex:1;min-width:220px;padding:.6rem;border:2px solid #ddd;border-radius:8px;font-size:1.1rem" oninput="window._s3Ans=this.value;document.getElementById('s3-v').innerHTML=s3VerdictHTML()">
-                        <span id="s3-v" style="display:contents">${s3VerdictHTML()}</span></div>` + B('✓ Benar', 's3Nilai(true)') + B('✗ Salah', 's3Nilai(false)', 'btn-danger') : B('📖 Tampilkan Soal', 's3Soal()')) + B('Batal pilih', 's3Batal()', 'btn-outline') : '<small>Klik nomor kotak untuk memilih.</small>');
-        }
-        function s3VerdictHTML() {
-            const s = G().s3, a = (window._s3Ans || '').trim();
-            if (!s || s.akt === null || s.fase !== 'soal' || !a) return '';
-            return verdictHTML(a, bankK[s.akt], 's3Nilai');
+                (i !== null ? `<div class="kunci-box" style="width:100%"><div class="kb-top"><span>Kotak ${i + 1} · ${katIk(bankK[i].c)} ${esc(bankK[i].c || 'Umum')} · ${NM[s.k[i].j]}</span>${aBoxHTML()}</div>
+                        <div class="kb-q">${esc(bankK[i].t)}</div>
+                        <div class="kb-k">🔑 KUNCI JAWABAN: ${esc(bankK[i].j)}</div>${bankK[i].a && bankK[i].a.length ? `<div class="kb-a">Jawaban lain yang diterima: ${esc(bankK[i].a.join(', '))}</div>` : ''}</div>` +
+                    (s.fase === 'soal' ? B('✓ Benar', 's3Nilai(true)') + B('✗ Salah', 's3Nilai(false)', 'btn-danger') : B('📖 Tampilkan Soal', 's3Soal()')) + B('Batal pilih', 's3Batal()', 'btn-outline') : '<small>Klik nomor kotak untuk memilih.</small>');
         }
         function s3Gil(id) { gfAksi(() => { G().s3.gil = id; }); }
-        function s3Pilih(i) { window._s3Ans = ''; aStop(); const s = G().s3; if (s.selesai) return; s.akt = i; s.fase = 'kategori'; s.hasil = null; sfx('flip'); saveData(); render(); }
+        function s3Pilih(i) { aStop(); const s = G().s3; if (s.selesai) return; s.akt = i; s.fase = 'kategori'; s.hasil = null; sfx('flip'); saveData(); render(); }
         function s3Soal() { const s = G().s3; if (s.akt === null) return; s.fase = 'soal'; aStart(CFG.a3); saveData(); render(); }
-        function s3Batal() { window._s3Ans = ''; aStop(); const s = G().s3; s.akt = null; s.fase = null; saveData(); render(); }
+        function s3Batal() { aStop(); const s = G().s3; s.akt = null; s.fase = null; saveData(); render(); }
         function s3Mulai() { hitung(s3Jalan); }
         function s3Jalan() { G().s3.mulai = true; gfTimer(CFG.s3 * 60, () => { G().s3.selesai = true; saveData(); render(); toast('⏰ Waktu Kotak Katik habis!'); }); saveData(); render(); }
         function s3Akhiri() { stopTimer(); G().s3.selesai = true; saveData(); render(); }
         function s3Nilai(ok) {
             const s = G().s3, i = s.akt; if (i === null || s.fase !== 'soal') return;
-            window._s3Ans = ''; aStop();
+            aStop();
             gfAksi(() => {
                 const b = s.k[i], id = s.gil;
                 if (ok) {
@@ -2142,6 +2121,6 @@
     <div>LCC Kepanduan · Kemah Kerja Madrasah Season 5 · MAN 1 Boalemo</div>
     <small>Dibangun dengan HTML, Google Apps Script &amp; Google Sheets · Kurikulum Merdeka berbasis cinta, dengan literasi dan numerasi</small>
 </footer>
-<div id="app-ver" style="position:fixed;bottom:2px;left:6px;font-size:10px;opacity:.45;z-index:5;pointer-events:none">v2026.11.11-j</div>
+<div id="app-ver" style="position:fixed;bottom:2px;left:6px;font-size:10px;opacity:.45;z-index:5;pointer-events:none">v2026.11.11-k</div>
 </body>
 </html>
