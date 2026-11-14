@@ -339,6 +339,30 @@
         .asal { font-size: .8rem; opacity: .7; text-align: center; margin: -.3rem 0 .6rem; }
 
         .member.now { box-shadow: 0 0 0 4px var(--kuning-pramuka); }
+        .mas { overflow:visible; display:inline-block; vertical-align:middle; }
+        .mas .m-body { fill:var(--kuning-pramuka); } .mas .m-body2 { fill:var(--aksen-tua); } .mas .m-dark { fill:var(--coklat-tua); } .mas .m-dark2 { fill:var(--gelap-terang); }
+        .mas .m-mid { fill:var(--coklat-muda); } .mas .m-light { fill:var(--aksen-pucat); }
+        .mas .m-body, .mas .m-body2, .mas .m-mid, .mas .m-light, .mas .m-dark, .mas .m-dark2 { stroke:var(--gelap-pekat); stroke-width:3; stroke-linejoin:round; }
+        .mas .m-line { fill:none; stroke:var(--gelap-pekat); stroke-width:4; stroke-linecap:round; }
+        .mas .m-limb { fill:none; stroke:var(--kuning-pramuka); stroke-width:15; stroke-linecap:round; }
+        .mas .m-handle { fill:none; stroke:var(--aksen-tua); stroke-width:12; stroke-linecap:round; }
+        .mas .m-round { stroke:var(--kuning-pramuka); stroke-width:14; stroke-linejoin:round; }
+        .mas .m-outline { fill:var(--gelap-pekat); stroke:var(--gelap-pekat); stroke-width:22; stroke-linejoin:round; }
+        .mas .mo-cheer, .mas .mo-sad, .mas .brow-sad, .mas .tear, .mas .spark { display:none; }
+        .mas.mood-cheer .mo-happy, .mas.mood-sad .mo-happy { display:none; }
+        .mas.mood-cheer .mo-cheer, .mas.mood-cheer .spark, .mas.mood-sad .mo-sad, .mas.mood-sad .brow-sad, .mas.mood-sad .tear { display:inline; }
+        .mas .bob { animation:masBob 2.6s ease-in-out infinite; transform-origin:50% 95%; transform-box:view-box; }
+        .mas.mood-cheer .bob { animation:masJump .55s ease-in-out infinite; }
+        .mas.mood-sad .bob { animation:masSad 2.4s ease-in-out infinite; }
+        .mas .eyes { animation:masBlink 4.8s infinite; transform-box:fill-box; transform-origin:center; }
+        .mas .spark { animation:masTwinkle .7s ease-in-out infinite alternate; }
+        @keyframes masBob { 50% { transform:translateY(-6px); } }
+        @keyframes masJump { 0%,100% { transform:translateY(0) scale(1.02,.98); } 50% { transform:translateY(-14px) scale(.98,1.03); } }
+        @keyframes masSad { 50% { transform:translateY(2px) rotate(-1.5deg); } }
+        @keyframes masBlink { 0%,92%,100% { transform:scaleY(1); } 95% { transform:scaleY(.08); } }
+        @keyframes masTwinkle { from { opacity:.45; } to { opacity:1; } }
+        .cv-mas { filter:drop-shadow(0 6px 10px rgba(0,0,0,.35)); }
+        .hasil-ov .mas { width:36%; height:auto; }
         .kunci-box { background:#e8f5e9; border:3px solid #43a047; border-radius:12px; padding:.6rem .9rem; }
         .kunci-box .kb-top { display:flex; justify-content:space-between; align-items:center; gap:.5rem; flex-wrap:wrap; font-weight:700; }
         .kunci-box .kb-q { margin:.3rem 0; font-size:1.05rem; }
@@ -524,6 +548,7 @@
     <div id="role-menu" style="display:none">
         <div class="rm-box">
             <img id="rm-logo" class="rm-logo" alt="Logo MAN 1 Boalemo">
+            <div id="rm-mascot" style="margin-top:.6rem"></div>
             <div class="cv-ribbon" id="rm-ribbon" style="display:inline-block;margin-top:1rem">SCOUT EDITION</div>
             <h1 id="rm-title1">Battle of Minds</h1>
             <p id="rm-sub">Kemah Kerja Madrasah · Season 5 · MAN 1 Boalemo</p>
@@ -1398,14 +1423,97 @@
             h += `<div class="jp-btns">${B('↩ Kembali ke Pramuka Klasik', 'pilihTema(0)', 'btn-outline')}</div>`;
             document.getElementById('tema-body').innerHTML = h;
         }
+        // ================= MASKOT: satu karakter untuk tiap edisi lomba (warna ikut tema) =================
+        function masFace(cx, cy, o) {
+            o = o || {}; const s = o.s || 1, e = (o.e || 24) * s, r = 11 * s;
+            const eye = x => `<circle cx="${x}" cy="${cy}" r="${r}" fill="#fff" stroke="#3E2723" stroke-width="2.5"/><circle cx="${x + 2 * s}" cy="${cy + 1.5 * s}" r="${5.5 * s}" fill="#2b1b17"/><circle cx="${x + 4 * s}" cy="${cy - 1.5 * s}" r="${2 * s}" fill="#fff"/>`;
+            let h = `<g class="face"><g class="eyes">${eye(cx - e)}${eye(cx + e)}</g>`;
+            h += `<circle cx="${cx - e - 13 * s}" cy="${cy + 16 * s}" r="${6.5 * s}" fill="#FF8A80" opacity=".5"/><circle cx="${cx + e + 13 * s}" cy="${cy + 16 * s}" r="${6.5 * s}" fill="#FF8A80" opacity=".5"/>`;
+            if (o.mouth !== false) {
+                h += `<path class="mo-happy" d="M${cx - 10 * s} ${cy + 15 * s} Q${cx} ${cy + 27 * s} ${cx + 10 * s} ${cy + 15 * s}" fill="none" stroke="#3E2723" stroke-width="3.5" stroke-linecap="round"/>`;
+                h += `<g class="mo-cheer"><path d="M${cx - 14 * s} ${cy + 13 * s} Q${cx} ${cy + 40 * s} ${cx + 14 * s} ${cy + 13 * s} Z" fill="#5D1F1F" stroke="#3E2723" stroke-width="3" stroke-linejoin="round"/><path d="M${cx - 7 * s} ${cy + 27 * s} Q${cx} ${cy + 20 * s} ${cx + 7 * s} ${cy + 27 * s} Q${cx} ${cy + 33 * s} ${cx - 7 * s} ${cy + 27 * s}Z" fill="#FF8A80"/></g>`;
+                h += `<path class="mo-sad" d="M${cx - 10 * s} ${cy + 26 * s} Q${cx} ${cy + 14 * s} ${cx + 10 * s} ${cy + 26 * s}" fill="none" stroke="#3E2723" stroke-width="3.5" stroke-linecap="round"/>`;
+            }
+            h += `<g class="brow-sad" stroke="#3E2723" stroke-width="3.5" stroke-linecap="round"><path d="M${cx - e - 10 * s} ${cy - 17 * s} L${cx - e + 9 * s} ${cy - 23 * s}"/><path d="M${cx + e + 10 * s} ${cy - 17 * s} L${cx + e - 9 * s} ${cy - 23 * s}"/></g>`;
+            h += `<path class="tear" d="M${cx - e - 6 * s} ${cy + 13 * s} c-4 6 -6 9 -6 12 a6 6 0 0 0 12 0 c0 -3 -2 -6 -6 -12z" fill="#4FC3F7" stroke="#0288D1" stroke-width="1.5"/></g>`;
+            return h;
+        }
+        function masSpark() {
+            const st = (x, y, k) => `<path d="M${x} ${y - 9 * k} L${x + 3 * k} ${y - 3 * k} L${x + 9 * k} ${y} L${x + 3 * k} ${y + 3 * k} L${x} ${y + 9 * k} L${x - 3 * k} ${y + 3 * k} L${x - 9 * k} ${y} L${x - 3 * k} ${y - 3 * k} Z" fill="#FFD54F" stroke="#F9A825" stroke-width="1.5"/>`;
+            return `<g class="spark">${st(24, 44, 1.3)}${st(178, 58, 1.1)}${st(160, 14, .9)}${st(34, 118, .8)}</g>`;
+        }
+        const MASKOT = {
+            scout: { nama: 'Elang Muda', draw: () => `
+                <ellipse cx="80" cy="206" rx="15" ry="7" fill="#FB8C00"/><ellipse cx="120" cy="206" rx="15" ry="7" fill="#FB8C00"/>
+                <ellipse cx="50" cy="152" rx="18" ry="38" class="m-body2" transform="rotate(16 50 152)"/><ellipse cx="150" cy="152" rx="18" ry="38" class="m-body2" transform="rotate(-16 150 152)"/>
+                <ellipse cx="100" cy="152" rx="52" ry="58" class="m-body"/><ellipse cx="100" cy="168" rx="33" ry="36" class="m-light"/>
+                <path d="M62 128 L138 128 L100 180 Z" fill="#E53935" stroke="#B71C1C" stroke-width="3" stroke-linejoin="round"/><path d="M62 128 L138 128 L133 140 L67 140 Z" fill="#fff"/><circle cx="100" cy="134" r="7" fill="#E53935" stroke="#fff" stroke-width="3"/>
+                <circle cx="100" cy="92" r="50" class="m-body"/>
+                <path d="M91 100 L109 100 L100 117 Z" fill="#FFB300" stroke="#E65100" stroke-width="2.5" stroke-linejoin="round"/>
+                ${masFace(100, 92, { mouth: false })}
+                <path d="M54 66 Q100 6 146 66 Z" class="m-dark"/><ellipse cx="100" cy="66" rx="58" ry="10" class="m-mid"/><rect x="62" y="54" width="76" height="8" rx="3" fill="#FFD54F" stroke="none"/><circle cx="100" cy="36" r="6" fill="#FFD54F" stroke="#F9A825" stroke-width="2"/>` },
+            class: { nama: 'Singa Kelas', draw: () => {
+                let mane = ''; for (let i = 0; i < 12; i++) { const a = i * Math.PI / 6; mane += `<circle cx="${(100 + 55 * Math.cos(a)).toFixed(1)}" cy="${(100 + 55 * Math.sin(a)).toFixed(1)}" r="19" class="m-body2"/>`; }
+                return `<ellipse cx="84" cy="212" rx="17" ry="8" class="m-body2"/><ellipse cx="116" cy="212" rx="17" ry="8" class="m-body2"/>
+                <ellipse cx="100" cy="180" rx="34" ry="38" class="m-body"/><ellipse cx="100" cy="188" rx="20" ry="24" class="m-light"/>
+                <path d="M74 172 L52 158" class="m-limb"/><path d="M126 172 L148 158" class="m-limb"/>
+                <circle cx="44" cy="154" r="17" fill="#E53935" stroke="#B71C1C" stroke-width="3"/><rect x="36" y="167" width="16" height="8" rx="2" fill="#fff" stroke="#B71C1C" stroke-width="2"/>
+                <circle cx="156" cy="154" r="17" fill="#E53935" stroke="#B71C1C" stroke-width="3"/><rect x="148" y="167" width="16" height="8" rx="2" fill="#fff" stroke="#B71C1C" stroke-width="2"/>
+                <circle cx="58" cy="50" r="17" class="m-body2"/><circle cx="58" cy="50" r="8" fill="#FFAB91" stroke="none"/><circle cx="142" cy="50" r="17" class="m-body2"/><circle cx="142" cy="50" r="8" fill="#FFAB91" stroke="none"/>
+                ${mane}<circle cx="100" cy="102" r="46" class="m-body"/>
+                <ellipse cx="100" cy="120" rx="22" ry="16" class="m-light"/><path d="M92 106 Q100 101 108 106 Q100 117 92 106Z" fill="#6D4C41" stroke="#3E2723" stroke-width="2" stroke-linejoin="round"/>
+                ${masFace(100, 96, {})}
+                <path d="M55 74 Q100 58 145 74 L145 87 Q100 71 55 87 Z" fill="#E53935" stroke="#B71C1C" stroke-width="3" stroke-linejoin="round"/><circle cx="100" cy="72" r="7" fill="#FFD54F" stroke="#F9A825" stroke-width="2"/>`; } },
+            junior: { nama: 'Bijak si Burung Hantu', draw: () => `
+                <ellipse cx="78" cy="208" rx="15" ry="7" fill="#FB8C00"/><ellipse cx="122" cy="208" rx="15" ry="7" fill="#FB8C00"/>
+                <ellipse cx="100" cy="142" rx="56" ry="66" class="m-mid"/>
+                <path d="M54 92 L58 46 L90 72 Z" class="m-mid"/><path d="M146 92 L142 46 L110 72 Z" class="m-mid"/><circle cx="100" cy="100" r="50" class="m-mid"/>
+                <ellipse cx="100" cy="168" rx="38" ry="40" class="m-light"/>
+                <circle cx="76" cy="100" r="30" class="m-light"/><circle cx="124" cy="100" r="30" class="m-light"/>
+                ${masFace(100, 100, { mouth: false })}
+                <circle cx="76" cy="100" r="19" class="m-line"/><circle cx="124" cy="100" r="19" class="m-line"/><path d="M95 100 L105 100" class="m-line"/>
+                <path d="M94 106 L106 106 L100 119 Z" fill="#FB8C00" stroke="#E65100" stroke-width="2.5" stroke-linejoin="round"/>
+                <ellipse cx="46" cy="158" rx="15" ry="34" class="m-dark" transform="rotate(14 46 158)"/><ellipse cx="154" cy="158" rx="15" ry="34" class="m-dark" transform="rotate(-14 154 158)"/>
+                <rect x="66" y="172" width="68" height="38" rx="5" class="m-body"/><path d="M100 172 L100 210" class="m-line" style="stroke-width:3"/><rect x="72" y="178" width="22" height="26" rx="2" fill="#fff" stroke="none"/><rect x="106" y="178" width="22" height="26" rx="2" fill="#fff" stroke="none"/>
+                <path d="M76 186 H90 M76 192 H90 M76 198 H90 M110 186 H124 M110 192 H124 M110 198 H124" stroke="#9E9E9E" stroke-width="2" stroke-linecap="round"/>
+                <path d="M72 70 L72 84 Q100 96 128 84 L128 70 Z" class="m-dark2"/><path d="M36 58 L100 30 L164 58 L100 84 Z" class="m-dark"/>
+                <path d="M100 58 L150 66 L150 90" fill="none" stroke="#FFD54F" stroke-width="3" stroke-linecap="round"/><circle cx="150" cy="94" r="6" fill="#FFD54F" stroke="#F9A825" stroke-width="2"/>` },
+            milad: { nama: 'Bintang Milad', draw: () => {
+                const pts = []; for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, r = i % 2 ? 44 : 84; pts.push((100 + r * Math.cos(a)).toFixed(1) + ',' + (136 + r * Math.sin(a)).toFixed(1)); }
+                const P = pts.join(' ');
+                return `<ellipse cx="56" cy="208" rx="14" ry="7" class="m-dark"/><ellipse cx="144" cy="208" rx="14" ry="7" class="m-dark"/>
+                <polygon points="${P}" class="m-outline"/><polygon points="${P}" class="m-body m-round"/>
+                <path d="M30 78 Q40 104 54 130" fill="none" stroke="#9E9E9E" stroke-width="2"/><ellipse cx="28" cy="58" rx="16" ry="20" fill="#29B6F6" stroke="#0277BD" stroke-width="3"/><path d="M26 77 L30 77 L28 82Z" fill="#0277BD"/>
+                ${masFace(100, 132, {})}
+                <path d="M82 68 L100 10 L118 68 Z" fill="#E53935" stroke="#B71C1C" stroke-width="3" stroke-linejoin="round"/><path d="M88 52 L112 40 M85 62 L115 50" stroke="#fff" stroke-width="5" stroke-linecap="round"/><ellipse cx="100" cy="68" rx="22" ry="5" fill="#FFD54F" stroke="#F9A825" stroke-width="2"/><circle cx="100" cy="10" r="7" fill="#FFD54F" stroke="#F9A825" stroke-width="2"/>
+                <circle cx="170" cy="40" r="4" fill="#E53935" stroke="none"/><circle cx="182" cy="110" r="4" fill="#29B6F6" stroke="none"/><circle cx="20" cy="150" r="4" fill="#66BB6A" stroke="none"/><circle cx="176" cy="170" r="3.5" fill="#AB47BC" stroke="none"/><rect x="150" y="20" width="8" height="4" fill="#FFD54F" stroke="none" transform="rotate(30 154 22)"/>`; } },
+            cup: { nama: 'Piala Madrasah', draw: () => `
+                <ellipse cx="62" cy="196" rx="13" ry="5" transform="rotate(-30 62 196)" fill="#43A047" stroke="#2E7D32" stroke-width="2"/><ellipse cx="50" cy="205" rx="13" ry="5" transform="rotate(-10 50 205)" fill="#43A047" stroke="#2E7D32" stroke-width="2"/>
+                <ellipse cx="138" cy="196" rx="13" ry="5" transform="rotate(30 138 196)" fill="#43A047" stroke="#2E7D32" stroke-width="2"/><ellipse cx="150" cy="205" rx="13" ry="5" transform="rotate(10 150 205)" fill="#43A047" stroke="#2E7D32" stroke-width="2"/>
+                <rect x="70" y="190" width="60" height="20" rx="5" class="m-dark"/><rect x="90" y="166" width="20" height="28" class="m-mid"/>
+                <path d="M52 84 C10 82 14 130 62 140" class="m-handle"/><path d="M148 84 C190 82 186 130 138 140" class="m-handle"/>
+                <path d="M46 72 L154 72 C154 150 124 172 100 174 C76 172 46 150 46 72 Z" class="m-body"/>
+                <ellipse cx="100" cy="72" rx="54" ry="11" class="m-body2"/><ellipse cx="100" cy="72" rx="45" ry="7" class="m-dark"/>
+                <path d="M62 94 Q60 130 78 152" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" opacity=".5"/>
+                ${masFace(100, 114, {})}
+                <path d="M58 64 L100 50 L100 74 L58 80 Z" fill="#fff" stroke="#3E2723" stroke-width="3" stroke-linejoin="round"/><path d="M142 64 L100 50 L100 74 L142 80 Z" fill="#fff" stroke="#3E2723" stroke-width="3" stroke-linejoin="round"/>
+                <path d="M66 62 L94 55 M66 69 L94 62 M134 62 L106 55 M134 69 L106 62" stroke="#9E9E9E" stroke-width="2" stroke-linecap="round"/>
+                <path d="M92 16 A14 14 0 1 0 108 36 A11 11 0 1 1 92 16 Z" fill="#FFD54F" stroke="#F9A825" stroke-width="2"/><path d="M122 18 L125 26 L133 26 L127 31 L129 39 L122 34 L115 39 L117 31 L111 26 L119 26Z" fill="#FFD54F" stroke="#F9A825" stroke-width="1.5" stroke-linejoin="round"/>` }
+        };
+        function mascotHTML(id, mood, px, cls) {
+            const m = MASKOT[id]; if (!m) return '';
+            const w = px || 140;
+            return `<svg class="mas mood-${mood || 'happy'} ${cls || ''}" viewBox="0 0 200 230" width="${w}" height="${Math.round(w * 1.15)}" role="img" aria-label="${m.nama}"><ellipse cx="100" cy="222" rx="56" ry="7" fill="rgba(0,0,0,.2)"/><g class="bob">${m.draw()}</g>${masSpark()}</svg>`;
+        }
+
         // ================= BRANDING: nama lomba, edisi, tagline, istilah peserta =================
-        const BRAND_DEFAULT = { nama: 'Battle of Minds', edisi: 'Scout Edition', tagline: 'Cerdas, Cermat, Berkarakter', acara: 'Kemah Kerja Madrasah · Season 5', lembaga: 'MAN 1 Boalemo', istilah: 'Regu' };
+        const BRAND_DEFAULT = { nama: 'Battle of Minds', edisi: 'Scout Edition', tagline: 'Cerdas, Cermat, Berkarakter', acara: 'Kemah Kerja Madrasah · Season 5', lembaga: 'MAN 1 Boalemo', istilah: 'Regu', maskot: 'scout' };
         const BRAND_PRESET = [
-            { label: 'Scout Edition', b: { edisi: 'Scout Edition', tagline: 'Cerdas, Cermat, Berkarakter', istilah: 'Regu' } },
-            { label: 'Class Clash (antar kelas)', b: { edisi: 'Class Clash', tagline: 'Satu Kelas, Satu Tim, Satu Juara', istilah: 'Kelas' } },
-            { label: 'Junior Edition (MTs/SMP)', b: { edisi: 'Junior Edition', tagline: 'Bintang Muda Beradu Ilmu', istilah: 'Tim' } },
-            { label: 'Milad Edition', b: { edisi: 'Milad Edition', tagline: 'Merayakan Milad dengan Prestasi', istilah: 'Tim' } },
-            { label: 'Madrasah Cup', b: { edisi: 'Madrasah Cup', tagline: 'Berlomba dalam Kebaikan, Berkompetisi dengan Ilmu', istilah: 'Tim' } }
+            { label: 'Scout Edition', b: { maskot: 'scout', edisi: 'Scout Edition', tagline: 'Cerdas, Cermat, Berkarakter', istilah: 'Regu' } },
+            { label: 'Class Clash (antar kelas)', b: { maskot: 'class', edisi: 'Class Clash', tagline: 'Satu Kelas, Satu Tim, Satu Juara', istilah: 'Kelas' } },
+            { label: 'Junior Edition (MTs/SMP)', b: { maskot: 'junior', edisi: 'Junior Edition', tagline: 'Bintang Muda Beradu Ilmu', istilah: 'Tim' } },
+            { label: 'Milad Edition', b: { maskot: 'milad', edisi: 'Milad Edition', tagline: 'Merayakan Milad dengan Prestasi', istilah: 'Tim' } },
+            { label: 'Madrasah Cup', b: { maskot: 'cup', edisi: 'Madrasah Cup', tagline: 'Berlomba dalam Kebaikan, Berkompetisi dengan Ilmu', istilah: 'Tim' } }
         ];
         function BR() {
             let b = null;
@@ -1447,7 +1555,7 @@
         function brandStatik() {   // teks statis di HTML (judul, menu peran, footer). Dipanggil juga saat halaman selesai dimuat karena <footer> ada setelah <script>
             const b = BR();
             const set = (id, h) => { const e = document.getElementById(id); if (e) e.innerHTML = h; };
-            set('hd-title', esc(b.nama) + ': ' + esc(b.edisi)); set('rm-ribbon', esc(b.edisi).toUpperCase()); set('rm-title1', esc(b.nama));
+            set('hd-title', mascotHTML(b.maskot, 'happy', 40) + ' ' + esc(b.nama) + ': ' + esc(b.edisi)); set('rm-mascot', mascotHTML(b.maskot, 'happy', 110)); set('rm-ribbon', esc(b.edisi).toUpperCase()); set('rm-title1', esc(b.nama));
             set('rm-sub', esc(b.acara) + ' · ' + esc(b.lembaga)); set('ft-nama', esc(b.nama));
             set('ft-brand', esc(b.nama) + ' · ' + esc(b.edisi) + ' · ' + esc(b.acara) + ' · ' + esc(b.lembaga));
             document.title = b.nama + ' · ' + b.edisi;
@@ -1467,11 +1575,13 @@
         function bukaBrand() { renderBrand(); document.getElementById('brand-modal').style.display = 'flex'; }
         function tutupBrand() { document.getElementById('brand-modal').style.display = 'none'; }
         function setBrand(patch, simpan) { state.brand = Object.assign({}, BR(), patch); terapBrand(); if (simpan) saveData(); }
+        function pilihMaskot(id) { setBrand({ maskot: id }, true); renderBrand(); }
         function pilihBrand(i) { setBrand(BRAND_PRESET[i].b, true); renderBrand(); }
         function renderBrand() {
             const b = BR(), f = (k, lb, ph) => `<label style="display:flex;flex-direction:column;gap:.2rem;font-size:.85rem;flex:1;min-width:230px">${lb}<input value="${esc(b[k])}" placeholder="${ph}" oninput="setBrand({${k}:this.value},false)" onchange="saveData()" style="padding:.5rem;border:2px solid #ddd;border-radius:6px;font-size:1rem"></label>`;
             document.getElementById('brand-body').innerHTML = `<p><small>Nama dan istilah ikut tampil di sampul, layar penonton, peserta, dan juri, serta tersinkron ke semua perangkat.</small></p>
                 <h3>Pilih cepat</h3><div class="jp-btns">${BRAND_PRESET.map((p, i) => B(p.label, `pilihBrand(${i})`, b.edisi === p.b.edisi ? 'btn-primary' : 'btn-outline')).join('')}</div>
+                <h3 style="margin-top:1rem">🎭 Maskot</h3><div style="display:flex;gap:.6rem;flex-wrap:wrap;align-items:flex-end">${Object.keys(MASKOT).map(k => `<div onclick="pilihMaskot('${k}')" style="cursor:pointer;text-align:center;border:3px solid ${b.maskot === k ? 'var(--hijau-sukses)' : '#ddd'};border-radius:10px;padding:.3rem .5rem;background:var(--coklat-tua);width:104px">${mascotHTML(k, 'happy', 80)}<div style="color:#fff;font-size:.72rem;font-weight:700">${MASKOT[k].nama}</div></div>`).join('')}<div onclick="pilihMaskot('none')" style="cursor:pointer;text-align:center;border:3px solid ${!MASKOT[b.maskot] ? 'var(--hijau-sukses)' : '#ddd'};border-radius:10px;padding:1.6rem .8rem;background:#fff;font-size:.8rem;font-weight:700">Tanpa maskot</div></div>
                 <h3 style="margin-top:1rem">Atur sendiri</h3><div style="display:flex;gap:.8rem;flex-wrap:wrap">
                 ${f('nama', 'Nama lomba', 'Battle of Minds')}${f('edisi', 'Edisi / sub-judul', 'Class Clash')}${f('tagline', 'Tagline', 'Satu Kelas, Satu Tim, Satu Juara')}
                 ${f('acara', 'Nama kegiatan', 'Milad ke-20 · 2026')}${f('lembaga', 'Penyelenggara / madrasah', 'MAN 1 Boalemo')}
@@ -1541,7 +1651,8 @@
                 return `<div class="pd-col"><div class="pd-names">${names}</div><div class="pd-block" style="height:${h}px">${med}<b>${r}</b></div></div>`;
             };
             const rest = pr.filter(x => x.r > 3);
-            return `<div class="pn-q" style="font-size:${jr ? '1.6rem' : '3rem'}">🏆 JUARA LOMBA CERDAS CERMAT</div>
+            return `<div class="pn-q" style="font-size:${jr ? '1.6rem' : '3rem'}">🏆 JUARA ${esc(BR().nama).toUpperCase()}</div>
+                ${(jr || rev >= 3) && MASKOT[BR().maskot] ? `<div style="text-align:center">${mascotHTML(BR().maskot, 'cheer', jr ? 90 : 150)}</div>` : ''}
                 <div class="pd-wrap">${col(2, 150, '🥈')}${col(1, 210, '🥇')}${col(3, 110, '🥉')}</div>` +
                 (rest.length && (jr || rev >= 3) ? `<div class="jp-btns" style="justify-content:center">${rest.map(x => `<span class="buzz" style="background:${warna(x.t.id)};margin:0;font-size:1.1rem">#${x.r} ${esc(x.t.name)} · ${x.t.gf || 0}</span>`).join('')}</div>` : '');
         }
@@ -1698,7 +1809,7 @@
             }).join('') + '</div>';
             const info = !b ? '' : s.fase === 'soal' ? `<div class="pn-q" style="font-size:${fz}">Kotak ${s.akt + 1} · ${NM[b.j]}<br>${esc(q.t)}</div>` :
                 `<div class="pn-q" style="font-size:${fz}">Kotak ${s.akt + 1}<br><span style="font-size:3em">${katIk(q.c)}</span><br>${esc(q.c || 'Umum')}</div>`;
-            const ov = s.hasil ? `<div class="hasil-ov ${s.hasil.ok ? 'ok' : 'bad'}"><div>${s.hasil.ok ? 'BENAR' : 'SALAH'}<span>${s.hasil.ok ? '😊' : '😞'}</span></div></div>` : '';
+            const ov = s.hasil ? `<div class="hasil-ov ${s.hasil.ok ? 'ok' : 'bad'}"><div>${s.hasil.ok ? 'BENAR' : 'SALAH'}<span>${BR().maskot && MASKOT[BR().maskot] ? mascotHTML(BR().maskot, s.hasil.ok ? 'cheer' : 'sad', 180) : (s.hasil.ok ? '😊' : '😞')}</span></div></div>` : '';
             return grid +
                 (s.bonus ? `<div class="buzz" style="background:${warna(s.bonus)}">🎉 ${esc(tById(s.bonus).name)} membuat 1 garis lurus! BONUS +30</div>` : s.selesai ? '<div class="buzz" style="background:var(--coklat-tua)">⏰ Sesi Kotak Katik selesai</div>' :
                     `<div class="buzz" style="background:${warna(s.gil)}">Giliran: ${esc(tById(s.gil).name)}${s.extra ? ' · EXTRA BOX, pilih 1 kotak lagi!' : ''}</div>`) + info + ov;
@@ -1793,7 +1904,7 @@
         function coverHTML(jr, landing) {
             return `<div class="cv-wrap">
                 <div class="cv-ribbon">LOMBA CERDAS CERMAT</div>
-                <div class="cv-row">${logoHTML(jr)}</div>
+                <div class="cv-row">${logoHTML(jr)}${mascotHTML(BR().maskot, 'happy', 150, 'cv-mas')}</div>
                 <div class="cv-t1">${esc(BR().nama)}</div>
                 <div class="cv-rope"></div>
                 <div class="cv-t2">${esc(BR().edisi)}</div>
@@ -2353,6 +2464,6 @@
     <div id="ft-brand">Battle of Minds · Scout Edition · Kemah Kerja Madrasah · Season 5 · MAN 1 Boalemo</div>
     <small>Dibangun dengan HTML, Google Apps Script &amp; Google Sheets · Kurikulum Merdeka berbasis cinta, dengan literasi dan numerasi</small>
 </footer>
-<div id="app-ver" style="position:fixed;bottom:2px;left:6px;font-size:10px;opacity:.45;z-index:5;pointer-events:none">v2026.11.11-o</div>
+<div id="app-ver" style="position:fixed;bottom:2px;left:6px;font-size:10px;opacity:.45;z-index:5;pointer-events:none">v2026.11.11-p</div>
 </body>
 </html>
