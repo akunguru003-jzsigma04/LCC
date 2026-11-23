@@ -1299,7 +1299,8 @@
             { id: 'biru', nama: 'Biru & Emas', c: { gelap: '#0D2B5C', sedang: '#4A74B8', aksen: '#FFC72C', bg: '#F1F4FA' } },
             { id: 'maroon', nama: 'Maroon & Emas', c: { gelap: '#6A1427', sedang: '#B05A6B', aksen: '#F2B705', bg: '#F8F3F4' } },
             { id: 'ungu', nama: 'Ungu & Kuning', c: { gelap: '#3B1D6B', sedang: '#8366BF', aksen: '#FFD54F', bg: '#F5F2FA' } },
-            { id: 'tosca', nama: 'Tosca & Oranye', c: { gelap: '#00494F', sedang: '#2C8E97', aksen: '#FF9F1C', bg: '#F0F6F7' } }
+            { id: 'tosca', nama: 'Tosca & Oranye', c: { gelap: '#00494F', sedang: '#2C8E97', aksen: '#FF9F1C', bg: '#F0F6F7' } },
+            { id: 'hariguru', nama: 'Hari Guru Nasional (papan tulis)', c: { gelap: '#23423A', sedang: '#5F8F7E', aksen: '#FFD23F', bg: '#FAF6EA' } }
         ];
         const clampN = (x, a, b) => Math.min(b, Math.max(a, x));
         function hex2rgb(h) { h = String(h).replace('#', ''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16) || 0; return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
@@ -1499,6 +1500,19 @@
                 <path d="M58 64 L100 50 L100 74 L58 80 Z" fill="#fff" stroke="#3E2723" stroke-width="3" stroke-linejoin="round"/><path d="M142 64 L100 50 L100 74 L142 80 Z" fill="#fff" stroke="#3E2723" stroke-width="3" stroke-linejoin="round"/>
                 <path d="M66 62 L94 55 M66 69 L94 62 M134 62 L106 55 M134 69 L106 62" stroke="#9E9E9E" stroke-width="2" stroke-linecap="round"/>
                 <path d="M92 16 A14 14 0 1 0 108 36 A11 11 0 1 1 92 16 Z" fill="#FFD54F" stroke="#F9A825" stroke-width="2"/><path d="M122 18 L125 26 L133 26 L127 31 L129 39 L122 34 L115 39 L117 31 L111 26 L119 26Z" fill="#FFD54F" stroke="#F9A825" stroke-width="1.5" stroke-linejoin="round"/>` }
+            ,
+            guru: { nama: 'Pensil Guru', draw: () => `
+                <ellipse cx="82" cy="214" rx="14" ry="6" class="m-dark"/><ellipse cx="118" cy="214" rx="14" ry="6" class="m-dark"/>
+                <path d="M62 130 L34 146" class="m-limb"/><circle cx="30" cy="148" r="9" class="m-body"/>
+                <path d="M138 130 L164 124" class="m-limb"/>
+                <path d="M62 78 L138 78 L100 22 Z" fill="#FFCC80" stroke="#4E342E" stroke-width="3" stroke-linejoin="round"/><path d="M91 40 L109 40 L100 22 Z" fill="#3E2723" stroke="#3E2723" stroke-width="2" stroke-linejoin="round"/>
+                <rect x="62" y="78" width="76" height="98" class="m-body"/><path d="M82 78 V176 M118 78 V176" stroke="var(--aksen-tua)" stroke-width="3" fill="none"/>
+                <rect x="62" y="176" width="76" height="14" rx="2" fill="#CFD8DC" stroke="#4E342E" stroke-width="3"/><path d="M72 176 V190 M82 176 V190 M92 176 V190 M102 176 V190 M112 176 V190 M122 176 V190 M132 176 V190" stroke="#90A4AE" stroke-width="2"/>
+                <rect x="62" y="190" width="76" height="20" rx="9" fill="#F48FB1" stroke="#4E342E" stroke-width="3"/>
+                ${masFace(100, 122, { e: 23 })}
+                <circle cx="77" cy="122" r="16" class="m-line"/><circle cx="123" cy="122" r="16" class="m-line"/><path d="M93 121 L107 121" class="m-line"/>
+                <g><circle cx="170" cy="112" r="15" fill="#E53935" stroke="#B71C1C" stroke-width="3"/><path d="M170 98 Q172 90 178 88" fill="none" stroke="#5D4037" stroke-width="3" stroke-linecap="round"/><path d="M174 94 Q184 90 186 98 Q178 100 174 94Z" fill="#43A047" stroke="#2E7D32" stroke-width="2"/><circle cx="165" cy="108" r="3.5" fill="#fff" opacity=".6" stroke="none"/></g>
+                <circle cx="164" cy="126" r="9" class="m-body"/>` }
         };
         function mascotHTML(id, mood, px, cls) {
             const m = MASKOT[id]; if (!m) return '';
@@ -1513,6 +1527,7 @@
             { label: 'Class Clash (antar kelas)', b: { maskot: 'class', edisi: 'Class Clash', tagline: 'Satu Kelas, Satu Tim, Satu Juara', istilah: 'Kelas' } },
             { label: 'Junior Edition (MTs/SMP)', b: { maskot: 'junior', edisi: 'Junior Edition', tagline: 'Bintang Muda Beradu Ilmu', istilah: 'Tim' } },
             { label: 'Milad Edition', b: { maskot: 'milad', edisi: 'Milad Edition', tagline: 'Merayakan Milad dengan Prestasi', istilah: 'Tim' } },
+            { label: 'Hari Guru Nasional', tema: 'hariguru', b: { maskot: 'guru', edisi: 'Hari Guru Nasional', tagline: 'Terima Kasih, Guruku', istilah: 'Tim' } },
             { label: 'Madrasah Cup', b: { maskot: 'cup', edisi: 'Madrasah Cup', tagline: 'Berlomba dalam Kebaikan, Berkompetisi dengan Ilmu', istilah: 'Tim' } }
         ];
         function BR() {
@@ -1576,7 +1591,11 @@
         function tutupBrand() { document.getElementById('brand-modal').style.display = 'none'; }
         function setBrand(patch, simpan) { state.brand = Object.assign({}, BR(), patch); terapBrand(); if (simpan) saveData(); }
         function pilihMaskot(id) { setBrand({ maskot: id }, true); renderBrand(); }
-        function pilihBrand(i) { setBrand(BRAND_PRESET[i].b, true); renderBrand(); }
+        function pilihBrand(i) {
+            const p = BRAND_PRESET[i]; setBrand(p.b, true);
+            if (p.tema) { const k = TEMA_PRESET.findIndex(t => t.id === p.tema); if (k >= 0) pilihTema(k); }   // paket: warna tema ikut dipasang
+            renderBrand();
+        }
         function renderBrand() {
             const b = BR(), f = (k, lb, ph) => `<label style="display:flex;flex-direction:column;gap:.2rem;font-size:.85rem;flex:1;min-width:230px">${lb}<input value="${esc(b[k])}" placeholder="${ph}" oninput="setBrand({${k}:this.value},false)" onchange="saveData()" style="padding:.5rem;border:2px solid #ddd;border-radius:6px;font-size:1rem"></label>`;
             document.getElementById('brand-body').innerHTML = `<p><small>Nama dan istilah ikut tampil di sampul, layar penonton, peserta, dan juri, serta tersinkron ke semua perangkat.</small></p>
@@ -2464,6 +2483,6 @@
     <div id="ft-brand">Battle of Minds · Scout Edition · Kemah Kerja Madrasah · Season 5 · MAN 1 Boalemo</div>
     <small>Dibangun dengan HTML, Google Apps Script &amp; Google Sheets · Kurikulum Merdeka berbasis cinta, dengan literasi dan numerasi</small>
 </footer>
-<div id="app-ver" style="position:fixed;bottom:2px;left:6px;font-size:10px;opacity:.45;z-index:5;pointer-events:none">v2026.11.11-p</div>
+<div id="app-ver" style="position:fixed;bottom:2px;left:6px;font-size:10px;opacity:.45;z-index:5;pointer-events:none">v2026.11.11-q</div>
 </body>
 </html>
