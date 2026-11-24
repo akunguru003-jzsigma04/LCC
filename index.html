@@ -136,6 +136,8 @@
 
         .members {
             display: flex;
+            flex-wrap: wrap;
+            row-gap: 6px;
             justify-content: space-between;
             gap: 5px;
         }
@@ -333,7 +335,7 @@
 
         #landing { position: fixed; inset: 0; z-index: 2000; overflow: auto; background: #f4f4f4; padding: 1rem; }
 
-        .reg-row { display: grid; grid-template-columns: 2rem 1.5fr 1.2fr repeat(3, 1fr) 2.2rem; gap: 5px; margin-bottom: 5px; align-items: center; font-size: .85rem; }
+        .reg-row { display: grid; grid-template-columns: 2rem 1.5fr 1.2fr repeat(var(--na, 3), minmax(86px, 1fr)) 2.2rem; min-width: calc(330px + var(--na, 3) * 96px); gap: 5px; margin-bottom: 5px; align-items: center; font-size: .85rem; }
         .reg-row input { padding: .4rem; border: 2px solid #ddd; border-radius: 6px; width: 100%; min-width: 0; }
         .reg-head { font-weight: 800; color: var(--coklat-tua); }
         .asal { font-size: .8rem; opacity: .7; text-align: center; margin: -.3rem 0 .6rem; }
@@ -509,9 +511,9 @@
 
     <div id="reg-modal" class="modal" style="display:none"><div class="modal-box" style="max-width:1250px">
         <h2>📝 Pendaftaran Regu — Sistem Gugur</h2>
-        <small>Setiap regu terdiri dari 3 anggota. Jumlah regu bebas (bisa dimulai dari nol). Aturan gugur dan jumlah regu yang lolos ke Grand Final diatur di bawah. Data tersimpan otomatis.</small>
+        <small id="reg-sub">Jumlah regu bebas (bisa dimulai dari nol). Jumlah anggota per regu, aturan gugur, dan jumlah regu yang lolos ke Grand Final diatur di bawah. Data tersimpan otomatis.</small>
         <div id="reg-info" style="margin:.6rem 0"></div>
-        <div id="reg-list"></div>
+        <div id="reg-list" style="overflow-x:auto"></div>
         <div class="jp-btns">
             <button class="btn btn-primary btn-sm" id="reg-add" onclick="tambahReg()">＋ Tambah Regu</button>
             <label class="btn btn-primary btn-outline btn-sm" id="reg-imp">📥 Impor CSV<input type="file" accept=".csv,.txt" hidden onchange="imporReg(this)"></label>
@@ -579,8 +581,12 @@
         const PENONTON = location.hash === '#penonton', BEL = location.hash === '#bel' || location.hash === '#regu', MODE_REGU = location.hash === '#regu';
         const PICK = !PENONTON && !BEL && sessionStorage.getItem('lcc_role') !== 'juri';  // tampilkan menu pilihan peran
         // State Management
-        const ANGGOTA = 3;   // jumlah anggota per regu
-        const ANG = Array.from({ length: ANGGOTA }, (_, i) => i);
+        // Jumlah anggota per regu/tim DINAMIS (1-10), diatur di Pendaftaran per kegiatan; ikut tersinkron lewat state.cfg
+        let CFG = Object.assign({ s1: 180, s2: 60, s3: 15, gugur: 3, gfN: 5, anggota: 3, a1: 10, a3: 20, grace: 3 }, (() => { try { return JSON.parse(localStorage.getItem('lcc_cfg')); } catch (e) { return null; } })() || {});
+        let ANGGOTA = 3, ANG = [0, 1, 2];
+        function setAng(n) { n = Math.min(10, Math.max(1, Math.round(+n) || 3)); ANGGOTA = n; ANG = Array.from({ length: n }, (_, i) => i); }
+        function terapCfg(c) { Object.assign(CFG, c || {}); setAng(CFG.anggota); try { localStorage.setItem('lcc_cfg', JSON.stringify(CFG)); } catch (e) {} }
+        setAng(CFG.anggota);
         let state = {
             phase: 'penyisihan', // 'penyisihan' | 'final'
             viewMode: 'juri', // 'juri' | 'peserta'
@@ -824,7 +830,7 @@
                     stopTimer(); state = Object.assign({}, d.state, { history: [] });
                     bankSoal = d.banks.p || bankSoal; bankGF = d.banks.g || bankGF; bankK = d.banks.k || bankK;
                     if (Array.isArray(d.papan) && d.papan.length === 5) papan = d.papan;
-                    if (d.cfg) CFG = Object.assign(CFG, d.cfg);
+                    if (d.cfg) terapCfg(d.cfg);
                     try { localStorage.setItem('lcc_cfg', JSON.stringify(CFG)); if (d.logo) localStorage.setItem('lcc_logo', d.logo); } catch (e) {}
                     simpanSoal(); simpanGambar(); saveData(); cloudDirty = { b: true, m: true }; cloudSchedule(); buildCover(); render(); toast('✅ Cadangan dipulihkan');
                 } catch (e) { toast('❌ Berkas cadangan tidak valid'); }
@@ -1258,6 +1264,15 @@
         let papan = (() => { try { const p = JSON.parse(localStorage.getItem('lcc_papan')); if (Array.isArray(p) && p.length === 5) return p; } catch (e) {} return papanBaru(); })();
         function gfN() { return Math.max(1, Math.round(+CFG.gfN) || 5); }   // jumlah regu yang lolos ke Grand Final (diatur di Pendaftaran Regu)
         function gugurN() { return Math.min(ANGGOTA, Math.max(1, Math.round(+CFG.gugur) || 3)); }
+        function setAnggota(v) {
+            const n = Math.min(10, Math.max(1, Math.round(+v) || 3));
+            if (n === ANGGOTA) { renderReg(); return; }
+            if (lombaBerjalan() && n < ANGGOTA && !confirm('Mengurangi jumlah anggota akan menghapus anggota terakhir (nama & status) di setiap regu. Lanjutkan?')) { renderReg(); return; }
+            CFG.anggota = n; terapCfg({});
+            CFG.gugur = Math.min(CFG.gugur, n);
+            rapikan(); state.teams.forEach(t => { t.absen = t.absen || []; syncAbsen(t); });
+            toast('✅ Jumlah anggota per regu: ' + n); saveData(); render(); renderReg();
+        }
         function setGugur(v) {
             if (lombaBerjalan()) { toast('Aturan gugur dikunci saat lomba berjalan'); renderReg(); return; }
             CFG.gugur = Math.min(ANGGOTA, Math.max(1, Math.round(+v) || 3));
@@ -1268,10 +1283,10 @@
             (state.teams || []).forEach(t => {
                 t.members = (t.members || []).slice(0, ANGGOTA); while (t.members.length < ANGGOTA) t.members.push(true);
                 if (t.anggota) { t.anggota = t.anggota.slice(0, ANGGOTA); while (t.anggota.length < ANGGOTA) t.anggota.push(''); }
+                if (t.absen) { t.absen = t.absen.slice(0, ANGGOTA); while (t.absen.length < ANGGOTA) t.absen.push(false); }
             });
         }
         let edP = 0, cfgOpen = false;
-        let CFG = Object.assign({ s1: 180, s2: 60, s3: 15, gugur: 3, gfN: 5, a1: 10, a3: 20, grace: 3 }, (() => { try { return JSON.parse(localStorage.getItem('lcc_cfg')); } catch (e) { return null; } })() || {});
         function setCfg(k, v) { const mn = (k === 'a1' || k === 'a3' || k === 'grace') ? 0 : 1; let n = Math.round(+v); if (!(n >= mn)) n = CFG[k]; v = n; CFG[k] = v; try { localStorage.setItem('lcc_cfg', JSON.stringify(CFG)); } catch (e) {} toast('⏱ Waktu disimpan'); saveData(); renderGF(); }
         let edBank = 'p', gambarOpen = false;
         function EB() { return edBank === 'g' ? bankGF : edBank === 'k' ? bankK : bankSoal; }
@@ -1753,7 +1768,14 @@
         }
         function papanEdHTML() {
             const P = papan[edP];
-            return `<div class="jp-btns" style="margin:.4rem 0">${papan.map((_, k) => B('Papan ' + (k + 1), `edP=${k};refreshPapan()`, edP === k ? 'btn-primary' : 'btn-outline')).join('')}</div>
+            return `<div class="jp-btns" style="margin:.2rem 0">${B('📦 Unggah ZIP (semua papan sekaligus)', "document.getElementById('zip-papan').click()", 'btn-primary')}<input type="file" id="zip-papan" accept=".zip,application/zip" style="display:none" onchange="unggahZip(this)"></div>
+                <details style="margin:.2rem 0 .6rem"><summary><small><b>Format ZIP</b> (klik untuk melihat)</small></summary><div style="font-size:.85rem;line-height:1.5;padding:.4rem .6rem;background:var(--aksen-pucat);border-radius:8px">
+                    <b>Susunan:</b> satu folder per papan, mis. <code>Papan 1/</code> … <code>Papan 5/</code> (atau <code>P1</code>, <code>1</code>), berisi hingga 12 gambar.<br>
+                    <b>Nama gambar:</b> <code>01 Simpul mati.png</code> — angka depan = nomor slot (1–12), sisanya = nama gambar. Tambahkan <code>*</code> di akhir nama untuk menandai <b>kunci benar</b>: <code>02 Ikatan palang*.png</code> (atau akhiran <code>_benar</code>).<br>
+                    <b>Tanpa folder:</b> <code>P1-03-Simpul mati*.png</code> (papan-nomor-nama). Gambar tanpa penanda diurutkan abjad, 12 per papan.<br>
+                    <b>Soal papan (opsional):</b> berkas <code>soal.txt</code> di luar folder dengan baris <code>1: Pilih 5 gambar ...</code>, atau <code>soal.txt</code> di dalam folder papan.<br>
+                    Gambar otomatis dikecilkan. Maksimal 5 papan × 12 gambar; format jpg/png/webp/gif/svg.</div></details>
+                <div class="jp-btns" style="margin:.4rem 0">${papan.map((_, k) => B('Papan ' + (k + 1), `edP=${k};refreshPapan()`, edP === k ? 'btn-primary' : 'btn-outline')).join('')}</div>
                 <input style="width:100%;margin:.4rem 0" value="${esc(P.soal)}" placeholder="Soal papan ${edP + 1}, mis. Pilih 5 gambar simpul yang ..." oninput="papan[edP].soal=this.value;simpanGambar()">` +
                 P.g.map((g, i) => `<div class="ed-row" style="grid-template-columns:2rem 1fr 2fr 3.5rem"><b>${i + 1}${g.img ? '✅' : ''}</b>
                     <input type="file" accept="image/*" onchange="muatGambar(${i},this)">
@@ -1775,6 +1797,100 @@
                 P.g[i].img = c.toDataURL('image/jpeg', .6); simpanGambar(); URL.revokeObjectURL(u); refreshPapan();
             };
             im.src = u;
+        }
+        // ===== Unggah ZIP: semua gambar Papan Sesi 2 sekaligus (tanpa pustaka luar; butuh DecompressionStream: Chrome/Edge 80+, Firefox 113+, Safari 16.4+) =====
+        async function bacaZip(file) {
+            const buf = await file.arrayBuffer(), dv = new DataView(buf), u8 = new Uint8Array(buf);
+            let e = -1; for (let i = buf.byteLength - 22; i >= Math.max(0, buf.byteLength - 65557); i--) if (dv.getUint32(i, true) === 0x06054b50) { e = i; break; }
+            if (e < 0) throw new Error('bukan berkas ZIP');
+            const n = dv.getUint16(e + 10, true); let p = dv.getUint32(e + 16, true);
+            if (n === 0xffff || p === 0xffffffff) throw new Error('ZIP64 tidak didukung');
+            const out = [], dec = new TextDecoder('utf-8');
+            for (let k = 0; k < n; k++) {
+                if (dv.getUint32(p, true) !== 0x02014b50) throw new Error('struktur ZIP rusak');
+                const meth = dv.getUint16(p + 10, true), csz = dv.getUint32(p + 20, true), nl = dv.getUint16(p + 28, true), el = dv.getUint16(p + 30, true), cl = dv.getUint16(p + 32, true), lo = dv.getUint32(p + 42, true);
+                const name = dec.decode(u8.subarray(p + 46, p + 46 + nl)); p += 46 + nl + el + cl;
+                if (!name.endsWith('/')) out.push({ name, meth, csz, lo });
+            }
+            return { dv, u8, out };
+        }
+        async function isiZip(z, e) {
+            if (z.dv.getUint32(e.lo, true) !== 0x04034b50) throw new Error('struktur ZIP rusak: ' + e.name);
+            const st = e.lo + 30 + z.dv.getUint16(e.lo + 26, true) + z.dv.getUint16(e.lo + 28, true), data = z.u8.subarray(st, st + e.csz);
+            if (e.meth === 0) return data;
+            if (e.meth === 8) return new Uint8Array(await new Response(new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer());
+            throw new Error('metode kompresi ' + e.meth + ' tidak didukung (' + e.name + ')');
+        }
+        function blobKeDataUrl(bytes, ext) {   // kecilkan ke lebar maks 420px, JPEG (sama seperti unggah satuan)
+            const mime = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', gif: 'image/gif', webp: 'image/webp', bmp: 'image/bmp', svg: 'image/svg+xml' }[ext] || 'image/png';
+            return new Promise((res, rej) => {
+                const u = URL.createObjectURL(new Blob([bytes], { type: mime })), im = new Image();
+                im.onload = () => {
+                    const w0 = im.width || 420, h0 = im.height || 420, k = Math.min(1, 420 / w0), c = document.createElement('canvas');
+                    c.width = Math.max(1, Math.round(w0 * k)); c.height = Math.max(1, Math.round(h0 * k));
+                    const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(im, 0, 0, c.width, c.height);
+                    URL.revokeObjectURL(u); res(c.toDataURL('image/jpeg', .6));
+                };
+                im.onerror = () => { URL.revokeObjectURL(u); rej(new Error('gambar tidak bisa dibuka')); };
+                im.src = u;
+            });
+        }
+        const RE_FOLDER = /^(?:papan|pap|p)?[\s_-]*(\d{1,2})$/i, RE_FLAT = /^(?:papan|pap|p)?[\s_-]*(\d{1,2})[\s_.-]+(\d{1,2})(?:[\s_.-]+(.*))?$/i, RE_MARK = /(?:\s*[*✓✔]|[\s_-]+\(?benar\)?)\s*$/i;
+        function parseGambarZip(path) {   // -> { papan, no, nama, benar }
+            const parts = path.split('/'), file = parts.pop(), base = file.replace(/\.[^.]+$/, '');
+            let papan = null; for (let i = parts.length - 1; i >= 0 && papan === null; i--) { const m = parts[i].trim().match(RE_FOLDER); if (m) papan = +m[1]; }
+            let no = null, nama = base.trim(), m;
+            if (papan !== null) { if ((m = nama.match(/^(\d{1,2})(?:[\s_.-]+(.*))?$/))) { no = +m[1]; nama = m[2] || ''; } }
+            else if ((m = nama.match(RE_FLAT))) { papan = +m[1]; no = +m[2]; nama = m[3] || ''; }
+            const benar = RE_MARK.test(nama); nama = nama.replace(RE_MARK, '').trim();
+            if (!/\s/.test(nama)) nama = nama.replace(/_/g, ' ');
+            return { papan, no, nama, benar };
+        }
+        async function unggahZip(inp) {
+            const f = inp.files[0]; inp.value = ''; if (!f) return;
+            if (typeof DecompressionStream === 'undefined') { alert('Browser ini belum mendukung baca ZIP. Gunakan Chrome/Edge terbaru, atau unggah gambar satuan.'); return; }
+            toast('Membaca ZIP…');
+            try {
+                const z = await bacaZip(f), gambar = [], teks = [], lewati = [];
+                for (const e of z.out) {
+                    const base = e.name.split('/').pop();
+                    if (/^__MACOSX\//.test(e.name) || base.startsWith('.') || /^Thumbs\.db$/i.test(base)) continue;
+                    if (/\.(jpe?g|png|gif|webp|bmp|svg)$/i.test(base)) gambar.push(e); else if (/\.txt$/i.test(base)) teks.push(e); else lewati.push(base);
+                }
+                if (!gambar.length) { alert('Tidak ada gambar (jpg/png/webp/gif/svg) di dalam ZIP.'); return; }
+                // soal papan dari soal.txt (baris "1: Pilih 5 gambar ..." atau soal.txt di dalam folder papan)
+                const soal = {};
+                for (const e of teks) {
+                    const txt = new TextDecoder('utf-8').decode(await isiZip(z, e)).replace(/^\uFEFF/, ''), folder = e.name.split('/').slice(0, -1).reverse().map(d => d.trim().match(RE_FOLDER)).find(Boolean);
+                    if (folder) { const t = txt.split(/\r?\n/).map(x => x.trim()).filter(Boolean).join(' '); if (t) soal[+folder[1]] = t; }
+                    else txt.split(/\r?\n/).forEach(l => { const m = l.trim().match(/^(?:papan|pap|p)?\s*(\d{1,2})\s*[:.)-]\s*(.+)$/i); if (m) soal[+m[1]] = m[2].trim(); });
+                }
+                // kelompokkan gambar per papan
+                const info = gambar.map(e => Object.assign({ e, ext: e.name.split('.').pop().toLowerCase() }, parseGambarZip(e.name)));
+                const tanpa = info.filter(x => x.papan === null).sort((a, b) => a.e.name.localeCompare(b.e.name, undefined, { numeric: true }));
+                tanpa.forEach((x, i) => { x.papan = Math.floor(i / 12) + 1; x.no = null; });   // tanpa penanda: urut abjad, 12 gambar per papan
+                const salah = info.filter(x => x.papan < 1 || x.papan > papan.length);
+                const ok = info.filter(x => x.papan >= 1 && x.papan <= papan.length), per = {};
+                ok.forEach(x => (per[x.papan] = per[x.papan] || []).push(x));
+                const ringkas = Object.keys(per).sort((a, b) => a - b).map(k => `Papan ${k}: ${Math.min(12, per[k].length)} gambar`).join(', ');
+                if (!confirm(`ZIP berisi ${gambar.length} gambar.\n${ringkas}\n\nGambar lama di slot yang sama akan ditimpa. Lanjutkan?`)) return;
+                let sudah = 0, gagal = [];
+                for (const k of Object.keys(per).map(Number).sort((a, b) => a - b)) {
+                    const P = papan[k - 1], dipakai = new Set(), urut = per[k].slice().sort((a, b) => (a.no ?? 1e9) - (b.no ?? 1e9) || a.e.name.localeCompare(b.e.name, undefined, { numeric: true }));
+                    const slot = []; urut.filter(x => x.no >= 1 && x.no <= 12).forEach(x => { if (!dipakai.has(x.no - 1)) { dipakai.add(x.no - 1); slot.push([x.no - 1, x]); } else x.no = null; });
+                    urut.filter(x => !(x.no >= 1 && x.no <= 12)).forEach(x => { let i = 0; while (i < 12 && dipakai.has(i)) i++; if (i < 12) { dipakai.add(i); slot.push([i, x]); } else gagal.push(x.e.name + ' (papan ' + k + ' penuh, maks 12)'); });
+                    for (const [i, x] of slot) {
+                        try { P.g[i].img = await blobKeDataUrl(await isiZip(z, x.e), x.ext); P.g[i].t = x.nama; P.g[i].b = x.benar; sudah++; toast(`Memproses gambar… ${sudah}/${gambar.length}`); }
+                        catch (err) { gagal.push(x.e.name + ' (' + err.message + ')'); }
+                    }
+                    if (soal[k]) P.soal = soal[k];
+                }
+                Object.keys(soal).forEach(k => { if (!per[k] && papan[k - 1]) papan[k - 1].soal = soal[k]; });
+                simpanGambar(); refreshPapan();
+                const kunci = papan.map((b, k) => (k + 1) + '=' + b.g.filter(g => g.b).length + '/5').join(' ');
+                alert(`✅ ${sudah} gambar diunggah.\nKunci benar (✓) per papan: ${kunci}` + (papan.some(b => b.g.filter(g => g.b).length !== 5) ? '\n\n⚠ Papan yang belum tepat 5 kunci perlu dicentang manual (atau beri tanda * di akhir nama berkas gambar).' : '') +
+                    (salah.length ? `\n\nDilewati (nomor papan di luar 1–${papan.length}): ${salah.length} berkas` : '') + (gagal.length ? '\n\nGagal:\n- ' + gagal.slice(0, 8).join('\n- ') : '') + (lewati.length ? `\n\nBerkas non-gambar diabaikan: ${lewati.length}` : ''));
+            } catch (err) { alert('ZIP tidak dapat diproses: ' + err.message); }
         }
         function s2Tim(id) { const s = S2(); if (s.mulai || cdN) return; s.aktif = id; s.buka = false; saveData(); render(); }
         function s2Kartu(k) {
@@ -2005,7 +2121,7 @@
         }
         function applyCloud(r) {
             state = Object.assign({}, r.state, { history: [] });
-            if (state.cfg) { Object.assign(CFG, state.cfg); try { localStorage.setItem('lcc_cfg', JSON.stringify(CFG)); } catch (e) {} }
+            if (state.cfg) terapCfg(state.cfg);
             localStorage.setItem('lcc_data_v1', JSON.stringify(state));
             if (r.banks) {
                 bankSoal = r.banks.p || bankSoal; bankGF = r.banks.g || bankGF; bankK = r.banks.k || bankK;
@@ -2043,7 +2159,7 @@
                 if (r.state && (r.state.ver || 0) > (state.ver || 0)) {
                     const vm = state.viewMode;
                     state = Object.assign({}, r.state, { history: [] }); if (vm) state.viewMode = vm;
-                    if (state.cfg) { Object.assign(CFG, state.cfg); try { localStorage.setItem('lcc_cfg', JSON.stringify(CFG)); } catch (e) {} }
+                    if (state.cfg) terapCfg(state.cfg);
                     try { localStorage.setItem('lcc_data_v1', JSON.stringify(state)); } catch (e) {}
                     ch = true;
                 }
@@ -2094,7 +2210,7 @@
         async function cloudPollOnce() {
             const r = await api('poll', { ver: state.ver || 0, bver: window._cb || 0, mver: window._cm || 0 }, 45000);
             if (!r || !r.ok) return;
-            if (r.state) { state = r.state; if (state.cfg) Object.assign(CFG, state.cfg); }
+            if (r.state) { state = r.state; if (state.cfg) terapCfg(state.cfg); }
             if (r.banks) { bankSoal = r.banks.p || bankSoal; bankGF = r.banks.g || bankGF; bankK = r.banks.k || bankK; }
             if (r.bver !== undefined) window._cb = r.bver;
             if (r.media) { if (r.media.papan) papan = r.media.papan; if (r.media.logo) localStorage.setItem('lcc_logo', r.media.logo); }
@@ -2253,8 +2369,9 @@
                 ? '<div class="jp-kunci" style="border-color:var(--merah-gagal)">🔒 Lomba sudah berjalan: nama regu, asal, dan nama anggota masih bisa diubah, tetapi hapus regu dan impor dikunci (tambah regu tetap bisa). Gunakan <b>Reset Data</b> untuk memulai ulang.</div>'
                 : `<div class="jp-kunci">Jumlah regu terdaftar: <b>${state.teams.length}</b> (tanpa batas). Hapus regu dan impor CSV hanya bisa sebelum lomba dimulai; tambah regu bisa kapan saja.</div>`;
             document.getElementById('reg-info').innerHTML += `<div style="margin-top:.4rem">Aturan gugur: regu gugur jika <input type="number" min="1" max="${ANGGOTA}" value="${gugurN()}" style="width:3.5rem" onchange="setGugur(this.value)" ${lock ? 'disabled' : ''}> dari ${ANGGOTA} anggota salah. &nbsp;·&nbsp; Regu yang lolos ke Grand Final: <input type="number" min="1" value="${gfN()}" style="width:3.5rem" onchange="setGfN(this.value)"> regu.</div>`;
-            document.getElementById('reg-info').innerHTML += window._regHint + `<div style="margin-top:.4rem">Toleransi selisih waktu perangkat peserta: <input type="number" min="0" max="10" value="${CFG.grace}" style="width:3.5rem" onchange="setCfg('grace',this.value);renderReg()"> detik (jawaban terakhir masih diterima setelah hitungan 0).</div>`;
+            document.getElementById('reg-info').innerHTML += `<div style="margin-top:.4rem">👥 Jumlah anggota per regu: <input type="number" min="1" max="10" value="${ANGGOTA}" style="width:3.5rem" onchange="setAnggota(this.value)"> orang (1–10, bisa berbeda tiap kegiatan).</div>` + window._regHint + `<div style="margin-top:.4rem">Toleransi selisih waktu perangkat peserta: <input type="number" min="0" max="10" value="${CFG.grace}" style="width:3.5rem" onchange="setCfg('grace',this.value);renderReg()"> detik (jawaban terakhir masih diterima setelah hitungan 0).</div>`;
             ['reg-imp'].forEach(id => { const e = document.getElementById(id); e.style.opacity = lock ? .4 : 1; e.style.pointerEvents = lock ? 'none' : 'auto'; });
+            document.getElementById('reg-list').style.setProperty('--na', ANGGOTA);
             document.getElementById('reg-list').innerHTML = '<div class="reg-row reg-head"><span>No</span><span>Nama Regu</span><span>Asal / Pangkalan</span>' + ANG.map(j => `<span>Anggota ${j + 1}</span>`).join('') + '<span></span></div>' +
                 state.teams.map((t, i) => {
                     const a = t.anggota || [];
@@ -2483,6 +2600,6 @@
     <div id="ft-brand">Battle of Minds · Scout Edition · Kemah Kerja Madrasah · Season 5 · MAN 1 Boalemo</div>
     <small>Dibangun dengan HTML, Google Apps Script &amp; Google Sheets · Kurikulum Merdeka berbasis cinta, dengan literasi dan numerasi</small>
 </footer>
-<div id="app-ver" style="position:fixed;bottom:2px;left:6px;font-size:10px;opacity:.45;z-index:5;pointer-events:none">v2026.11.11-q</div>
+<div id="app-ver" style="position:fixed;bottom:2px;left:6px;font-size:10px;opacity:.45;z-index:5;pointer-events:none">v2026.11.11-s</div>
 </body>
 </html>
