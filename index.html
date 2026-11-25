@@ -314,7 +314,8 @@
         .pd-block b { font-size: 2.6rem; }
 
         #cloud-badge { position: fixed; left: 12px; bottom: 12px; z-index: 950; color: #fff; font-size: .8rem; font-weight: 700; padding: .35rem .8rem; border-radius: 20px; background: #777; opacity: .92; pointer-events: none; }
-        body.penonton #cloud-badge, body.bel #cloud-badge { display: none; }
+        body.penonton #cloud-badge, body.bel #cloud-badge { opacity: .4; font-size: .62rem; padding: .15rem .55rem; }
+        #cloud-badge.err { opacity: .95 !important; }
 
         #main-header { position: relative; }
         .hd-logo { position: absolute; left: 1.2rem; top: 50%; transform: translateY(-50%); height: 58px; background: #fff; border-radius: 50%; padding: 2px; }
@@ -402,6 +403,7 @@
         
         <div id="juri-buttons" style="display: flex; gap: 10px; flex-wrap: wrap;">
             <button class="btn btn-primary btn-outline" onclick="bukaReg()">📝 Daftar Regu</button>
+            <button class="btn btn-primary btn-outline" onclick="bukaSync()" title="Periksa & paksa sinkronisasi dengan Google Sheets">🔄 Sinkron</button>
             <button class="btn btn-primary btn-outline" onclick="bukaBrand()" title="Nama lomba, edisi, tagline, dan istilah peserta (Regu/Tim/Kelas)">🏷 Nama Lomba</button>
             <button class="btn btn-primary btn-outline" onclick="bukaTema()" title="Pilih warna tampilan (mengikuti logo madrasah / kegiatan)">🎨 Tema</button>
             <button class="btn btn-primary btn-outline" onclick="bukaPO()" title="Pendaftaran & penilaian play-off bila regu lolos kurang dari target">🥊 Play-off</button>
@@ -497,6 +499,12 @@
         <div class="jp-btns"><button class="btn btn-primary" onclick="tutupBrand()">Selesai</button></div>
     </div></div>
 
+    <div id="sync-modal" class="modal" style="display:none"><div class="modal-box" style="max-width:900px">
+        <h2>🔄 Status Sinkronisasi</h2>
+        <div id="sync-body"></div>
+        <div class="jp-btns"><button class="btn btn-primary" onclick="tutupSync()">Tutup</button></div>
+    </div></div>
+
     <div id="tema-modal" class="modal" style="display:none"><div class="modal-box" style="max-width:900px">
         <h2>🎨 Tema Tampilan</h2>
         <div id="tema-body"></div>
@@ -572,7 +580,7 @@
         // =====================================================================
         //  KONFIGURASI GOOGLE APPS SCRIPT  (ganti nilai di bawah ini)
         // =====================================================================
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbwntYul-8RxNpxQRkr7hccdmCflNzpbbe5PwhJmtkZXB0ZKeg4G9lYYK6jGh7gy9XMLkQ/exec";   // tempel URL Web App (berakhiran /exec)
+        const GAS_URL = "https://script.google.com/macros/s/AKfycby1i4fYOsQHy4aiyE6vnzLgeWx68y9J9ichcpsvrddTOWRA8_MGr1FP0FmsJqSLDUMfgA/exec";   // tempel URL Web App (berakhiran /exec)
         const GAS_KEY = "";                      // opsional, samakan dengan API_KEY di Code.gs
         const JURI_PIN = "";                     // opsional: isi PIN (mis. "1234") agar menu Juri meminta PIN
         const POLL_MS = 2000;                    // interval layar penonton/bel mengambil data (ms)
@@ -841,7 +849,7 @@
         function cekKesiapan() {
             const L = (ok, t) => `<div style="padding:.3rem 0">${ok ? '✅' : '⚠️'} ${t}</div>`, ts = state.teams || [];
             const isi = a => a.filter(q => q.t && q.j && q.j !== '-' && !/^Soal kotak \d+ \(/.test(q.t)).length;
-            const pb = papan.map((b, k) => b.soal && b.g.every(g => g.img) && b.g.filter(g => g.b).length === 5 ? 0 : k + 1).filter(Boolean);
+            const pb = papanAktif().map(k => { const b = papan[k]; return b.soal && b.g.every(g => g.img) && b.g.filter(g => g.b).length === 5 ? 0 : k + 1; }).filter(Boolean);
             const kat = bankK.filter(q => q.c).length;
             const o = document.createElement('div'); o.id = 'cek-ov';
             o.style.cssText = 'position:fixed;inset:0;z-index:9997;background:#000a;display:flex;align-items:center;justify-content:center';
@@ -1241,7 +1249,7 @@
             document.body.classList.add('penonton');
             const sync = () => { readLocal(); renderPenonton(); };
             window.addEventListener('storage', sync);
-            sync(); setInterval(sync, 1000);
+            sync(); setInterval(sync, 1000); watchHb();
             if (REMOTE) { window._renderRemote = renderPenonton; cloudPoll(); setInterval(cloudPoll, POLL_MS); }
         }
 
@@ -1262,6 +1270,8 @@
         function katIk(c) { return KAT[c] || '❓'; }
         const papanBaru = () => Array.from({ length: 5 }, () => ({ soal: '', g: Array.from({ length: 12 }, () => ({ img: '', t: '', b: false })) }));
         let papan = (() => { try { const p = JSON.parse(localStorage.getItem('lcc_papan')); if (Array.isArray(p) && p.length === 5) return p; } catch (e) {} return papanBaru(); })();
+        // Papan yang dipakai = papan yang sudah berisi soal/gambar (papan kosong disembunyikan dari pilihan kartu, jadi lomba boleh memakai 1-5 papan)
+        function papanAktif() { const a = papan.map((_, k) => k).filter(k => papan[k].soal || papan[k].g.some(g => g.img)); return a.length ? a : papan.map((_, k) => k); }
         function gfN() { return Math.max(1, Math.round(+CFG.gfN) || 5); }   // jumlah regu yang lolos ke Grand Final (diatur di Pendaftaran Regu)
         function gugurN() { return Math.min(ANGGOTA, Math.max(1, Math.round(+CFG.gugur) || 3)); }
         function setAnggota(v) {
@@ -1748,8 +1758,8 @@
             if (!a) return '<div class="pn-q">Sesi 2 · Cerdas Cermat<br><small>Juri memilih regu yang tampil</small></div>';
             const t = tById(a), bd = s2Bd(s);
             if (!bd) {
-                return `<div class="buzz" style="background:${warna(a)}">${esc(t.name)} · pilih 1 dari 5 kartu soal</div><div class="kg" style="grid-template-columns:repeat(5,1fr);max-width:none">` +
-                    papan.map((_, k) => { const own = tim().length > papan.length ? undefined : Object.keys(s.pap).find(id => s.pap[id] === k); return `<div class="kc" style="flex-direction:column;font-size:${jr ? '1.6rem' : '3rem'};aspect-ratio:.8;background:${own ? warna(+own) : '#ffca28'};color:${own ? '#fff' : '#3e2723'}" ${jr && !own ? `onclick="s2Kartu(${k})"` : ''}><span>${own ? '🔒' : '🎴'}</span>${k + 1}</div>`; }).join('') + '</div>';
+                return `<div class="buzz" style="background:${warna(a)}">${esc(t.name)} · pilih 1 dari ${papanAktif().length} kartu soal</div><div class="kg" style="grid-template-columns:repeat(${Math.min(5, papanAktif().length)},1fr);max-width:none">` +
+                    papanAktif().map((k, ii) => { const own = tim().length > papanAktif().length ? undefined : Object.keys(s.pap).find(id => s.pap[id] === k); return `<div class="kc" style="flex-direction:column;font-size:${jr ? '1.6rem' : '3rem'};aspect-ratio:.8;background:${own ? warna(+own) : '#ffca28'};color:${own ? '#fff' : '#3e2723'}" ${jr && !own ? `onclick="s2Kartu(${k})"` : ''}><span>${own ? '🔒' : '🎴'}</span>${ii + 1}</div>`; }).join('') + '</div>';
             }
             const p = s.pil[a] || [], hs = s.hasil[a] || [], lihat = jr || s.mulai || s.done[a] || s.buka;
             const cells = bd.g.map((g, i) => {
@@ -1887,15 +1897,15 @@
                 }
                 Object.keys(soal).forEach(k => { if (!per[k] && papan[k - 1]) papan[k - 1].soal = soal[k]; });
                 simpanGambar(); refreshPapan();
-                const kunci = papan.map((b, k) => (k + 1) + '=' + b.g.filter(g => g.b).length + '/5').join(' ');
-                alert(`✅ ${sudah} gambar diunggah.\nKunci benar (✓) per papan: ${kunci}` + (papan.some(b => b.g.filter(g => g.b).length !== 5) ? '\n\n⚠ Papan yang belum tepat 5 kunci perlu dicentang manual (atau beri tanda * di akhir nama berkas gambar).' : '') +
+                const kunci = papanAktif().map(k => (k + 1) + '=' + papan[k].g.filter(g => g.b).length + '/5').join(' ');
+                alert(`✅ ${sudah} gambar diunggah.\nKunci benar (✓) per papan: ${kunci}` + (papanAktif().some(k => papan[k].g.filter(g => g.b).length !== 5) ? '\n\n⚠ Papan yang belum tepat 5 kunci perlu dicentang manual (atau beri tanda * di akhir nama berkas gambar).' : '') +
                     (salah.length ? `\n\nDilewati (nomor papan di luar 1–${papan.length}): ${salah.length} berkas` : '') + (gagal.length ? '\n\nGagal:\n- ' + gagal.slice(0, 8).join('\n- ') : '') + (lewati.length ? `\n\nBerkas non-gambar diabaikan: ${lewati.length}` : ''));
             } catch (err) { alert('ZIP tidak dapat diproses: ' + err.message); }
         }
         function s2Tim(id) { const s = S2(); if (s.mulai || cdN) return; s.aktif = id; s.buka = false; saveData(); render(); }
         function s2Kartu(k) {
             const s = S2(), a = s.aktif; if (!a || s.mulai || s.pap[a] !== undefined) return;
-            if (tim().length <= papan.length && Object.values(s.pap).includes(k)) { toast('Kartu sudah dipilih regu lain'); return; }   // jika regu > papan, kartu boleh dipakai bersama
+            if (tim().length <= papanAktif().length && Object.values(s.pap).includes(k)) { toast('Kartu sudah dipilih regu lain'); return; }   // jika regu > papan, kartu boleh dipakai bersama
             gfAksi(() => { s.pap[a] = k; sfx('tick'); });
         }
         function s2Ganti() {
@@ -1994,7 +2004,7 @@
         function initBel() {
             document.body.classList.add('bel');
             const sync = () => { readLocal(); renderBel(); };
-            window.addEventListener('storage', sync); sync(); setInterval(sync, 300);
+            window.addEventListener('storage', sync); sync(); setInterval(sync, 300); watchHb();
             if (REMOTE) { window._renderRemote = renderBel; cloudPoll(); setInterval(cloudPoll, POLL_MS); }
         }
         function renderBel() {
@@ -2067,10 +2077,15 @@
         // ===== Integrasi Google Sheets (GAS) =====
         const GAS_AKTIF = /^https:\/\/script\.google\.com\//.test(GAS_URL);
         // layar penonton/bel di perangkat lain (tanpa data lokal) otomatis membaca dari Sheets; paksa dengan ?online
-        const REMOTE = (PENONTON || BEL) && GAS_AKTIF && (!localStorage.getItem('lcc_data_v1') || location.search.includes('online'));
+        // Layar penonton/peserta mengambil data dari Google Sheets, KECUALI tab juri di browser yang sama sedang aktif (lalu memakai data lokal agar instan).
+        // (Sebelumnya: browser yang pernah menyimpan data lomba selalu memakai data lokal lama dan tidak pernah tersinkron.)
+        const hbFresh = () => Date.now() - (+localStorage.getItem('lcc_hb') || 0) < 8000;
+        const REMOTE = (PENONTON || BEL) && GAS_AKTIF && (location.search.includes('online') || !hbFresh());
+        function startHb() { const f = () => { try { localStorage.setItem('lcc_hb', String(Date.now())); } catch (e) {} }; f(); setInterval(f, 2000); }
+        function watchHb() { if (!REMOTE && GAS_AKTIF) setInterval(() => { if (!hbFresh()) location.reload(); }, 6000); }   // tab juri ditutup -> beralih ke mode Sheets
         let cloudTimer = null, cloudBusy = false, cloudDirty = { b: false, m: false }, logQ = [], clockOff = 0;
         function srvNow() { return Date.now() + clockOff; }
-        function badge(t, c) { const e = document.getElementById('cloud-badge'); if (e) { e.innerText = t; e.style.background = c || '#777'; } }
+        function badge(t, c) { const e = document.getElementById('cloud-badge'); if (e) { e.innerText = t; e.style.background = c || '#777'; e.classList.toggle('err', c === '#c62828'); } }
         function readLocal() { if (REMOTE) return; try { state = JSON.parse(localStorage.getItem('lcc_data_v1')) || state; } catch (e) {} }
 
         async function api(action, data, ms) {
@@ -2086,9 +2101,11 @@
                     if (rtt >= 0 && (window._rtt === undefined || rtt <= window._rtt + 150)) { clockOff = ((j.recv - t0) + (j.now - t1)) / 2; window._rtt = rtt; }
                     else window._rtt += 60;   // sampel terbaik perlahan "kedaluwarsa"
                 }
+                if (j) window._srv = j.srv;   // versi Code.gs yang sedang berjalan (kosong = Code.gs lama belum di-deploy ulang)
+                if (j && j.ok !== false) { window._lastOk = Date.now(); } else { window._lastErr = new Date().toLocaleTimeString('id-ID') + ' · ' + action + ': ' + ((j && j.err) || '?'); }
                 if (j && j.err === 'PIN juri salah') { sessionStorage.removeItem('lcc_pin'); badge('🔒 PIN juri salah — muat ulang halaman', '#c62828'); }
                 return j;
-            } catch (e) { return { ok: false, err: String(e) }; }
+            } catch (e) { window._lastErr = new Date().toLocaleTimeString('id-ID') + ' · ' + action + ': ' + String(e); return { ok: false, err: String(e) }; }
             finally { clearTimeout(to); }
         }
         function cloudLog(aksi, detail) { if (GAS_AKTIF && !PENONTON && !BEL) logQ.push([new Date().toLocaleString('id-ID'), aksi, detail || '']); }
@@ -2137,15 +2154,60 @@
             if (!GAS_AKTIF) { badge('☁️ Offline — isi GAS_URL', '#777'); return; }
             badge('☁️ Menghubungkan…', '#f39c12');
             if (sessionStorage.getItem('lcc_pin') === null) sessionStorage.setItem('lcc_pin', prompt('PIN juri (kosongkan jika belum diatur di Code.gs):') || '');
+            { const b = document.getElementById('cloud-badge'); if (b) { b.style.pointerEvents = 'auto'; b.style.cursor = 'pointer'; b.title = 'Klik untuk membuka Status Sinkronisasi'; b.onclick = bukaSync; } }
             const r = await api('load');
-            if (!r || !r.ok) { badge('☁️ Gagal terhubung ke GAS', '#c62828'); window._jready = true; return; }
+            if (!r || !r.ok) { badge('☁️ Gagal terhubung ke GAS' + (r && r.err ? ' (' + String(r.err).slice(0, 40) + ')' : ''), '#c62828'); window._jready = true; return; }
             if (r.state && (r.state.ver || 0) >= (state.ver || 0)) {
                 // Google Sheets adalah sumber data utama: perangkat juri lain otomatis mengikuti, tanpa menimpa data di Sheets
                 if ((r.state.ver || 0) > (state.ver || 0)) applyCloud(r);
                 window._cb = r.bver || 0; window._cm = r.mver || 0;
                 badge('☁️ Tersinkron dengan Sheets', '#2e7d32');
-            } else { cloudDirty = { b: true, m: true }; cloudSchedule(); }   // data perangkat ini lebih baru (atau Sheets masih kosong)
+            } else {
+                // data perangkat ini lebih baru (atau Sheets masih kosong). Bila selisihnya jauh, tanya dulu agar data lama tidak menimpa Sheets.
+                const fmt = v => new Date(v).toLocaleString('id-ID');
+                if (r.state && (state.ver || 0) - (r.state.ver || 0) > 60000 && !confirm('Data di perangkat ini (' + fmt(state.ver) + ') lebih baru dari data di Google Sheets (' + fmt(r.state.ver) + ').\n\nOK = kirim data perangkat ini ke Sheets (MENIMPA data di Sheets).\nBatal = muat data dari Google Sheets.')) {
+                    applyCloud(r); window._cb = r.bver || 0; window._cm = r.mver || 0; badge('☁️ Dimuat dari Sheets', '#2e7d32');
+                } else { cloudDirty = { b: true, m: true }; cloudSchedule(); }
+            }
             window._jready = true;
+        }
+        // ---- Status Sinkronisasi (diagnosis + muat/kirim paksa) ----
+        function bukaSync() { renderSync(); document.getElementById('sync-modal').style.display = 'flex'; }
+        function tutupSync() { document.getElementById('sync-modal').style.display = 'none'; }
+        async function renderSync() {
+            const el = document.getElementById('sync-body'), fmt = v => v ? new Date(v).toLocaleString('id-ID') : '—';
+            const base = () => `<div class="jp-kunci"><b>Peran:</b> Juri · <b>Aplikasi:</b> ${esc((document.getElementById('app-ver') || {}).textContent || '')} · <b>Cloud:</b> ${GAS_AKTIF ? 'aktif' : 'MATI (GAS_URL kosong)'}<br>
+                <b>Sukses terakhir:</b> ${fmt(window._lastOk)} · <b>Galat terakhir:</b> ${esc(window._lastErr || 'tidak ada')}<br>
+                <b>Antrian kirim:</b> ${cloudBusy ? 'sedang mengirim · ' : ''}${window._pend ? 'menunggu · ' : ''}${cloudDirty.b ? 'soal · ' : ''}${cloudDirty.m ? 'gambar · ' : ''}${logQ.length ? logQ.length + ' log' : ''}${(!cloudBusy && !window._pend && !cloudDirty.b && !cloudDirty.m && !logQ.length) ? 'kosong ✔' : ''}<br>
+                <b>Selisih jam server:</b> ${Math.round(clockOff)} ms</div>`;
+            el.innerHTML = base() + '<p>Memeriksa data di Google Sheets…</p>';
+            const r = GAS_AKTIF ? await api('juriPoll', { ver: state.ver || 0, bver: window._cb || 0, mver: window._cm || 0 }, 45000) : null;
+            let h = base();
+            const kode = !window._srv ? '<span style="color:var(--merah-gagal)"><b>Code.gs LAMA</b> — belum di-deploy ulang (Deploy → Manage deployments → Edit → New version)</span>' : 'v' + esc(window._srv);
+            h += `<div class="jp-kunci"><b>Versi Code.gs:</b> ${kode}</div>`;
+            if (!r || !r.ok) h += `<p style="color:var(--merah-gagal);font-weight:700">⚠ Tidak bisa membaca Google Sheets${r && r.err ? ': ' + esc(String(r.err)) : ''}. Periksa internet, GAS_URL, dan PIN juri.</p>`;
+            else {
+                const c = r.cur || {}, sS = c.s || 0, loc = state.ver || 0;
+                const banding = sS === loc ? '✅ sama' : sS > loc ? '⬇ Sheets LEBIH BARU' : '⬆ perangkat ini LEBIH BARU';
+                h += `<table class="po-tbl"><tr><th>Data</th><th>Perangkat ini</th><th>Google Sheets</th><th></th></tr>
+                    <tr><td>Data lomba (regu, skor, pengaturan)</td><td>${fmt(loc)}</td><td>${fmt(sS)}</td><td>${banding}</td></tr>
+                    <tr><td>Versi soal</td><td>${window._cb || 0}</td><td>${c.b || 0}</td><td>${(window._cb || 0) === (c.b || 0) ? '✅ sama' : '⚠ beda'}</td></tr>
+                    <tr><td>Versi gambar/logo</td><td>${window._cm || 0}</td><td>${c.m || 0}</td><td>${(window._cm || 0) === (c.m || 0) ? '✅ sama' : '⚠ beda'}</td></tr></table>`;
+            }
+            h += `<div class="jp-btns">${B('🔄 Segarkan', 'renderSync()', 'btn-outline')}${B('⬇ Muat paksa dari Sheets', 'syncMuatPaksa()', 'btn-primary')}${B('⬆ Kirim paksa ke Sheets', 'syncKirimPaksa()', 'btn-danger')}</div>
+                <small>Layar penonton/peserta di perangkat lain menampilkan jam pembaruan terakhir di pojok kiri bawah (merah = tidak terhubung). Bila tidak berubah, muat ulang halaman dengan Ctrl+F5.</small>`;
+            el.innerHTML = h;
+        }
+        async function syncMuatPaksa() {
+            if (!confirm('Data di perangkat ini akan DIGANTI dengan data dari Google Sheets. Lanjutkan?')) return;
+            toast('Memuat dari Sheets…'); const r = await api('load', undefined, 60000);
+            if (!r || !r.ok || !r.state) { alert('Gagal memuat dari Sheets' + (r && r.err ? ': ' + r.err : ' (Sheets masih kosong?)')); return; }
+            cloudDirty = { b: false, m: false }; window._pend = false; clearTimeout(cloudTimer);
+            applyCloud(r); window._cb = r.bver || 0; window._cm = r.mver || 0; badge('☁️ Dimuat dari Sheets ' + new Date().toLocaleTimeString('id-ID'), '#2e7d32'); renderSync();
+        }
+        function syncKirimPaksa() {
+            if (!confirm('Semua data di perangkat ini (regu, skor, soal, gambar) akan dikirim ke Google Sheets dan MENIMPA isinya. Lanjutkan?')) return;
+            cloudDirty = { b: true, m: true }; saveData(); toast('Mengirim semua data ke Sheets…'); setTimeout(renderSync, 4000);
         }
         // ---- beberapa perangkat juri: ikuti perubahan dari perangkat juri lain ----
         function cloudIdle() { return !cloudBusy && !window._pend && !cloudDirty.b && !cloudDirty.m && !logQ.length; }
@@ -2154,6 +2216,7 @@
             window._jsync = true;
             try {
                 const r = await api('juriPoll', { ver: state.ver || 0, bver: window._cb || 0, mver: window._cm || 0 }, 45000);
+                if (r && r.err === 'Aksi tidak dikenal') { badge('⚠ Code.gs belum di-deploy ulang (sinkron antar juri nonaktif)', '#c62828'); return; }
                 if (!r || !r.ok || !cloudIdle()) return;   // ada perubahan lokal selama menunggu: jangan ditimpa
                 let ch = false;
                 if (r.state && (r.state.ver || 0) > (state.ver || 0)) {
@@ -2209,7 +2272,8 @@
         }
         async function cloudPollOnce() {
             const r = await api('poll', { ver: state.ver || 0, bver: window._cb || 0, mver: window._cm || 0 }, 45000);
-            if (!r || !r.ok) return;
+            if (!r || !r.ok) { window._pollFail = (window._pollFail || 0) + 1; badge('⚠ Tidak terhubung ke Sheets' + (r && r.err ? ' (' + String(r.err).slice(0, 40) + ')' : '') + (window._pollFail > 1 ? ' · gagal ' + window._pollFail + 'x' : ''), '#c62828'); return; }
+            window._pollFail = 0; badge('☁️ ' + new Date().toLocaleTimeString('id-ID'), '#2e7d32');
             if (r.state) { state = r.state; if (state.cfg) terapCfg(state.cfg); }
             if (r.banks) { bankSoal = r.banks.p || bankSoal; bankGF = r.banks.g || bankGF; bankK = r.banks.k || bankK; }
             if (r.bver !== undefined) window._cb = r.bver;
@@ -2593,13 +2657,13 @@
             if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && state.viewMode === 'juri') { e.preventDefault(); undo(); }
         });
         initBrand();
-        if (PICK) { initPick(); } else if (PENONTON) { initPenonton(); } else if (BEL) { initBel(); } else { buildCover(); updateMuteUI(); initApp(); if (state.phase === 'cover') mulaiLomba(); aturBabakJuri(); updateTimerUI(); cloudInit(); setInterval(belPollCloud, 1500); setInterval(jawabPollCloud, 1500); }
+        if (PICK) { initPick(); } else if (PENONTON) { initPenonton(); } else if (BEL) { initBel(); } else { startHb(); buildCover(); updateMuteUI(); initApp(); if (state.phase === 'cover') mulaiLomba(); aturBabakJuri(); updateTimerUI(); cloudInit(); setInterval(belPollCloud, 1500); setInterval(jawabPollCloud, 1500); }
     </script>
 <footer id="app-foot">
     <div>© 2026 · <span id="ft-nama">Battle of Minds</span> · Dikembangkan oleh <b>J D Ace | Sigma04, an1mo</b></div>
     <div id="ft-brand">Battle of Minds · Scout Edition · Kemah Kerja Madrasah · Season 5 · MAN 1 Boalemo</div>
     <small>Dibangun dengan HTML, Google Apps Script &amp; Google Sheets · Kurikulum Merdeka berbasis cinta, dengan literasi dan numerasi</small>
 </footer>
-<div id="app-ver" style="position:fixed;bottom:2px;left:6px;font-size:10px;opacity:.45;z-index:5;pointer-events:none">v2026.11.11-s</div>
+<div id="app-ver" style="position:fixed;bottom:2px;left:6px;font-size:10px;opacity:.45;z-index:5;pointer-events:none">v2026.11.11-u</div>
 </body>
 </html>
